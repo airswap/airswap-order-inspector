@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './App.css';
 import { useContractRead } from 'wagmi';
-import swapAbi from '../swapAbi.json';
+import swapERC20ABI from '../swapERC20ABI.json';
 import { zeroAddress } from 'viem';
 
 interface checkParamsJSON {
@@ -13,7 +13,7 @@ interface checkParamsJSON {
   signerAmount: bigint;
   senderToken: `0x${string}`;
   senderAmount: bigint;
-  v: string;
+  v: number;
   r: string;
   s: string;
 }
@@ -22,27 +22,27 @@ function App() {
   const [jsonString, setJsonString] = useState<undefined | string>();
   const [parsedJSON, setParsedJSON] = useState<undefined | checkParamsJSON>();
 
-  const swapContractAddress = '0xb926D88D6BdD560383fCd6537bbf5Aa863470318';
-
-  const order = {
-    senderWallet: parsedJSON?.senderWallet || zeroAddress,
-    nonce: Number(parsedJSON?.nonce) || 0,
-    expiry: Number(parsedJSON?.expiry) || 0,
-    signerWallet: parsedJSON?.signerWallet || zeroAddress,
-    signerToken: parsedJSON?.signerToken || zeroAddress,
-    signerAmount: BigInt(Number(parsedJSON?.signerAmount)) || BigInt(0),
-    senderToken: parsedJSON?.senderToken || zeroAddress,
-    senderAmount: BigInt(Number(parsedJSON?.senderAmount)) || BigInt(0),
-    v: parsedJSON?.v || '0',
-    r: parsedJSON?.r || '0x',
-    s: parsedJSON?.s || '0x',
-  };
+  const swapContractAddress = '0x0C9b31Dc37718417608CE22bb1ba940f702BF90B';
 
   const { data, isError, error } = useContractRead({
     address: swapContractAddress,
-    abi: swapAbi,
+    abi: swapERC20ABI,
     functionName: 'check',
-    args: [parsedJSON?.senderWallet || zeroAddress, order],
+    args: [
+      parsedJSON?.senderWallet || zeroAddress,
+      Number(parsedJSON?.nonce) || 0,
+      Number(parsedJSON?.expiry) || 0,
+      parsedJSON?.signerWallet || zeroAddress,
+      parsedJSON?.signerToken || zeroAddress,
+      (parsedJSON?.signerAmount && BigInt(parsedJSON?.signerAmount)) ||
+        BigInt(0),
+      parsedJSON?.senderToken || zeroAddress,
+      (parsedJSON?.senderAmount && BigInt(parsedJSON?.senderAmount)) ||
+        BigInt(0),
+      Number(parsedJSON?.v) || 0,
+      parsedJSON?.r || '0x',
+      parsedJSON?.s || '0x',
+    ],
     enabled: !!jsonString,
   });
 
