@@ -1,0 +1,22 @@
+textarea {
+  margin: 1rem auto;
+  min-width: 350px;
+  min-height: 150px;
+}
+
+label {
+  font-size: large;
+  font-weight: bold;
+}
+
+.textarea-container {
+  display: flex;
+  flex-direction: column;
+  max-width: fit-content;
+  margin: auto;
+  background-color: white;
+  color: black;
+  padding: 1rem 2rem 2rem 2rem;
+  border: solid darkgray 1px;
+  border-radius: 3px;
+}
