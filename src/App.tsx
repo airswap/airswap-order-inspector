@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './App.css';
 import { useContractRead } from 'wagmi';
 import swapAbi from '../swapAbi.json';
 import { zeroAddress } from 'viem';
 
 interface checkParamsJSON {
-  nonce: string;
-  expiry: string;
-  signerWallet: string;
-  signerToken: string;
-  signerAmount: string;
-  senderToken: string;
-  senderAmount: string;
+  senderWallet: `0x${string}`;
+  nonce: number;
+  expiry: number;
+  signerWallet: `0x${string}`;
+  signerToken: `0x${string}`;
+  signerAmount: bigint;
+  senderToken: `0x${string}`;
+  senderAmount: bigint;
   v: string;
   r: string;
   s: string;
@@ -24,34 +25,38 @@ function App() {
   const swapContractAddress = '0xb926D88D6BdD560383fCd6537bbf5Aa863470318';
 
   const order = {
-    nonce: parsedJSON?.nonce || '',
-    expiry: parsedJSON?.expiry || '',
-    signerWallet: parsedJSON?.signerWallet || '',
-    signerToken: parsedJSON?.signerToken || '',
-    signerAmount: parsedJSON?.signerAmount || '',
-    senderToken: parsedJSON?.senderToken || '',
-    senderAmount: parsedJSON?.senderAmount || '',
-    v: parsedJSON?.v || '',
-    r: parsedJSON?.r || '',
-    s: parsedJSON?.s || '',
+    senderWallet: parsedJSON?.senderWallet || zeroAddress,
+    nonce: Number(parsedJSON?.nonce) || 0,
+    expiry: Number(parsedJSON?.expiry) || 0,
+    signerWallet: parsedJSON?.signerWallet || zeroAddress,
+    signerToken: parsedJSON?.signerToken || zeroAddress,
+    signerAmount: BigInt(Number(parsedJSON?.signerAmount)) || BigInt(0),
+    senderToken: parsedJSON?.senderToken || zeroAddress,
+    senderAmount: BigInt(Number(parsedJSON?.senderAmount)) || BigInt(0),
+    v: parsedJSON?.v || '0',
+    r: parsedJSON?.r || '0x',
+    s: parsedJSON?.s || '0x',
   };
 
-  const { data, isError } = useContractRead({
+  const { data, isError, error } = useContractRead({
     address: swapContractAddress,
     abi: swapAbi,
     functionName: 'check',
-    args: [parsedJSON?.signerWallet || zeroAddress, order],
+    args: [parsedJSON?.senderWallet || zeroAddress, order],
     enabled: !!jsonString,
   });
 
-  console.log(data, isError);
+  console.log('errors:', error);
 
-  React.useEffect(() => {
+  const handleCheckForErrors = () => {
+    console.log('submit');
+    // if object is shaped correctly, then enable useContractRead:
     if (jsonString) {
       const parsedJson = JSON.parse(jsonString);
       setParsedJSON(parsedJson);
+      console.log(parsedJSON);
     }
-  }, [jsonString]);
+  };
 
   return (
     <>
@@ -72,7 +77,7 @@ function App() {
           autoComplete="off"
           onChange={(e) => setJsonString(e.target.value)}
         />
-        <button>Check for errors</button>
+        <button onClick={handleCheckForErrors}>Check for errors</button>
       </div>
     </>
   );
