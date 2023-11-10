@@ -15,8 +15,6 @@ export const validateJsonShape = (json: any) => {
   ) {
     return 'noErrors';
   } else {
-    const errorString = 'Your JSON object is missing the following keys: ';
-
     // assume all keys are missing
     const missingKeys: { [k: string]: boolean } = {
       senderWallet: true,
@@ -43,11 +41,13 @@ export const validateJsonShape = (json: any) => {
       }
     }
 
-    missingKeysArray.forEach((missingKey) => {
-      if (missingKeysArray.length > 1) {
-        errorString.concat(`, ${missingKey}`);
+    let errorString = 'Your JSON is missing the following keys: ';
+
+    missingKeysArray.forEach((missingKey, index) => {
+      if (index === 0) {
+        errorString += missingKey;
       } else {
-        errorString.concat(missingKey);
+        errorString += `, ${missingKey}`;
       }
     });
 
