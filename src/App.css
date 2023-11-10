@@ -52,5 +52,5 @@ input {
   background-color: white;
   border: solid lightgray 1px;
   border-radius: 3px;
-  max-width: 60%;
+  width: fit-content;
 }

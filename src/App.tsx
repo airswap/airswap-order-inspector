@@ -22,6 +22,7 @@ function App() {
       Number(parsedJSON?.expiry) || 0,
       parsedJSON?.signerWallet || zeroAddress,
       parsedJSON?.signerToken || zeroAddress,
+      // FIXME: program should not crash if signerAmount isn't a valid number
       (parsedJSON?.signerAmount && BigInt(parsedJSON?.signerAmount)) ||
         BigInt(0),
       parsedJSON?.senderToken || zeroAddress,
@@ -73,6 +74,7 @@ function App() {
           />
           <input name="submit" type="submit" value="Check for errors" />
         </form>
+        {/* TODO: error handling needs to be more more robus and give clear feedback */}
         {errors && <div className="errors">{errors}</div>}
       </div>
     </>
