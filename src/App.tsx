@@ -3,20 +3,7 @@ import './App.css';
 import { useContractRead } from 'wagmi';
 import swapERC20ABI from '../swapERC20ABI.json';
 import { zeroAddress } from 'viem';
-
-interface checkParamsJSON {
-  senderWallet: `0x${string}`;
-  nonce: number;
-  expiry: number;
-  signerWallet: `0x${string}`;
-  signerToken: `0x${string}`;
-  signerAmount: bigint;
-  senderToken: `0x${string}`;
-  senderAmount: bigint;
-  v: number;
-  r: string;
-  s: string;
-}
+import { checkParamsJSON } from '../types';
 
 function App() {
   const [jsonString, setJsonString] = useState<undefined | string>();
