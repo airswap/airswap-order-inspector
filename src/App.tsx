@@ -1,14 +1,18 @@
-import { MouseEvent, useEffect, useState } from 'react';
+import { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
 import './App.css';
 import { useContractRead } from 'wagmi';
 import swapERC20ABI from '../swapERC20ABI.json';
 import { zeroAddress } from 'viem';
 import { checkParamsJSON } from '../types';
+import { validateJsonShape } from './helpers/validateJsonShape';
 
 function App() {
-  const [jsonString, setJsonString] = useState<undefined | string>();
-  const [parsedJSON, setParsedJSON] = useState<undefined | checkParamsJSON>();
-  const [errors, setErrors] = useState<undefined | string>();
+  const [jsonString, setJsonString] = useState<undefined | string>(undefined);
+  const [parsedJSON, setParsedJSON] = useState<undefined | checkParamsJSON>(
+    undefined
+  );
+  const [errors, setErrors] = useState<undefined | string>(undefined);
+  const [isNoErrors, setIsNoErrors] = useState<undefined | boolean>(undefined);
 
   const swapContractAddress = '0x0C9b31Dc37718417608CE22bb1ba940f702BF90B';
 
@@ -35,13 +39,24 @@ function App() {
     enabled: !!jsonString,
   });
 
-  console.log('errors:', errors);
+  console.log(!!jsonString);
 
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const isValidJsonShape = validateJsonShape(jsonString);
+    if (isValidJsonShape !== 'noErrors') {
+      setErrors(isValidJsonShape);
+    }
+
     if (jsonString) {
       const parsedJson = JSON.parse(jsonString);
       setParsedJSON(parsedJson);
+    }
+    if (isError) {
+      setErrors(error?.message);
+    } else {
+      setErrors('Looks good! No errors! 🎊');
+      setIsNoErrors(true);
     }
   };
 
@@ -60,13 +75,21 @@ function App() {
     "s": "0x1b71e6e633b3334fc88faf4ec0ca1b7611883bc0de4df7024abec07af78b97c3"
 }`;
 
+  const handleChangeTextArea = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    e.preventDefault();
+    setJsonString(e.target.value);
+  };
+  console.log('isError', isError);
   useEffect(() => {
-    if (isError) {
-      error && setErrors(error.message);
-    } else {
+    if (!jsonString) {
       setErrors(undefined);
     }
-  }, [isError, error]);
+    // if (isError) {
+    //   error && setErrors(error.message);
+    // } else {
+    //   setErrors(undefined);
+    // }
+  }, [jsonString, isError, error]);
 
   return (
     <>
@@ -79,12 +102,22 @@ function App() {
             name="json"
             placeholder={textAreaPlaceholder}
             autoComplete="off"
-            onChange={(e) => setJsonString(e.target.value)}
+            onChange={handleChangeTextArea}
           />
           <input name="submit" type="submit" value="Check for errors" />
         </form>
         {/* TODO: error handling needs to be more more robus and give clear feedback */}
-        {errors && <div className="errors">{errors}</div>}
+        {errors && (
+          <div
+            className="errors"
+            style={{
+              color: isNoErrors ? 'blue' : 'red',
+              fontWeight: 'bold',
+            }}
+          >
+            {errors}
+          </div>
+        )}
       </div>
     </>
   );
