@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { MouseEvent, useEffect, useState } from 'react';
 import './App.css';
 import { useContractRead } from 'wagmi';
 import swapERC20ABI from '../swapERC20ABI.json';
@@ -21,10 +21,11 @@ interface checkParamsJSON {
 function App() {
   const [jsonString, setJsonString] = useState<undefined | string>();
   const [parsedJSON, setParsedJSON] = useState<undefined | checkParamsJSON>();
+  const [errors, setErrors] = useState<undefined | string>();
 
   const swapContractAddress = '0x0C9b31Dc37718417608CE22bb1ba940f702BF90B';
 
-  const { data, isError, error } = useContractRead({
+  const { isError, error } = useContractRead({
     address: swapContractAddress,
     abi: swapERC20ABI,
     functionName: 'check',
@@ -46,17 +47,23 @@ function App() {
     enabled: !!jsonString,
   });
 
-  console.log('errors:', error);
+  console.log('errors:', errors);
 
-  const handleCheckForErrors = () => {
-    console.log('submit');
-    // if object is shaped correctly, then enable useContractRead:
+  const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (jsonString) {
       const parsedJson = JSON.parse(jsonString);
       setParsedJSON(parsedJson);
-      console.log(parsedJSON);
     }
   };
+
+  useEffect(() => {
+    if (isError) {
+      error && setErrors(error.message);
+    } else {
+      setErrors(undefined);
+    }
+  }, [isError, error]);
 
   return (
     <>
@@ -68,16 +75,18 @@ function App() {
           <br />
           <em> chainId, swapContract, version, and senderWallet</em>
         </p>
-
-        <label>Paste your JSON below:</label>
-        <textarea
-          id="json"
-          name="json"
-          placeholder="paste your JSON here..."
-          autoComplete="off"
-          onChange={(e) => setJsonString(e.target.value)}
-        />
-        <button onClick={handleCheckForErrors}>Check for errors</button>
+        <form onClick={handleSubmit}>
+          <label>Paste your JSON below:</label>
+          <textarea
+            id="json"
+            name="json"
+            placeholder="paste your JSON here..."
+            autoComplete="off"
+            onChange={(e) => setJsonString(e.target.value)}
+          />
+          <input name="submit" type="submit" value="Check for errors" />
+        </form>
+        {errors && <div className="errors">{errors}</div>}
       </div>
     </>
   );
