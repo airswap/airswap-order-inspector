@@ -6,6 +6,7 @@ import { zeroAddress } from 'viem';
 import { checkParamsJSON } from '../types';
 import { validateJsonShape } from './helpers/validateJsonShape';
 import { swapContractAddress, textAreaPlaceholder } from './helpers/constants';
+import airswapLogo from '../src/assets/airswap-logo-with-text.svg';
 
 function App() {
   const [jsonString, setJsonString] = useState<undefined | string>(undefined);
@@ -45,6 +46,12 @@ function App() {
 
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!jsonString) {
+      setIsError(true);
+      setErrors('Please enter valid JSON');
+    }
+
     try {
       const parsedJsonString = jsonString && JSON.parse(jsonString);
       setParsedJSON(parsedJsonString);
@@ -77,38 +84,39 @@ function App() {
       setErrors(checkFunctionError.message);
     } else if (!checkFunctionError && isEnableCheck) {
       setIsError(false);
-      setErrors('Your JSON input Looks good with no errors! 🎊');
+      setErrors('No errors found! 🎊');
     }
   }, [checkFunctionError, isEnableCheck]);
 
   return (
     <>
-      <h1>AirSwap Debugger:</h1>
-      <div className="textarea-container">
-        <form onSubmit={handleSubmit}>
-          <label>Paste your JSON in the text area below:</label>
-          <textarea
-            id="json"
-            name="json"
-            placeholder={textAreaPlaceholder}
-            autoComplete="off"
-            onChange={handleChangeTextArea}
-          />
-          <input name="submit" type="submit" value="Check for errors" />
-        </form>
+      <div className="image-container">
+        <img src={airswapLogo} alt="AirSwap logo" />
+      </div>
+      <div className="container">
+        <h1>Server Debugger:</h1>
+        <div className="textarea-container">
+          <form onSubmit={handleSubmit}>
+            <label>Paste your JSON in the text area below:</label>
+            <textarea
+              id="json"
+              name="json"
+              placeholder={textAreaPlaceholder}
+              autoComplete="off"
+              onChange={handleChangeTextArea}
+            />
+            <input name="submit" type="submit" value="Check for errors" />
+          </form>
 
-        {errors && (
-          <div
-            className="errors"
-            style={{
-              color: !isError ? 'blue' : 'red',
-              fontWeight: 'bold',
-              border: !isError ? 'none' : 'solid gray 1px',
-            }}
-          >
-            {typeof errors === 'string' ? errors : null}
-          </div>
-        )}
+          {errors && (
+            <div
+              className="errors-container"
+              style={{ color: !isError ? 'blue' : 'red' }}
+            >
+              {typeof errors === 'string' ? errors : null}
+            </div>
+          )}
+        </div>
       </div>
     </>
   );

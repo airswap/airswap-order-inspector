@@ -1,9 +1,38 @@
 body {
-  width: 650px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
   background-color: rgba(43, 114, 255, 1);
-  color: white;
   font-family: Arial, Helvetica, sans-serif;
+}
+
+h1 {
+  font-size: 24px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  margin: auto;
+  padding: 1rem;
+}
+
+textarea {
+  margin: 1rem auto;
+  min-width: 80%;
+  max-width: 100%;
+  min-height: 350px;
+  border-color: lightgray;
+  border-radius: 3px;
+  padding: 1rem;
+}
+
+input {
+  background-color: rgba(43, 114, 255, 1);
+  margin: auto;
+  color: white;
+  padding: 0.75rem 1.25rem;
+  border: solid darkgray 1px;
+  border-radius: 3px;
+  font-size: large;
+  font-weight: 500;
+  text-transform: uppercase;
 }
