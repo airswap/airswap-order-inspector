@@ -91,7 +91,7 @@ function App() {
   return (
     <>
       <div className="image-container">
-        <img src={airswapLogo} alt="AirSwap logo" />
+        <img src={airswapLogo} alt="AirSwap logo" style={{ height: '3rem' }} />
       </div>
       <div className="container">
         <h1>Server Debugger:</h1>

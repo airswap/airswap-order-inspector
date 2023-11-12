@@ -4,7 +4,9 @@ body {
 }
 
 h1 {
-  font-size: 24px;
+  margin-top: 1.5rem;
+  font-size: 26px;
+  text-transform: uppercase;
 }
 
 form {
@@ -19,7 +21,7 @@ textarea {
   margin: 1rem auto;
   min-width: 80%;
   max-width: 100%;
-  min-height: 350px;
+  min-height: 325px;
   border-color: lightgray;
   border-radius: 3px;
   padding: 1rem;
