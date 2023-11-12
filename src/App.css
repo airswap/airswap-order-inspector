@@ -53,4 +53,5 @@ input {
   border: solid lightgray 1px;
   border-radius: 3px;
   width: fit-content;
+  white-space: pre-line;
 }

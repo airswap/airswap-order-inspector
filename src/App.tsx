@@ -1,101 +1,78 @@
-import { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
+import { ChangeEvent, MouseEvent, useState } from 'react';
 import './App.css';
 import { useContractRead } from 'wagmi';
 import swapERC20ABI from '../swapERC20ABI.json';
 import { zeroAddress } from 'viem';
 import { checkParamsJSON } from '../types';
 import { validateJsonShape } from './helpers/validateJsonShape';
+import { swapContractAddress, textAreaPlaceholder } from './helpers/constants';
 
 function App() {
   const [jsonString, setJsonString] = useState<undefined | string>(undefined);
-  const [parsedJSON, setParsedJSON] = useState<undefined | checkParamsJSON>(
-    undefined
-  );
-  const [errors, setErrors] = useState<undefined | string>(undefined);
-  const [isNoErrors, setIsNoErrors] = useState<undefined | boolean>(undefined);
+  const [parsedJSON, setParsedJSON] = useState<
+    undefined | Partial<checkParamsJSON>
+  >(undefined);
+  const [errors, setErrors] = useState<boolean | string>(false);
+  const [isError, setIsError] = useState(false);
 
-  const swapContractAddress = '0x0C9b31Dc37718417608CE22bb1ba940f702BF90B';
-
-  const { isError, error } = useContractRead({
-    address: swapContractAddress,
-    abi: swapERC20ABI,
-    functionName: 'check',
-    args: [
-      parsedJSON?.senderWallet || zeroAddress,
-      Number(parsedJSON?.nonce) || 0,
-      Number(parsedJSON?.expiry) || 0,
-      parsedJSON?.signerWallet || zeroAddress,
-      parsedJSON?.signerToken || zeroAddress,
-      // FIXME: program should not crash if signerAmount isn't a valid number
-      (parsedJSON?.signerAmount && BigInt(parsedJSON?.signerAmount)) ||
-        BigInt(0),
-      parsedJSON?.senderToken || zeroAddress,
-      (parsedJSON?.senderAmount && BigInt(parsedJSON?.senderAmount)) ||
-        BigInt(0),
-      Number(parsedJSON?.v) || 0,
-      parsedJSON?.r || '0x',
-      parsedJSON?.s || '0x',
-    ],
-    enabled: !!jsonString,
-  });
-
-  console.log(!!jsonString);
+  // const { error } = useContractRead({
+  //   address: swapContractAddress,
+  //   abi: swapERC20ABI,
+  //   functionName: 'check',
+  //   args: [
+  //     parsedJSON?.senderWallet || zeroAddress,
+  //     Number(parsedJSON?.nonce) || 0,
+  //     Number(parsedJSON?.expiry) || 0,
+  //     parsedJSON?.signerWallet || zeroAddress,
+  //     parsedJSON?.signerToken || zeroAddress,
+  //     (parsedJSON?.signerAmount && BigInt(parsedJSON?.signerAmount)) ||
+  //       BigInt(0),
+  //     parsedJSON?.senderToken || zeroAddress,
+  //     (parsedJSON?.senderAmount && BigInt(parsedJSON?.senderAmount)) ||
+  //       BigInt(0),
+  //     Number(parsedJSON?.v) || 0,
+  //     parsedJSON?.r || '0x',
+  //     parsedJSON?.s || '0x',
+  //   ],
+  //   // enabled: false,
+  //   enabled: isCheckErrors,
+  // });
 
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const isValidJsonShape = validateJsonShape(jsonString);
-    if (isValidJsonShape !== 'noErrors') {
-      setErrors(isValidJsonShape);
+
+    try {
+      const parsedJsonString = jsonString && JSON.parse(jsonString);
+      setParsedJSON(parsedJsonString);
+    } catch (e) {
+      console.error(e);
+      console.log('console.log e:', e);
+      setErrors(`Your input is not valid JSON format:\n\n${e}`);
+      setIsError(true);
+      return;
     }
 
-    if (jsonString) {
-      const parsedJson = JSON.parse(jsonString);
-      setParsedJSON(parsedJson);
-    }
-    if (isError) {
-      setErrors(error?.message);
-    } else {
-      setErrors('Looks good! No errors! 🎊');
-      setIsNoErrors(true);
+    if (parsedJSON) {
+      const isValidJsonShape = validateJsonShape(parsedJSON);
+      if (!isValidJsonShape) {
+        setErrors(isValidJsonShape);
+        setIsError(true);
+      } else {
+        setErrors('Looks good! No errors! 🎊');
+        setIsError(false);
+      }
     }
   };
-
-  const textAreaPlaceholder = `Paste your JSON object here with the following format:
-
-  {
-    "nonce": "99",
-    "expiry": "1566941284",
-    "signerWallet": "0x73BCEb1Cd57C711feaC4224D062b0F6ff338501f",
-    "signerToken": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-    "signerAmount": "100000000",
-    "senderToken": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-    "senderAmount": "1000000000000000000",
-    "v": "28",
-    "r": "0x67e0723b0afd357d4f28523bf633dfee16e0eab2f3cbcf8ce1afd32a035d2764",
-    "s": "0x1b71e6e633b3334fc88faf4ec0ca1b7611883bc0de4df7024abec07af78b97c3"
-}`;
 
   const handleChangeTextArea = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    e.preventDefault();
     setJsonString(e.target.value);
   };
-  console.log('isError', isError);
-  useEffect(() => {
-    if (!jsonString) {
-      setErrors(undefined);
-    }
-    // if (isError) {
-    //   error && setErrors(error.message);
-    // } else {
-    //   setErrors(undefined);
-    // }
-  }, [jsonString, isError, error]);
 
   return (
     <>
       <h1>AirSwap Debugger:</h1>
       <div className="textarea-container">
-        <form onClick={handleSubmit}>
+        <form onSubmit={handleSubmit}>
           <label>Paste your JSON in the text area below:</label>
           <textarea
             id="json"
@@ -106,13 +83,14 @@ function App() {
           />
           <input name="submit" type="submit" value="Check for errors" />
         </form>
-        {/* TODO: error handling needs to be more more robus and give clear feedback */}
+
         {errors && (
           <div
             className="errors"
             style={{
-              color: isNoErrors ? 'blue' : 'red',
+              color: !isError ? 'blue' : 'red',
               fontWeight: 'bold',
+              border: !isError ? 'none' : 'solid gray 1px',
             }}
           >
             {errors}
