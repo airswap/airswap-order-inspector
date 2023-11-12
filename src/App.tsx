@@ -14,7 +14,7 @@ function App() {
   >(undefined);
   const [errors, setErrors] = useState<boolean | string | Error>(false);
   const [isError, setIsError] = useState(false);
-  const [isEnableCheck, setEnableCheck] = useState(false);
+  const [isEnableCheck, setIsEnableCheck] = useState(false);
 
   const { error: checkFunctionError } = useContractRead({
     address: swapContractAddress,
@@ -39,14 +39,12 @@ function App() {
   });
 
   const handleChangeTextArea = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setEnableCheck(false);
+    setIsEnableCheck(false);
     setJsonString(e.target.value);
   };
 
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('click');
-
     try {
       const parsedJsonString = jsonString && JSON.parse(jsonString);
       setParsedJSON(parsedJsonString);
@@ -58,27 +56,24 @@ function App() {
   };
 
   useEffect(() => {
-    // This block will be executed whenever parsedJSON is updated
     if (parsedJSON) {
       const isValidJsonShape = validateJsonShape(parsedJSON);
 
       if (isValidJsonShape) {
+        setIsEnableCheck(false);
         setErrors(isValidJsonShape);
         setIsError(true);
         return;
       } else {
         // run check function on smart contract
-        setEnableCheck(true);
+        setIsEnableCheck(true);
       }
     }
   }, [parsedJSON]);
 
   useEffect(() => {
-    // This block will be executed whenever checkFunctionError is updated
-
     if (checkFunctionError && isEnableCheck) {
       setIsError(true);
-      console.log('checkFunctionError', checkFunctionError);
       setErrors(checkFunctionError.message);
     } else if (!checkFunctionError && isEnableCheck) {
       setIsError(false);
