@@ -24,15 +24,42 @@ textarea {
 
 input {
   background-color: rgba(43, 114, 255, 1);
-  margin: auto;
+  margin: 0.5rem auto 0rem auto;
   width: 90%;
   color: white;
   padding: 0.75rem 1.25rem;
   border: solid darkgray 1px;
   border-radius: 3px;
-  font-size: large;
+  font-size: medium;
   font-weight: 500;
   text-transform: uppercase;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 0.5rem;
+  width: 100%;
+  max-width: 600px;
+  margin: auto;
+  overflow-x: hidden;
+  text-align: center;
+  background-color: rgb(241, 241, 241);
+  color: black;
+  border-radius: 5px;
+}
+
+@media (max-width: 425px) {
+  input {
+    width: 100%;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 600px;
+    overflow-x: hidden;
+  }
 }
 
 .image-container {
@@ -42,21 +69,10 @@ input {
   width: 100%;
 }
 
-.container {
-  padding: 0.5rem 0rem 2rem 0rem;
-  width: 450px;
-  max-width: 600px;
-  margin: auto;
-  text-align: center;
-  background-color: rgb(241, 241, 241);
-  color: black;
-  border-radius: 4px;
-}
-
 .textarea-container {
   display: flex;
   flex-direction: column;
-  max-width: 100%;
+  width: 100%;
 }
 
 .errors-container {
@@ -68,5 +84,4 @@ input {
   background-color: white;
   border: #ff0101 dotted 2px;
   border-radius: 3px;
-  /* font-weight: bold; */
 }
