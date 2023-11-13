@@ -17,7 +17,11 @@ function App() {
   const [isError, setIsError] = useState(false);
   const [isEnableCheck, setIsEnableCheck] = useState(false);
 
-  const { error: checkFunctionError } = useContractRead({
+  const {
+    isError: checkFunctionIsError,
+    error: checkFunctionError,
+    data,
+  } = useContractRead({
     address: swapContractAddress,
     abi: swapERC20ABI,
     functionName: 'check',
@@ -39,6 +43,9 @@ function App() {
     enabled: isEnableCheck,
   });
 
+  console.log(checkFunctionIsError);
+  console.log('data', data);
+
   const handleChangeTextArea = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setIsEnableCheck(false);
     setJsonString(e.target.value);
@@ -46,12 +53,10 @@ function App() {
 
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     if (!jsonString) {
       setIsError(true);
-      setErrors('Please enter valid JSON');
+      setErrors('Input cannot be blank');
     }
-
     try {
       const parsedJsonString = jsonString && JSON.parse(jsonString);
       setParsedJSON(parsedJsonString);
@@ -91,7 +96,7 @@ function App() {
   return (
     <>
       <div className="image-container">
-        <img src={airswapLogo} alt="AirSwap logo" style={{ height: '3rem' }} />
+        <img src={airswapLogo} alt="AirSwap logo" />
       </div>
       <div className="container">
         <h1>Server Debugger:</h1>
@@ -113,7 +118,7 @@ function App() {
               className="errors-container"
               style={{ color: !isError ? 'blue' : 'red' }}
             >
-              {typeof errors === 'string' ? errors : null}
+              {typeof errors === 'string' ? errors : null}{' '}
             </div>
           )}
         </div>
