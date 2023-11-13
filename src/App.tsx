@@ -94,36 +94,34 @@ function App() {
   }, [checkFunctionError, isEnableCheck]);
 
   return (
-    <>
+    <div className="textarea-container">
       <div className="image-container">
         <img src={airswapLogo} alt="AirSwap logo" />
       </div>
       <div className="container">
         <h1>Server Debugger:</h1>
-        <div className="textarea-container">
-          <form onSubmit={handleSubmit}>
-            <label>Paste your JSON in the text area below:</label>
-            <textarea
-              id="json"
-              name="json"
-              placeholder={textAreaPlaceholder}
-              autoComplete="off"
-              onChange={handleChangeTextArea}
-            />
-            <input name="submit" type="submit" value="Check for errors" />
-          </form>
+        <form onSubmit={handleSubmit}>
+          <label>Paste your JSON in the text area below:</label>
+          <textarea
+            id="json"
+            name="json"
+            placeholder={textAreaPlaceholder}
+            autoComplete="off"
+            onChange={handleChangeTextArea}
+          />
+          <input name="submit" type="submit" value="Check errors" />
+        </form>
 
-          {errors && (
-            <div
-              className="errors-container"
-              style={{ color: !isError ? 'blue' : 'red' }}
-            >
-              {typeof errors === 'string' ? errors : null}{' '}
-            </div>
-          )}
-        </div>
+        {errors && (
+          <div
+            className="errors-container"
+            style={{ color: !isError ? 'blue' : 'red' }}
+          >
+            {typeof errors === 'string' ? errors : null}{' '}
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 }
 
