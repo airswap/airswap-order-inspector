@@ -58,7 +58,6 @@ export const validateJsonShape = (
     const errorString = `Your JSON is missing the following keys: ${missingKeys.join(
       ', '
     )}.`;
-    console.error(errorString);
     return errorString;
   } catch (e) {
     console.error(e);

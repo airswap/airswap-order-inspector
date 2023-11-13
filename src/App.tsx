@@ -4,7 +4,7 @@ import { useContractRead } from 'wagmi';
 import swapERC20ABI from '../swapERC20ABI.json';
 import { zeroAddress } from 'viem';
 import { checkParamsJSON } from '../types';
-import { validateJsonShape } from './helpers/validateJsonShape';
+import { validateJsonShape } from './helpers/validations';
 import { swapContractAddress, textAreaPlaceholder } from './helpers/constants';
 import airswapLogo from '../src/assets/airswap-logo-with-text.svg';
 
