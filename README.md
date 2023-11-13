@@ -1,27 +1,26 @@
-# React + TypeScript + Vite
+# AirSwap Debugger
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[![Discord](https://img.shields.io/discord/590643190281928738.svg)](https://chat.airswap.io) ![Twitter Follow](https://img.shields.io/twitter/follow/airswap?style=social) ![Subreddit subscribers](https://img.shields.io/reddit/subreddit-subscribers/AirSwap?style=social)
 
-Currently, two official plugins are available:
+[Website](https://www.airswap.io/) · [About](https://about.airswap.io/) · [Twitter](https://twitter.com/airswap) · [Discord](https://chat.airswap.io/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+First, please give us a star! ⭐️
 
-## Expanding the ESLint configuration
+### Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- React
+- NodeJS v18
+- Yarn
 
-- Configure the top-level `parserOptions` property like this:
+### Quick start
 
-```js
-   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-   },
+```
+$ git clone https://github.com/<YOUR-GITHUB-USER>/airswap-web
+$ cd airswap-debugger
+$ yarn install
+$ yarn start
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+This repo is a frontend for AirSwap. AirSwap is an open developer community focused on decentralized trading systems. Designers and developers earn for contributing; check [CONTRIBUTING](CONTRIBUTING.md) and join the [Discord](https://chat.airswap.io/) server to learn more.
+
+Let's build stuff! 🛠️
