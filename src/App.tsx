@@ -17,25 +17,45 @@ function App() {
   const [isError, setIsError] = useState(false);
   const [isEnableCheck, setIsEnableCheck] = useState(false);
 
-  const args: CheckArgs = [
-    parsedJSON?.senderWallet || zeroAddress,
-    BigInt(Number(parsedJSON?.nonce)) || BigInt(0),
-    BigInt(Number(parsedJSON?.expiry)) || BigInt(0),
-    parsedJSON?.signerWallet || zeroAddress,
-    parsedJSON?.signerToken || zeroAddress,
-    (parsedJSON?.signerAmount && BigInt(parsedJSON?.signerAmount)) || BigInt(0),
-    parsedJSON?.senderToken || zeroAddress,
-    (parsedJSON?.senderAmount && BigInt(parsedJSON?.senderAmount)) || BigInt(0),
-    Number(parsedJSON?.v) || 0,
-    (parsedJSON?.r as `0x${string}`) || `0x`,
-    (parsedJSON?.s as `0x${string}`) || `0x`,
+  const senderWallet = parsedJSON?.senderWallet || zeroAddress;
+  const nonce = isNaN(Number(parsedJSON?.nonce))
+    ? BigInt(0)
+    : BigInt(Number(parsedJSON?.nonce));
+  const expiry = isNaN(Number(parsedJSON?.expiry))
+    ? BigInt(0)
+    : BigInt(Number(parsedJSON?.expiry));
+  const signerWallet = parsedJSON?.signerWallet || zeroAddress;
+  const signerToken = parsedJSON?.signerToken || zeroAddress;
+  const signerAmount = isNaN(Number(parsedJSON?.signerAmount))
+    ? BigInt(0)
+    : BigInt(Number(parsedJSON?.signerAmount));
+  const senderToken = parsedJSON?.senderToken || zeroAddress;
+  const senderAmount = isNaN(Number(parsedJSON?.senderAmount))
+    ? BigInt(0)
+    : BigInt(Number(parsedJSON?.senderAmount));
+  const v = Number(parsedJSON?.v) || 0;
+  const r = (parsedJSON?.r as `0x${string}`) || `0x`;
+  const s = (parsedJSON?.s as `0x${string}`) || `0x`;
+
+  const checkArgs: CheckArgs = [
+    senderWallet,
+    nonce,
+    expiry,
+    signerWallet,
+    signerToken,
+    signerAmount,
+    senderToken,
+    senderAmount,
+    v,
+    r,
+    s,
   ];
 
   const { error: checkFunctionError } = useContractRead({
     address: swapContractAddress,
     abi,
     functionName: 'check',
-    args,
+    args: checkArgs,
     enabled: isEnableCheck,
   });
 
