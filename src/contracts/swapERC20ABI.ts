@@ -1,4 +1,4 @@
-[
+export const abi = [
   {
     "inputs": [
       { "internalType": "uint256", "name": "_protocolFee", "type": "uint256" },

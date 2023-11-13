@@ -1,7 +1,7 @@
 import { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
 import './App.css';
 import { useContractRead } from 'wagmi';
-import swapERC20ABI from '../swapERC20ABI.json';
+import { abi } from './contracts/swapERC20ABI';
 import { zeroAddress } from 'viem';
 import { checkParamsJSON } from '../types';
 import { validateJsonShape } from './helpers/validations';
@@ -23,7 +23,7 @@ function App() {
     data,
   } = useContractRead({
     address: swapContractAddress,
-    abi: swapERC20ABI,
+    abi: abi,
     functionName: 'check',
     args: [
       parsedJSON?.senderWallet || zeroAddress,
