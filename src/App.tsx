@@ -17,27 +17,30 @@ function App() {
   const [isError, setIsError] = useState(false);
   const [isEnableCheck, setIsEnableCheck] = useState(false);
 
-  const { error: checkFunctionError } = useContractRead({
-    address: swapContractAddress,
-    abi: swapERC20ABI,
-    functionName: 'check',
-    args: [
-      parsedJSON?.senderWallet || zeroAddress,
-      Number(parsedJSON?.nonce) || 0,
-      Number(parsedJSON?.expiry) || 0,
-      parsedJSON?.signerWallet || zeroAddress,
-      parsedJSON?.signerToken || zeroAddress,
-      (parsedJSON?.signerAmount && BigInt(parsedJSON?.signerAmount)) ||
-        BigInt(0),
-      parsedJSON?.senderToken || zeroAddress,
-      (parsedJSON?.senderAmount && BigInt(parsedJSON?.senderAmount)) ||
-        BigInt(0),
-      Number(parsedJSON?.v) || 0,
-      parsedJSON?.r || '0x',
-      parsedJSON?.s || '0x',
-    ],
-    enabled: isEnableCheck,
-  });
+  const { isError: checkFunctionIsError, error: checkFunctionError } =
+    useContractRead({
+      address: swapContractAddress,
+      abi: swapERC20ABI,
+      functionName: 'check',
+      args: [
+        parsedJSON?.senderWallet || zeroAddress,
+        Number(parsedJSON?.nonce) || 0,
+        Number(parsedJSON?.expiry) || 0,
+        parsedJSON?.signerWallet || zeroAddress,
+        parsedJSON?.signerToken || zeroAddress,
+        (parsedJSON?.signerAmount && BigInt(parsedJSON?.signerAmount)) ||
+          BigInt(0),
+        parsedJSON?.senderToken || zeroAddress,
+        (parsedJSON?.senderAmount && BigInt(parsedJSON?.senderAmount)) ||
+          BigInt(0),
+        Number(parsedJSON?.v) || 0,
+        parsedJSON?.r || '0x',
+        parsedJSON?.s || '0x',
+      ],
+      enabled: isEnableCheck,
+    });
+
+  console.log(checkFunctionIsError);
 
   const handleChangeTextArea = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setIsEnableCheck(false);
@@ -46,12 +49,10 @@ function App() {
 
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     if (!jsonString) {
       setIsError(true);
-      setErrors('Please enter valid JSON');
+      setErrors('Input cannot be blank');
     }
-
     try {
       const parsedJsonString = jsonString && JSON.parse(jsonString);
       setParsedJSON(parsedJsonString);
@@ -91,7 +92,7 @@ function App() {
   return (
     <>
       <div className="image-container">
-        <img src={airswapLogo} alt="AirSwap logo" style={{ height: '3rem' }} />
+        <img src={airswapLogo} alt="AirSwap logo" />
       </div>
       <div className="container">
         <h1>Server Debugger:</h1>
@@ -113,7 +114,7 @@ function App() {
               className="errors-container"
               style={{ color: !isError ? 'blue' : 'red' }}
             >
-              {typeof errors === 'string' ? errors : null}
+              {typeof errors === 'string' ? errors : null}{' '}
             </div>
           )}
         </div>

@@ -1,0 +1,77 @@
+{
+  "hash": "ea3baa32",
+  "browserHash": "a2df2efa",
+  "optimized": {
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "f0b239dd",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "b64f8943",
+      "needsInterop": true
+    },
+    "wagmi": {
+      "src": "../../node_modules/wagmi/dist/index.js",
+      "file": "wagmi.js",
+      "fileHash": "73011d8f",
+      "needsInterop": false
+    },
+    "wagmi/providers/public": {
+      "src": "../../node_modules/wagmi/dist/providers/public.js",
+      "file": "wagmi_providers_public.js",
+      "fileHash": "db663fd4",
+      "needsInterop": false
+    },
+    "viem": {
+      "src": "../../node_modules/viem/_esm/index.js",
+      "file": "viem.js",
+      "fileHash": "d41a39f9",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-MKG3NT3Y": {
+      "file": "chunk-MKG3NT3Y.js"
+    },
+    "chunk-67XTWVEJ": {
+      "file": "chunk-67XTWVEJ.js"
+    },
+    "chunk-FEESO44D": {
+      "file": "chunk-FEESO44D.js"
+    },
+    "chunk-ZUGXMLMB": {
+      "file": "chunk-ZUGXMLMB.js"
+    },
+    "ccip-D7755DAT": {
+      "file": "ccip-D7755DAT.js"
+    },
+    "chunk-KJD7SGMW": {
+      "file": "chunk-KJD7SGMW.js"
+    },
+    "secp256k1-NAC6VI26": {
+      "file": "secp256k1-NAC6VI26.js"
+    },
+    "chunk-NEMFIMYM": {
+      "file": "chunk-NEMFIMYM.js"
+    },
+    "ens-OV3GWXP4": {
+      "file": "ens-OV3GWXP4.js"
+    },
+    "chunk-GXELNKAA": {
+      "file": "chunk-GXELNKAA.js"
+    },
+    "chunk-7UF4UOOS": {
+      "file": "chunk-7UF4UOOS.js"
+    },
+    "chunk-ABLC2WDW": {
+      "file": "chunk-ABLC2WDW.js"
+    },
+    "chunk-5WWUZCGV": {
+      "file": "chunk-5WWUZCGV.js"
+    }
+  }
+}

@@ -7,12 +7,12 @@ export const validateJsonShape = (
   console.log(json);
   try {
     const requiredKeys: (keyof checkParamsJSON)[] = [
-      'senderWallet',
       'nonce',
       'expiry',
       'signerWallet',
       'signerToken',
       'signerAmount',
+      'senderWallet',
       'senderToken',
       'senderAmount',
       'v',
