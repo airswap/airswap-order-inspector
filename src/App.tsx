@@ -4,8 +4,11 @@ import { useContractRead } from 'wagmi';
 import { abi } from './contracts/swapERC20ABI';
 import { zeroAddress } from 'viem';
 import { CheckArgs, CheckParamsJSON } from '../types';
-import { validateJsonShape } from './helpers/validations';
-import { swapContractAddress, textAreaPlaceholder } from './helpers/constants';
+import { validateJsonShape } from './utilities/validations';
+import {
+  swapContractAddress,
+  textAreaPlaceholder,
+} from './utilities/constants';
 import airswapLogo from '../src/assets/airswap-logo-with-text.svg';
 
 function App() {
