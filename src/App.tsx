@@ -3,7 +3,7 @@ import './App.css';
 import { useContractRead } from 'wagmi';
 import { abi } from './contracts/swapERC20ABI';
 import { zeroAddress } from 'viem';
-import { checkParamsJSON } from '../types';
+import { CheckArgs, CheckParamsJSON } from '../types';
 import { validateJsonShape } from './helpers/validations';
 import { swapContractAddress, textAreaPlaceholder } from './helpers/constants';
 import airswapLogo from '../src/assets/airswap-logo-with-text.svg';
@@ -11,40 +11,33 @@ import airswapLogo from '../src/assets/airswap-logo-with-text.svg';
 function App() {
   const [jsonString, setJsonString] = useState<undefined | string>(undefined);
   const [parsedJSON, setParsedJSON] = useState<
-    undefined | Partial<checkParamsJSON>
+    undefined | Partial<CheckParamsJSON>
   >(undefined);
   const [errors, setErrors] = useState<boolean | string | Error>(false);
   const [isError, setIsError] = useState(false);
   const [isEnableCheck, setIsEnableCheck] = useState(false);
 
-  const {
-    isError: checkFunctionIsError,
-    error: checkFunctionError,
-    data,
-  } = useContractRead({
+  const args: CheckArgs = [
+    parsedJSON?.senderWallet || zeroAddress,
+    BigInt(Number(parsedJSON?.nonce)) || BigInt(0),
+    BigInt(Number(parsedJSON?.expiry)) || BigInt(0),
+    parsedJSON?.signerWallet || zeroAddress,
+    parsedJSON?.signerToken || zeroAddress,
+    (parsedJSON?.signerAmount && BigInt(parsedJSON?.signerAmount)) || BigInt(0),
+    parsedJSON?.senderToken || zeroAddress,
+    (parsedJSON?.senderAmount && BigInt(parsedJSON?.senderAmount)) || BigInt(0),
+    Number(parsedJSON?.v) || 0,
+    (parsedJSON?.r as `0x${string}`) || `0x`,
+    (parsedJSON?.s as `0x${string}`) || `0x`,
+  ];
+
+  const { error: checkFunctionError } = useContractRead({
     address: swapContractAddress,
-    abi: abi,
+    abi,
     functionName: 'check',
-    args: [
-      parsedJSON?.senderWallet || zeroAddress,
-      Number(parsedJSON?.nonce) || 0,
-      Number(parsedJSON?.expiry) || 0,
-      parsedJSON?.signerWallet || zeroAddress,
-      parsedJSON?.signerToken || zeroAddress,
-      (parsedJSON?.signerAmount && BigInt(parsedJSON?.signerAmount)) ||
-        BigInt(0),
-      parsedJSON?.senderToken || zeroAddress,
-      (parsedJSON?.senderAmount && BigInt(parsedJSON?.senderAmount)) ||
-        BigInt(0),
-      Number(parsedJSON?.v) || 0,
-      parsedJSON?.r || '0x',
-      parsedJSON?.s || '0x',
-    ],
+    args,
     enabled: isEnableCheck,
   });
-
-  console.log(checkFunctionIsError);
-  console.log('data', data);
 
   const handleChangeTextArea = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setIsEnableCheck(false);

@@ -1,12 +1,12 @@
 import { isAddress } from 'viem';
-import { checkParamsJSON } from '../../types';
+import { CheckParamsJSON } from '../../types';
 
 export const validateJsonShape = (
-  json: Partial<checkParamsJSON> | undefined
+  json: Partial<CheckParamsJSON> | undefined
 ): string | boolean => {
   console.log(json);
   try {
-    const requiredKeys: (keyof checkParamsJSON)[] = [
+    const requiredKeys: (keyof CheckParamsJSON)[] = [
       'nonce',
       'expiry',
       'signerWallet',
@@ -52,8 +52,6 @@ export const validateJsonShape = (
     if (missingKeys.length === 0) {
       return false; // No errors
     }
-
-    // console.log(missingKeys, 'missingKeys');
 
     const errorString = `Your JSON is missing the following keys: ${missingKeys.join(
       ', '
