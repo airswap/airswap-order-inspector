@@ -5,11 +5,9 @@ import { abi } from './contracts/swapERC20ABI';
 import { zeroAddress } from 'viem';
 import { CheckArgs, CheckParamsJSON } from '../types';
 import { validateJsonShape } from './utilities/validations';
-import {
-  swapContractAddress,
-  textAreaPlaceholder,
-} from './utilities/constants';
+import { swapContractAddress } from './utilities/constants';
 import airswapLogo from '../src/assets/airswap-logo-with-text.svg';
+import { textareaPlaceholder } from './defaults/textareaPlaceholder';
 
 function App() {
   const [jsonString, setJsonString] = useState<undefined | string>(undefined);
@@ -121,7 +119,7 @@ function App() {
           <textarea
             id="json"
             name="json"
-            placeholder={textAreaPlaceholder}
+            placeholder={textareaPlaceholder}
             autoComplete="off"
             onChange={handleChangeTextArea}
           />
