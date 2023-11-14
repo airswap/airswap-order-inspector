@@ -1,6 +1,4 @@
-export const swapContractAddress = '0x0C9b31Dc37718417608CE22bb1ba940f702BF90B';
-
-export const textAreaPlaceholder = `{
+export const textareaPlaceholder = `{
     "nonce": "99",
     "expiry": "1566941284",
     "signerWallet": "0x73BCEb1Cd57C711feaC4224D062b0F6ff338501f",

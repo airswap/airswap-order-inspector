@@ -1,50 +1,64 @@
 import { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
 import './App.css';
 import { useContractRead } from 'wagmi';
-import swapERC20ABI from '../swapERC20ABI.json';
+import { abi } from './contracts/swapERC20ABI';
 import { zeroAddress } from 'viem';
-import { checkParamsJSON } from '../types';
-import { validateJsonShape } from './helpers/validations';
-import { swapContractAddress, textAreaPlaceholder } from './helpers/constants';
+import { CheckArgs, CheckParamsJSON } from '../types';
+import { validateJsonShape } from './utilities/validations';
+import { swapContractAddress } from './utilities/constants';
 import airswapLogo from '../src/assets/airswap-logo-with-text.svg';
+import { textareaPlaceholder } from './defaults/textareaPlaceholder';
 
 function App() {
   const [jsonString, setJsonString] = useState<undefined | string>(undefined);
   const [parsedJSON, setParsedJSON] = useState<
-    undefined | Partial<checkParamsJSON>
+    undefined | Partial<CheckParamsJSON>
   >(undefined);
   const [errors, setErrors] = useState<boolean | string | Error>(false);
   const [isError, setIsError] = useState(false);
   const [isEnableCheck, setIsEnableCheck] = useState(false);
 
-  const {
-    isError: checkFunctionIsError,
-    error: checkFunctionError,
-    data,
-  } = useContractRead({
+  const senderWallet = parsedJSON?.senderWallet || zeroAddress;
+  const nonce = isNaN(Number(parsedJSON?.nonce))
+    ? BigInt(0)
+    : BigInt(Number(parsedJSON?.nonce));
+  const expiry = isNaN(Number(parsedJSON?.expiry))
+    ? BigInt(0)
+    : BigInt(Number(parsedJSON?.expiry));
+  const signerWallet = parsedJSON?.signerWallet || zeroAddress;
+  const signerToken = parsedJSON?.signerToken || zeroAddress;
+  const signerAmount = isNaN(Number(parsedJSON?.signerAmount))
+    ? BigInt(0)
+    : BigInt(Number(parsedJSON?.signerAmount));
+  const senderToken = parsedJSON?.senderToken || zeroAddress;
+  const senderAmount = isNaN(Number(parsedJSON?.senderAmount))
+    ? BigInt(0)
+    : BigInt(Number(parsedJSON?.senderAmount));
+  const v = Number(parsedJSON?.v) || 0;
+  const r = (parsedJSON?.r as `0x${string}`) || `0x`;
+  const s = (parsedJSON?.s as `0x${string}`) || `0x`;
+
+  const checkArgs: CheckArgs = [
+    senderWallet,
+    nonce,
+    expiry,
+    signerWallet,
+    signerToken,
+    signerAmount,
+    senderToken,
+    senderAmount,
+    v,
+    r,
+    s,
+  ];
+
+  const { error: checkFunctionError } = useContractRead({
     address: swapContractAddress,
-    abi: swapERC20ABI,
+    abi,
     functionName: 'check',
-    args: [
-      parsedJSON?.senderWallet || zeroAddress,
-      Number(parsedJSON?.nonce) || 0,
-      Number(parsedJSON?.expiry) || 0,
-      parsedJSON?.signerWallet || zeroAddress,
-      parsedJSON?.signerToken || zeroAddress,
-      (parsedJSON?.signerAmount && BigInt(parsedJSON?.signerAmount)) ||
-        BigInt(0),
-      parsedJSON?.senderToken || zeroAddress,
-      (parsedJSON?.senderAmount && BigInt(parsedJSON?.senderAmount)) ||
-        BigInt(0),
-      Number(parsedJSON?.v) || 0,
-      parsedJSON?.r || '0x',
-      parsedJSON?.s || '0x',
-    ],
+    args: checkArgs,
     enabled: isEnableCheck,
   });
-
-  console.log(checkFunctionIsError);
-  console.log('data', data);
 
   const handleChangeTextArea = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setIsEnableCheck(false);
@@ -94,18 +108,18 @@ function App() {
   }, [checkFunctionError, isEnableCheck]);
 
   return (
-    <div className="textarea-container">
-      <div className="image-container">
+    <>
+      <div className="header">
         <img src={airswapLogo} alt="AirSwap logo" />
       </div>
       <div className="container">
-        <h1>Server Debugger:</h1>
+        <h1>JSON Debugger:</h1>
         <form onSubmit={handleSubmit}>
-          <label>Paste your JSON in the text area below:</label>
+          <label>Paste your server JSON in the text area below:</label>
           <textarea
             id="json"
             name="json"
-            placeholder={textAreaPlaceholder}
+            placeholder={textareaPlaceholder}
             autoComplete="off"
             onChange={handleChangeTextArea}
           />
@@ -121,7 +135,7 @@ function App() {
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }
 
