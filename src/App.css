@@ -9,12 +9,12 @@ form {
   flex-direction: column;
   width: 80%;
   margin: auto;
-  padding: 1rem;
 }
 
 textarea {
   margin: 1rem auto;
   width: 80%;
+  min-width: 60%;
   max-width: 90%;
   min-height: 325px;
   border-color: lightgray;
@@ -29,7 +29,7 @@ textarea::placeholder {
 input {
   background-color: rgba(43, 114, 255, 1);
   margin: 0.5rem auto 0rem auto;
-  width: 100%;
+  width: 90%;
   color: white;
   padding: 0.75rem 1.25rem;
   border: solid darkgray 1px;
@@ -39,11 +39,19 @@ input {
   text-transform: uppercase;
 }
 
+.header {
+  height: 2.5rem;
+  text-align: center;
+  padding: 1rem;
+  width: 100%;
+}
+
 .container {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  padding: 0.5rem 0rem 1.5rem 0rem;
+  padding-top: 0.5rem;
+  padding-bottom: 1.5rem;
   width: 100%;
   max-width: 600px;
   margin: auto;
@@ -52,35 +60,6 @@ input {
   background-color: rgb(241, 241, 241);
   color: black;
   border-radius: 5px;
-}
-
-@media (max-width: 425px) {
-  textarea {
-    width: 85%;
-  }
-
-  input {
-    width: 100%;
-  }
-
-  .container {
-    width: 100%;
-    max-width: 600px;
-    overflow-x: hidden;
-  }
-}
-
-.image-container {
-  height: 2.5rem;
-  text-align: center;
-  padding: 1rem;
-  width: 100%;
-}
-
-.textarea-container {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
 }
 
 .errors-container {
@@ -92,4 +71,10 @@ input {
   background-color: white;
   border: #ff0101 dotted 2px;
   border-radius: 3px;
+}
+
+@media (max-width: 425px) {
+  input {
+    width: 100%;
+  }
 }

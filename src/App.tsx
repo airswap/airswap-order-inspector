@@ -108,14 +108,14 @@ function App() {
   }, [checkFunctionError, isEnableCheck]);
 
   return (
-    <div className="textarea-container">
-      <div className="image-container">
+    <>
+      <div className="header">
         <img src={airswapLogo} alt="AirSwap logo" />
       </div>
       <div className="container">
-        <h1>Server Debugger:</h1>
+        <h1>JSON Debugger:</h1>
         <form onSubmit={handleSubmit}>
-          <label>Paste your JSON in the text area below:</label>
+          <label>Paste your server JSON in the text area below:</label>
           <textarea
             id="json"
             name="json"
@@ -135,7 +135,7 @@ function App() {
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }
 
