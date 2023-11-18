@@ -20,7 +20,7 @@ export const displayErrors = (errorsList: string[] | undefined) => {
         'unauthorized' || 'SignatoryUnauthorized' || 'Unauthorized'
       )
     ) {
-      return `Provided signature does not match the signerWallet. Double check signerWallet, "v", "r" and "s" values.`;
+      return `Provided signature does not match. Double check your values for: "signerWallet", "v", "r" and "s".`;
     } else if (error.includes('NonceAlreadyUsed')) {
       return `Nonce: the nonce entered is invalid.`;
     } else if (error.includes('expired')) {
@@ -33,8 +33,6 @@ export const displayErrors = (errorsList: string[] | undefined) => {
       return `signerAmount: the signerWallet has not approved the spending allowance of the signerToken.`;
     } else if (error.includes('signerbalance')) {
       return `signerAmount: the signerWallet does not have enough balance of the signerToken.`;
-    } else if (error.includes('signatureinvalid')) {
-      return `v: ${error}`;
     }
   });
 
