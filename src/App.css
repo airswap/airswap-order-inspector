@@ -55,6 +55,9 @@ li {
   list-style-type: none;
   margin-left: 0.5rem;
   margin-bottom: 0.5rem;
+  text-align: left;
+  align-self: start;
+  display: flex;
 }
 
 .header {
@@ -94,6 +97,13 @@ li {
 .error-div {
   display: flex;
   flex-direction: row;
+}
+
+.icon-styles {
+  display: flex;
+  align-self: start;
+  width: 1rem;
+  height: 1rem;
 }
 
 @media (max-width: 425px) {

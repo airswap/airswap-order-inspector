@@ -76,7 +76,9 @@ function App() {
 
   const readableErrors = errorsList?.map((error) => (
     <div className="error-div">
-      <FaCheckCircle />
+      <div className="icon-styles">
+        <FaCheckCircle />
+      </div>
       <li key={error}>{error}</li>
     </div>
   ));

@@ -11,7 +11,7 @@ export const validateJsonShape = (
       'signerWallet',
       'signerToken',
       'signerAmount',
-      // 'senderWallet',
+      'senderWallet',
       'senderToken',
       'senderAmount',
       'v',
