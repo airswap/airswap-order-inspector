@@ -16,9 +16,9 @@ function App() {
   const [parsedJSON, setParsedJSON] = useState<
     undefined | Partial<CheckParamsJSON>
   >(undefined);
-  const [errors, setErrors] = useState<boolean | string | string[] | undefined>(
-    false
-  );
+  const [errors, setErrors] = useState<
+    boolean | string | (string | undefined)[]
+  >(false);
   const [isError, setIsError] = useState(false);
   const [isEnableCheck, setIsEnableCheck] = useState(false);
 
