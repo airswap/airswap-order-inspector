@@ -1,5 +1,6 @@
 /* eslint-disable no-control-regex */
 export const displayErrors = (errorsList: string[] | undefined) => {
+  // if no errors are returned from the contract, return
   if (!errorsList) {
     return;
   }
@@ -12,6 +13,7 @@ export const displayErrors = (errorsList: string[] | undefined) => {
     })
     .map((error) => error.replace(/\x00/g, '').toLowerCase());
 
+  // loop over errors, return a new array with human-readable errors
   const errorMessages = filteredErrors.map((error) => {
     if (
       error.includes(

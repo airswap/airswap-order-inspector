@@ -4,7 +4,7 @@ import { useContractRead } from 'wagmi';
 import { abi } from './contracts/swapERC20ABI';
 import { hexToString, zeroAddress } from 'viem';
 import { CheckArgs, CheckParamsJSON } from '../types';
-import { validateJsonShape } from './utilities/validations';
+import { validateJson } from './utilities/validations';
 import { swapContractAddress } from './utilities/constants';
 import airswapLogo from '../src/assets/airswap-logo-with-text.svg';
 import { textareaPlaceholder } from './defaults/textareaPlaceholder';
@@ -16,10 +16,7 @@ function App() {
   const [parsedJSON, setParsedJSON] = useState<
     undefined | Partial<CheckParamsJSON>
   >(undefined);
-  const [errors, setErrors] = useState<
-    boolean | string | (string | undefined)[]
-  >(false);
-  const [isError, setIsError] = useState(false);
+  const [errors, setErrors] = useState<string[]>([]);
   const [isEnableCheck, setIsEnableCheck] = useState(false);
 
   const senderWallet = parsedJSON?.senderWallet || zeroAddress;
@@ -64,70 +61,69 @@ function App() {
     enabled: isEnableCheck,
   });
 
-  const outputErrorsList = returnedErrors?.[1].map((error) => {
-    return hexToString(error);
-  });
-
-  const errorsList = displayErrors(outputErrorsList);
-
-  const readableErrors = errorsList?.map((error) => (
-    <li key={error}>
-      <div className="icon-styles">
-        <FaCheckCircle />
-      </div>
-      <span>{error}</span>
-    </li>
-  ));
-
   const handleChangeTextArea = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setIsEnableCheck(false);
+    setErrors([]);
     setJsonString(e.target.value);
   };
 
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsError(false);
+    // reset values
+    setErrors([]);
+    setIsEnableCheck(true);
 
+    // if input is blank, return
     if (!jsonString) {
-      setIsError(true);
-      setErrors('Input cannot be blank');
+      setErrors(['Input cannot be blank']);
       return;
     }
 
     try {
+      // 1. check if JSON is a valid JSON
       const parsedJsonString = jsonString && JSON.parse(jsonString);
       setParsedJSON(parsedJsonString);
+
+      // 2. check that all required keys are present
+      const isJsonValid = validateJson(parsedJSON);
+
+      // 3. if validation errors, set, otherwise set errors to undefined
+      isJsonValid
+        ? setErrors((errors) => [...errors, ...isJsonValid])
+        : setErrors([]);
+
+      // 4. check returnedErrors from smart contract
+      const outputErrorsList = returnedErrors?.[1].map((error) => {
+        return hexToString(error);
+      });
+
+      // create an array with human-readable errors
+      const errorsList = displayErrors(outputErrorsList);
+      console.log('errorsList', errorsList);
+
+      // add human-readable errors into errors array
+      if (errorsList) {
+        setErrors((errors) => [...errors, ...errorsList]);
+      }
     } catch (e) {
-      setErrors(`Your input is not valid JSON format:\n\n${e}`);
-      setIsError(true);
+      setErrors([`Your input is not valid JSON format: ${e}`]);
     }
   };
 
-  useEffect(() => {
-    if (parsedJSON) {
-      const isValidJsonShape = validateJsonShape(parsedJSON);
-
-      if (isValidJsonShape) {
-        setIsEnableCheck(false);
-        setErrors(isValidJsonShape);
-        setIsError(true);
-      } else {
-        // run check function on smart contract
-        setIsEnableCheck(true);
-      }
-    }
-  }, [parsedJSON]);
+  const renderErrors = () => {
+    return errors?.map((error) => (
+      <li key={error}>
+        <div className="icon-styles">
+          <FaCheckCircle />
+        </div>
+        <span>{error}</span>
+      </li>
+    ));
+  };
 
   useEffect(() => {
-    if (errorsList && errorsList.length !== 0) {
-      setIsError(true);
-      setErrors(errorsList);
-    } else if (!errorsList?.length && isEnableCheck) {
-      setIsError(false);
-      setErrors('No errors found! 🎊');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [errorsList?.length, isEnableCheck]);
+    console.log('errors', errors);
+  }, [errors]);
 
   return (
     <>
@@ -152,21 +148,15 @@ function App() {
           />
         </form>
 
-        {errors && !isLoading && (
-          <div
-            className="errors-container"
-            style={{ color: !isError ? 'blue' : 'red' }}
-          >
-            {errorsList ? (
-              <>
-                <h3>
-                  Your JSON has the following error
-                  {errorsList.length > 1 ? 's' : null}:
-                </h3>
-                <ul>{readableErrors}</ul>
-              </>
-            ) : null}
-            {typeof errors === 'string' ? errors : null}
+        {errors.length > 0 && !isLoading && (
+          <div className="errors-container">
+            <>
+              <h3>
+                Please fix the following error
+                {renderErrors.length > 1 ? 's' : null}:
+              </h3>
+              <ul>{renderErrors()}</ul>
+            </>
           </div>
         )}
       </div>
