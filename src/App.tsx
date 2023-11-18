@@ -69,7 +69,6 @@ function App() {
 
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // reset values
     setErrors([]);
     setIsEnableCheck(true);
 
@@ -99,7 +98,7 @@ function App() {
 
       // create an array with human-readable errors
       const errorsList = displayErrors(outputErrorsList);
-      console.log('errorsList', errorsList);
+      console.log('errorsList:', errorsList);
 
       // add human-readable errors into errors array
       if (errorsList) {
@@ -122,8 +121,14 @@ function App() {
   };
 
   useEffect(() => {
-    console.log('errors', errors);
-  }, [errors]);
+    if (returnedErrors) {
+      const outputErrorsList = returnedErrors[1].map((error) =>
+        hexToString(error)
+      );
+      const errorsList = displayErrors(outputErrorsList);
+      setErrors((prevErrors) => [...prevErrors, ...(errorsList || [])]);
+    }
+  }, [returnedErrors]);
 
   return (
     <>
@@ -150,13 +155,11 @@ function App() {
 
         {errors.length > 0 && !isLoading && (
           <div className="errors-container">
-            <>
-              <h3>
-                Please fix the following error
-                {renderErrors.length > 1 ? 's' : null}:
-              </h3>
-              <ul>{renderErrors()}</ul>
-            </>
+            <h3>
+              Please fix the following error
+              {errors.length > 1 ? 's' : null}:
+            </h3>
+            <ul>{renderErrors()}</ul>
           </div>
         )}
       </div>

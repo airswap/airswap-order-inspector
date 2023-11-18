@@ -1,8 +1,10 @@
 /* eslint-disable no-control-regex */
-export const displayErrors = (errorsList: string[] | undefined) => {
+export const displayErrors = (
+  errorsList: string[] | undefined
+): string[] | undefined => {
   // if no errors are returned from the contract, return
   if (!errorsList) {
-    return;
+    return undefined;
   }
 
   // remove null values
@@ -13,7 +15,6 @@ export const displayErrors = (errorsList: string[] | undefined) => {
     })
     .map((error) => error.replace(/\x00/g, '').toLowerCase());
 
-  // loop over errors, return a new array with human-readable errors
   const errorMessages = filteredErrors.map((error) => {
     if (
       error.includes(
@@ -33,6 +34,8 @@ export const displayErrors = (errorsList: string[] | undefined) => {
       return `signerAmount: the signerWallet has not approved the spending allowance of the signerToken.`;
     } else if (error.includes('signerbalance')) {
       return `signerAmount: the signerWallet does not have enough balance of the signerToken.`;
+    } else {
+      return `An unexpected error occured: ${error}`;
     }
   });
 

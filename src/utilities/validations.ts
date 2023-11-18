@@ -61,7 +61,7 @@ export const validateJson = (
     const missingKeys = requiredKeys.filter((key) => json && !json[key]);
 
     missingKeys.forEach((missingKey) => {
-      errorsList.push(`Your JSON is missing ${missingKey}`);
+      errorsList.push(`Your JSON is missing a ${missingKey} key`);
     });
 
     if (errorsList.length === 0) {
