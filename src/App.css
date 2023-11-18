@@ -4,6 +4,11 @@ h1 {
   text-transform: uppercase;
 }
 
+h3 {
+  color: black;
+  margin: 0;
+}
+
 form {
   display: flex;
   flex-direction: column;
@@ -39,6 +44,20 @@ input {
   text-transform: uppercase;
 }
 
+ul {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  width: fit-content;
+  margin: 1rem auto;
+}
+
+li {
+  list-style-type: none;
+  margin-left: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
 .header {
   height: 2.5rem;
   text-align: center;
@@ -53,7 +72,7 @@ input {
   padding-top: 0.5rem;
   padding-bottom: 1.5rem;
   width: 100%;
-  max-width: 600px;
+  max-width: 60%;
   margin: auto;
   overflow-x: hidden;
   text-align: center;
@@ -64,8 +83,8 @@ input {
 
 .errors-container {
   width: 60%;
-  padding: 2rem;
-  margin: 1rem auto;
+  padding: 1.5rem 1.5rem 0 1.5rem;
+  margin: 1rem auto 2rem auto;
   color: #ff0101;
   white-space: pre-line;
   background-color: white;
@@ -73,8 +92,19 @@ input {
   border-radius: 3px;
 }
 
+.error-div {
+  display: flex;
+  flex-direction: row;
+}
+
 @media (max-width: 425px) {
   input {
     width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    min-width: 100%;
   }
 }

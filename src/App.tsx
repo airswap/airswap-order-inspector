@@ -2,19 +2,21 @@ import { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
 import './App.css';
 import { useContractRead } from 'wagmi';
 import { abi } from './contracts/swapERC20ABI';
-import { zeroAddress } from 'viem';
+import { hexToString, zeroAddress } from 'viem';
 import { CheckArgs, CheckParamsJSON } from '../types';
 import { validateJsonShape } from './utilities/validations';
 import { swapContractAddress } from './utilities/constants';
 import airswapLogo from '../src/assets/airswap-logo-with-text.svg';
 import { textareaPlaceholder } from './defaults/textareaPlaceholder';
+import { displayErrors } from './utilities/displayErrors';
+import { FaCheckCircle } from 'react-icons/fa';
 
 function App() {
   const [jsonString, setJsonString] = useState<undefined | string>(undefined);
   const [parsedJSON, setParsedJSON] = useState<
     undefined | Partial<CheckParamsJSON>
   >(undefined);
-  const [errors, setErrors] = useState<boolean | string | Error>(false);
+  const [errors, setErrors] = useState<boolean | string | string[]>(false);
   const [isError, setIsError] = useState(false);
   const [isEnableCheck, setIsEnableCheck] = useState(false);
 
@@ -52,13 +54,29 @@ function App() {
     s,
   ];
 
-  const { error: checkFunctionError } = useContractRead({
+  const {
+    // error: checkFunctionError,
+    data: returnedErrors,
+  } = useContractRead({
     address: swapContractAddress,
     abi,
     functionName: 'check',
     args: checkArgs,
     enabled: isEnableCheck,
   });
+
+  const outputErrorsList = returnedErrors?.[1].map((error) => {
+    return hexToString(error);
+  });
+
+  const errorsList = displayErrors(outputErrorsList);
+
+  const readableErrors = errorsList?.map((error) => (
+    <div className="error-div">
+      <FaCheckCircle />
+      <li key="error">{error}</li>
+    </div>
+  ));
 
   const handleChangeTextArea = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setIsEnableCheck(false);
@@ -98,14 +116,15 @@ function App() {
   }, [parsedJSON]);
 
   useEffect(() => {
-    if (checkFunctionError && isEnableCheck) {
+    if (errorsList && errorsList.length !== 0) {
       setIsError(true);
-      setErrors(checkFunctionError.message);
-    } else if (!checkFunctionError && isEnableCheck) {
+      setErrors(errorsList);
+    } else if (!errorsList?.length && isEnableCheck) {
       setIsError(false);
       setErrors('No errors found! 🎊');
     }
-  }, [checkFunctionError, isEnableCheck]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [errorsList?.length, isEnableCheck]);
 
   return (
     <>
@@ -131,7 +150,13 @@ function App() {
             className="errors-container"
             style={{ color: !isError ? 'blue' : 'red' }}
           >
-            {typeof errors === 'string' ? errors : null}{' '}
+            {errorsList ? (
+              <>
+                <h3>Please fix the following error(s):</h3>
+                <ul>{readableErrors}</ul>
+              </>
+            ) : null}
+            {typeof errors === 'string' ? errors : null}
           </div>
         )}
       </div>
