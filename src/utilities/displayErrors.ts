@@ -12,5 +12,25 @@ export const displayErrors = (errorsList: string[] | undefined) => {
     })
     .map((error) => error.replace(/\x00/g, '').toLowerCase());
 
-  return filteredErrors;
+  console.log(filteredErrors);
+
+  const errorMessages = filteredErrors.map((error) => {
+    if (error.includes('unauthorized')) {
+      return `nonce: ${error}`;
+    } else if (error.includes('expired')) {
+      return `expiry: ${error}`;
+    } else if (error.includes('senderallowance')) {
+      return `senderAmount: ${error}`;
+    } else if (error.includes('senderbalance')) {
+      return `senderAmount: ${error}`;
+    } else if (error.includes('signerallowance')) {
+      return `signerAmount: ${error}`;
+    } else if (error.includes('signerbalance')) {
+      return `signerAmount: ${error}`;
+    } else if (error.includes('signatureinvalid')) {
+      return `v: ${error}`;
+    }
+  });
+
+  return errorMessages;
 };

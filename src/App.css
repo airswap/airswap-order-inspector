@@ -5,8 +5,11 @@ h1 {
 }
 
 h3 {
-  color: black;
+  color: gray;
   margin: 0;
+  margin-bottom: 1rem;
+  font-weight: 500;
+  text-transform: uppercase;
 }
 
 form {
@@ -27,10 +30,6 @@ textarea {
   padding: 1rem;
 }
 
-textarea::placeholder {
-  font-size: 12px;
-}
-
 input {
   background-color: rgba(43, 114, 255, 1);
   margin: 0.5rem auto 0rem auto;
@@ -49,7 +48,7 @@ ul {
   flex-direction: column;
   align-items: left;
   width: fit-content;
-  margin: 1rem auto;
+  margin: auto;
 }
 
 li {
@@ -83,7 +82,7 @@ li {
 
 .errors-container {
   width: 60%;
-  padding: 1.5rem 1.5rem 0 1.5rem;
+  padding: 2rem;
   margin: 1rem auto 2rem auto;
   color: #ff0101;
   white-space: pre-line;

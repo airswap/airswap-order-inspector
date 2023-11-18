@@ -4,7 +4,6 @@ import { CheckParamsJSON } from '../../types';
 export const validateJsonShape = (
   json: Partial<CheckParamsJSON> | undefined
 ): string | boolean => {
-  console.log(json);
   try {
     const requiredKeys: (keyof CheckParamsJSON)[] = [
       'nonce',
@@ -12,7 +11,7 @@ export const validateJsonShape = (
       'signerWallet',
       'signerToken',
       'signerAmount',
-      'senderWallet',
+      // 'senderWallet',
       'senderToken',
       'senderAmount',
       'v',

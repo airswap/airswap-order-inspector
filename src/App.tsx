@@ -16,7 +16,9 @@ function App() {
   const [parsedJSON, setParsedJSON] = useState<
     undefined | Partial<CheckParamsJSON>
   >(undefined);
-  const [errors, setErrors] = useState<boolean | string | string[]>(false);
+  const [errors, setErrors] = useState<boolean | string | string[] | undefined>(
+    false
+  );
   const [isError, setIsError] = useState(false);
   const [isEnableCheck, setIsEnableCheck] = useState(false);
 
@@ -57,6 +59,7 @@ function App() {
   const {
     // error: checkFunctionError,
     data: returnedErrors,
+    isLoading,
   } = useContractRead({
     address: swapContractAddress,
     abi,
@@ -74,7 +77,7 @@ function App() {
   const readableErrors = errorsList?.map((error) => (
     <div className="error-div">
       <FaCheckCircle />
-      <li key="error">{error}</li>
+      <li key={error}>{error}</li>
     </div>
   ));
 
@@ -102,6 +105,7 @@ function App() {
   useEffect(() => {
     if (parsedJSON) {
       const isValidJsonShape = validateJsonShape(parsedJSON);
+      console.log('isValidJsonShape', isValidJsonShape);
 
       if (isValidJsonShape) {
         setIsEnableCheck(false);
@@ -142,17 +146,24 @@ function App() {
             autoComplete="off"
             onChange={handleChangeTextArea}
           />
-          <input name="submit" type="submit" value="Check errors" />
+          <input
+            name="submit"
+            type="submit"
+            value={!isLoading ? 'Check errors' : 'Loading...'}
+          />
         </form>
 
-        {errors && (
+        {errors && !isLoading && (
           <div
             className="errors-container"
             style={{ color: !isError ? 'blue' : 'red' }}
           >
             {errorsList ? (
               <>
-                <h3>Please fix the following error(s):</h3>
+                <h3>
+                  Please fix the following error
+                  {errorsList.length > 1 ? 's' : null}:
+                </h3>
                 <ul>{readableErrors}</ul>
               </>
             ) : null}
