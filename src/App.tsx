@@ -58,12 +58,12 @@ function App() {
     abi,
     functionName: 'check',
     args: checkArgs,
+    watch: true,
     enabled: isEnableCheck,
   });
 
   const handleChangeTextArea = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setIsEnableCheck(false);
-    setErrors([]);
     setJsonString(e.target.value);
   };
 
@@ -98,7 +98,6 @@ function App() {
 
       // create an array with human-readable errors
       const errorsList = displayErrors(outputErrorsList);
-      console.log('errorsList:', errorsList);
 
       // add human-readable errors into errors array
       if (errorsList) {
@@ -110,8 +109,8 @@ function App() {
   };
 
   const renderErrors = () => {
-    return errors?.map((error) => (
-      <li key={error}>
+    return errors?.map((error, i) => (
+      <li key={error + i}>
         <div className="icon-styles">
           <FaCheckCircle />
         </div>
@@ -126,8 +125,9 @@ function App() {
         hexToString(error)
       );
       const errorsList = displayErrors(outputErrorsList);
-      setErrors((prevErrors) => [...prevErrors, ...(errorsList || [])]);
+      setErrors(errorsList || []);
     }
+    console.log(returnedErrors);
   }, [returnedErrors]);
 
   return (
@@ -150,6 +150,7 @@ function App() {
             name="submit"
             type="submit"
             value={!isLoading ? 'Check errors' : 'Loading...'}
+            disabled={isLoading}
           />
         </form>
 
