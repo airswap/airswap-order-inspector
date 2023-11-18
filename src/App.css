@@ -72,7 +72,7 @@ li {
   padding-bottom: 1.5rem;
   width: 100%;
   max-width: 60%;
-  margin: auto;
+  margin: auto auto 2rem auto;
   overflow-x: hidden;
   text-align: center;
   background-color: rgb(241, 241, 241);
