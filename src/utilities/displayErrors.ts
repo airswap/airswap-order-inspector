@@ -12,8 +12,6 @@ export const displayErrors = (errorsList: string[] | undefined) => {
     })
     .map((error) => error.replace(/\x00/g, '').toLowerCase());
 
-  console.log(filteredErrors);
-
   const errorMessages = filteredErrors.map((error) => {
     if (
       error.includes(

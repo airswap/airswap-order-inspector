@@ -56,11 +56,7 @@ function App() {
     s,
   ];
 
-  const {
-    // error: checkFunctionError,
-    data: returnedErrors,
-    isLoading,
-  } = useContractRead({
+  const { data: returnedErrors, isLoading } = useContractRead({
     address: swapContractAddress,
     abi,
     functionName: 'check',
@@ -75,12 +71,12 @@ function App() {
   const errorsList = displayErrors(outputErrorsList);
 
   const readableErrors = errorsList?.map((error) => (
-    <div className="error-div">
+    <li key={error}>
       <div className="icon-styles">
         <FaCheckCircle />
       </div>
-      <li key={error}>{error}</li>
-    </div>
+      <span>{error}</span>
+    </li>
   ));
 
   const handleChangeTextArea = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -90,30 +86,31 @@ function App() {
 
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsError(false);
+
     if (!jsonString) {
       setIsError(true);
       setErrors('Input cannot be blank');
+      return;
     }
+
     try {
       const parsedJsonString = jsonString && JSON.parse(jsonString);
       setParsedJSON(parsedJsonString);
     } catch (e) {
       setErrors(`Your input is not valid JSON format:\n\n${e}`);
       setIsError(true);
-      return;
     }
   };
 
   useEffect(() => {
     if (parsedJSON) {
       const isValidJsonShape = validateJsonShape(parsedJSON);
-      console.log('isValidJsonShape', isValidJsonShape);
 
       if (isValidJsonShape) {
         setIsEnableCheck(false);
         setErrors(isValidJsonShape);
         setIsError(true);
-        return;
       } else {
         // run check function on smart contract
         setIsEnableCheck(true);
@@ -138,9 +135,9 @@ function App() {
         <img src={airswapLogo} alt="AirSwap logo" />
       </div>
       <div className="container">
-        <h1>JSON Debugger:</h1>
+        <h1>Server Debugger:</h1>
         <form onSubmit={handleSubmit}>
-          <label>Paste your server JSON in the text area below:</label>
+          <label>Paste your server response JSON in the text area below:</label>
           <textarea
             id="json"
             name="json"
@@ -163,7 +160,7 @@ function App() {
             {errorsList ? (
               <>
                 <h3>
-                  Please fix the following error
+                  Your JSON has the following error
                   {errorsList.length > 1 ? 's' : null}:
                 </h3>
                 <ul>{readableErrors}</ul>

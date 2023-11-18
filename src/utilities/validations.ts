@@ -11,7 +11,7 @@ export const validateJsonShape = (
       'signerWallet',
       'signerToken',
       'signerAmount',
-      'senderWallet',
+      // 'senderWallet',
       'senderToken',
       'senderAmount',
       'v',
@@ -38,11 +38,11 @@ export const validateJsonShape = (
       } else if (json['senderAmount'] && isNaN(Number(json['senderAmount']))) {
         return 'senderAmount must be a number. Make sure it\'s wrapped in quotation marks, e.g. "100000000"';
       } else if (json['v'] && !isNaN(json['v'])) {
-        ('v must be a number. Make sure it\'s wrapped in quotation marks, e.g. "29"');
+        return 'v must be a number. Make sure it\'s wrapped in quotation marks, e.g. "29"';
       } else if (json['r'] && typeof json['r'] === 'string') {
-        ('v must be a string. Make sure it\'s wrapped in quotation marks, e.g. "0x67e0723b0afd3...."');
+        return 'v must be a hash in string format, e.g. "0x67e0723b0afd3...."';
       } else if (json['s'] && typeof json['s'] === 'string') {
-        ('s must be a string. Make sure it\'s wrapped in quotation marks, e.g. "0x67e0723b0afd3...."');
+        return 's must be a hash in string format, e.g. "0x67e0723b0afd3...."';
       }
     }
     // Check for missing keys

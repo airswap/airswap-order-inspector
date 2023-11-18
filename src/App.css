@@ -2,13 +2,14 @@ h1 {
   margin-top: 1.5rem;
   font-size: 26px;
   text-transform: uppercase;
+  color: rgba(16, 24, 39, 1);
 }
 
 h3 {
-  color: gray;
   margin: 0;
   margin-bottom: 1rem;
-  font-weight: 500;
+  color: rgba(16, 24, 39, 1);
+  font-weight: 600;
   text-transform: uppercase;
 }
 
@@ -31,7 +32,7 @@ textarea {
 }
 
 input {
-  background-color: rgba(43, 114, 255, 1);
+  background-color: rgba(44, 112, 255, 1);
   margin: 0.5rem auto 0rem auto;
   width: 90%;
   color: white;
@@ -49,10 +50,12 @@ ul {
   align-items: left;
   width: fit-content;
   margin: auto;
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
 }
 
 li {
-  list-style-type: none;
   margin-left: 0.5rem;
   margin-bottom: 0.5rem;
   text-align: left;
@@ -74,9 +77,8 @@ li {
   padding-top: 0.5rem;
   padding-bottom: 1.5rem;
   width: 100%;
-  max-width: 60%;
+  max-width: 50%;
   margin: auto auto 2rem auto;
-  overflow-x: hidden;
   text-align: center;
   background-color: rgb(241, 241, 241);
   color: black;
@@ -86,17 +88,12 @@ li {
 .errors-container {
   width: 60%;
   padding: 2rem;
-  margin: 1rem auto 2rem auto;
+  margin: 2rem auto;
   color: #ff0101;
   white-space: pre-line;
   background-color: white;
-  border: #ff0101 dotted 2px;
+  border: #ff0101 dashed 3px;
   border-radius: 3px;
-}
-
-.error-div {
-  display: flex;
-  flex-direction: row;
 }
 
 .icon-styles {
@@ -104,16 +101,34 @@ li {
   align-self: start;
   width: 1rem;
   height: 1rem;
+  margin-right: 0.5rem;
 }
 
 @media (max-width: 425px) {
   input {
     width: 100%;
   }
+  textarea {
+    width: 100%;
+  }
+  .container {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
 }
 
 @media (max-width: 768px) {
   .container {
-    min-width: 100%;
+    min-width: 80%;
+  }
+  textarea {
+    width: 100%;
+  }
+}
+
+@media (max-width: 1024px) {
+  .container {
+    max-width: 60%;
   }
 }
