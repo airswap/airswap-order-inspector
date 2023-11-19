@@ -87,12 +87,15 @@ function App() {
 
       // 2. check that all required keys are present. if isJsonValid is false, that means no errors come from validations.ts
       const isJsonValid = validateJson(parsedJSON);
-      console.log('isJsonValid', isJsonValid);
 
       // 3. if validation errors, set, otherwise set errors to undefined.
       if (isJsonValid) {
-        // we only want to use the spread operator when adding a new validation error on top of useContractRead errors, or a read error with useContractReact on top of other errors
-        setErrors((prevErrors) => [...prevErrors, ...isJsonValid]);
+        // we want to use the spread operator when adding a new validation error on top of useContractRead errors, or a read error with useContractReact on top of other errors
+        setErrors((prevErrors) => {
+          const updatedErrors = [...prevErrors, ...isJsonValid];
+          const removeDuplicates = [...new Set(updatedErrors)];
+          return removeDuplicates;
+        });
       }
 
       // 4. check returnedErrors from smart contract
@@ -114,7 +117,7 @@ function App() {
   };
 
   useEffect(() => {
-    if (contractReadError && jsonString && isEnableCheck) {
+    if (contractReadError && jsonString && isEnableCheck && !errors) {
       setErrors((prevErrors) => {
         const updatedErrors = [...prevErrors, contractReadError.message];
         const removeDuplicates = [...new Set(updatedErrors)];
@@ -153,6 +156,12 @@ function App() {
 
     setRenderedErrors(renderedErrors);
   }, [errors]);
+
+  useEffect(() => {
+    if (parsedJSON && isEnableCheck && !errors) {
+      setErrors(['No errors found!']);
+    }
+  }, [parsedJSON, isEnableCheck, errors]);
 
   return (
     <>
