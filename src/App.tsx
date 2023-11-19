@@ -5,10 +5,9 @@ import { hexToString, zeroAddress } from 'viem';
 import { CheckArgs, CheckParamsJSON } from '../types';
 import { validateJson } from './utilities/validations';
 import { swapContractAddress } from './utilities/constants';
-import airswapLogo from '../src/assets/airswap-logo-with-text.svg';
+import airswapLogo from '../src/assets/airswap-logo.svg';
 import { textareaPlaceholder } from './defaults/textareaPlaceholder';
 import { displayErrors } from './utilities/displayErrors';
-import { FaCheckCircle } from 'react-icons/fa';
 import { twMerge } from 'tailwind-merge';
 
 function App() {
@@ -117,14 +116,9 @@ function App() {
   useEffect(() => {
     const renderErrors = () => {
       return errors?.map((error, i) => (
-        <li
-          key={error + i}
-          className="flex self-start max-w-full ml-2 mb-2 text-left"
-        >
-          <div className="flex self-start w-4 h-4 mr-1">
-            <FaCheckCircle />
-          </div>
-          <span>{error}</span>
+        <li key={error + i} className="flex max-w-full ml-2 mb-2 text-left">
+          <input type="checkbox" className="flex self-start w-4 mr-2 mt-1.5" />
+          <span className="flex">{error}</span>
         </li>
       ));
     };
@@ -143,21 +137,23 @@ function App() {
 
   return (
     <div className="flex flex-col font-sans">
-      <div className="h-fit p-4">
-        <img src={airswapLogo} alt="AirSwap logo" className="mx-auto" />
+      <div
+        className={twMerge(
+          'flex flex-row my-4 mx-auto p-2 text-2xl xs:text-3xl uppercase text-lightGray font-medium'
+        )}
+      >
+        <img src={airswapLogo} alt="AirSwap logo" className="mr-3" />
+        <h1>Server Debugger</h1>
       </div>
-      <h1 className="mb-4 text-2xl uppercase text-lightGray text-center font-medium">
-        Server Debugger:
-      </h1>
       <div
         id="container"
         className={twMerge(
-          'flex flex-col md:flex-row box-border pb-6 mx-auto',
+          'flex flex-col md:flex-row box-border pb-6 px-1 mx-auto',
           'w-full xs:w-[90%] sm:w-4/5 md:w-[95%] lg:w-[90%] xl:w-4/5',
           'text-center bg-transparent text-black rounded-md'
         )}
       >
-        <div className="md:w-full md:pt-4 md:pb-8 md:mr-2 bg-lightGray rounded-sm">
+        <div className="md:w-full md:pt-4 md:pb-8 md:mr-2 bg-lightGray rounded-sm pb-6 px-1">
           <form onSubmit={handleSubmit} className="flex flex-col m-auto w-full">
             <label className="my-2 text-lg font-semibold uppercase">
               Paste server response below:
@@ -188,11 +184,11 @@ function App() {
 
         <div
           className={twMerge(
-            'md:w-full md:pt-4 md:pb-8 md:ml-2',
-            'pt-4 bg-lightGray rounded-sm'
+            'md:w-full md:pt-4 md:ml-2 md:mt-0',
+            'mt-4 pt-4 pb-8 px-1 bg-lightGray rounded-sm'
           )}
         >
-          {errors.length > 0 && !isLoading && (
+          {!isLoading && (
             <>
               <h3 className="mt-2 mb-4 px-2 text-lg text-redAlert font-semibold uppercase">
                 Errors to fix:
