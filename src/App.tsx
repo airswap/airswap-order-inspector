@@ -19,6 +19,7 @@ function App() {
   const [errors, setErrors] = useState<string[]>([]);
   const [renderedErrors, setRenderedErrors] = useState<ReactNode | undefined>();
   const [isEnableCheck, setIsEnableCheck] = useState(false);
+  const [isNoErrors, setIsNoErrors] = useState(false);
 
   const senderWallet = parsedJSON?.senderWallet || zeroAddress;
   const nonce = isNaN(Number(parsedJSON?.nonce))
@@ -75,6 +76,7 @@ function App() {
     e.preventDefault();
     setIsEnableCheck(true);
     setErrors([]);
+    setIsNoErrors(false);
 
     if (!jsonString) {
       setErrors(['Input cannot be blank']);
@@ -110,22 +112,6 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parsedJSON, returnedErrors]);
 
-  /*
-  // if errors from from useContractRead, this updates setErrors
-  useEffect(() => {
-    console.log(errors);
-    if (contractReadError && jsonString && isEnableCheck) {
-      setErrors((prevErrors) => {
-        const updatedErrors = [...prevErrors, contractReadError.message];
-        const removeDuplicates = [...new Set(updatedErrors)];
-        return removeDuplicates;
-      });
-    }
-    // keep `errors` out of deps list, or it'll cause too many re-renders
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [contractReadError, jsonString, isEnableCheck]);
-  */
-
   useEffect(() => {
     const renderErrors = () => {
       return errors?.map((error, i) => (
@@ -142,10 +128,11 @@ function App() {
     setRenderedErrors(renderedErrors);
   }, [errors]);
 
-  // if input is not blank, and there are no errors, inform user
+  // if input is not blank, and there are no errors, JSON is okay
   useEffect(() => {
     if (parsedJSON && isEnableCheck && !errors) {
-      setErrors(['No errors found!']);
+      setErrors(['🎊 No errors found! 🎊']);
+      setIsNoErrors(true);
     }
   }, [parsedJSON, isEnableCheck, errors]);
 
@@ -175,11 +162,14 @@ function App() {
 
         {errors.length > 0 && !isLoading && (
           <div className="errors-container">
-            <h3>
-              Please fix the following error
-              {errors.length > 1 ? 's' : null}:
-            </h3>
-            <ul>{renderedErrors}</ul>
+            {!isNoErrors ? (
+              <>
+                <h3>Errors to fix:</h3>
+                <ul>{renderedErrors}</ul>
+              </>
+            ) : (
+              <h3>🎊 No errors found! 🎊</h3>
+            )}
           </div>
         )}
       </div>
