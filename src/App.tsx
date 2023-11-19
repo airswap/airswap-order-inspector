@@ -1,22 +1,25 @@
-import { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
+import { ChangeEvent, MouseEvent, ReactNode, useEffect, useState } from 'react';
 import './App.css';
 import { useContractRead } from 'wagmi';
 import { abi } from './contracts/swapERC20ABI';
-import { zeroAddress } from 'viem';
+import { hexToString, zeroAddress } from 'viem';
 import { CheckArgs, CheckParamsJSON } from '../types';
-import { validateJsonShape } from './utilities/validations';
+import { validateJson } from './utilities/validations';
 import { swapContractAddress } from './utilities/constants';
 import airswapLogo from '../src/assets/airswap-logo-with-text.svg';
 import { textareaPlaceholder } from './defaults/textareaPlaceholder';
+import { displayErrors } from './utilities/displayErrors';
+import { FaCheckCircle } from 'react-icons/fa';
 
 function App() {
   const [jsonString, setJsonString] = useState<undefined | string>(undefined);
   const [parsedJSON, setParsedJSON] = useState<
     undefined | Partial<CheckParamsJSON>
   >(undefined);
-  const [errors, setErrors] = useState<boolean | string | Error>(false);
-  const [isError, setIsError] = useState(false);
+  const [errors, setErrors] = useState<string[]>([]);
+  const [renderedErrors, setRenderedErrors] = useState<ReactNode | undefined>();
   const [isEnableCheck, setIsEnableCheck] = useState(false);
+  const [isNoErrors, setIsNoErrors] = useState(false);
 
   const senderWallet = parsedJSON?.senderWallet || zeroAddress;
   const nonce = isNaN(Number(parsedJSON?.nonce))
@@ -52,13 +55,19 @@ function App() {
     s,
   ];
 
-  const { error: checkFunctionError } = useContractRead({
+  const {
+    data: returnedErrors,
+    isLoading,
+    error: contractReadError,
+  } = useContractRead({
     address: swapContractAddress,
     abi,
     functionName: 'check',
     args: checkArgs,
     enabled: isEnableCheck,
   });
+
+  console.log('contractReadError:', contractReadError);
 
   const handleChangeTextArea = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setIsEnableCheck(false);
@@ -67,45 +76,67 @@ function App() {
 
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsEnableCheck(true);
+    setErrors([]);
+    setIsNoErrors(false);
+
     if (!jsonString) {
-      setIsError(true);
-      setErrors('Input cannot be blank');
+      setErrors(['Input cannot be blank']);
+      return;
     }
+
     try {
       const parsedJsonString = jsonString && JSON.parse(jsonString);
       setParsedJSON(parsedJsonString);
     } catch (e) {
-      setErrors(`Your input is not valid JSON format:\n\n${e}`);
-      setIsError(true);
-      return;
+      setErrors([`Your input is not valid JSON format: ${e}`]);
     }
   };
 
+  // performs actions after parsedJSON has been updated
   useEffect(() => {
-    if (parsedJSON) {
-      const isValidJsonShape = validateJsonShape(parsedJSON);
-
-      if (isValidJsonShape) {
-        setIsEnableCheck(false);
-        setErrors(isValidJsonShape);
-        setIsError(true);
-        return;
-      } else {
-        // run check function on smart contract
-        setIsEnableCheck(true);
-      }
+    // check that all required keys are present
+    const isJsonValid = validateJson(parsedJSON);
+    if (isJsonValid) {
+      setErrors(isJsonValid);
     }
-  }, [parsedJSON]);
+
+    // returnedErrors is data from smart contract
+    const outputErrorsList = returnedErrors?.[1].map((error) => {
+      return hexToString(error);
+    });
+
+    // create array of human-readable errors
+    const errorsList = displayErrors(outputErrorsList);
+    if (errorsList) {
+      setErrors(errorsList);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [parsedJSON, returnedErrors]);
 
   useEffect(() => {
-    if (checkFunctionError && isEnableCheck) {
-      setIsError(true);
-      setErrors(checkFunctionError.message);
-    } else if (!checkFunctionError && isEnableCheck) {
-      setIsError(false);
-      setErrors('No errors found! 🎊');
+    const renderErrors = () => {
+      return errors?.map((error, i) => (
+        <li key={error + i}>
+          <div className="icon-styles">
+            <FaCheckCircle />
+          </div>
+          <span>{error}</span>
+        </li>
+      ));
+    };
+    const renderedErrors = renderErrors();
+
+    setRenderedErrors(renderedErrors);
+  }, [errors]);
+
+  // if input is not blank, and there are no errors, JSON is okay
+  useEffect(() => {
+    if (parsedJSON && isEnableCheck && !errors) {
+      setErrors(['🎊 No errors found! 🎊']);
+      setIsNoErrors(true);
     }
-  }, [checkFunctionError, isEnableCheck]);
+  }, [parsedJSON, isEnableCheck, errors]);
 
   return (
     <>
@@ -113,9 +144,9 @@ function App() {
         <img src={airswapLogo} alt="AirSwap logo" />
       </div>
       <div className="container">
-        <h1>JSON Debugger:</h1>
+        <h1>Server Debugger:</h1>
         <form onSubmit={handleSubmit}>
-          <label>Paste your server JSON in the text area below:</label>
+          <label>Paste your server response JSON in the text area below:</label>
           <textarea
             id="json"
             name="json"
@@ -123,15 +154,24 @@ function App() {
             autoComplete="off"
             onChange={handleChangeTextArea}
           />
-          <input name="submit" type="submit" value="Check errors" />
+          <input
+            name="submit"
+            type="submit"
+            value={!isLoading ? 'Check errors' : 'Loading...'}
+            disabled={isLoading}
+          />
         </form>
 
-        {errors && (
-          <div
-            className="errors-container"
-            style={{ color: !isError ? 'blue' : 'red' }}
-          >
-            {typeof errors === 'string' ? errors : null}{' '}
+        {errors.length > 0 && !isLoading && (
+          <div className="errors-container">
+            {!isNoErrors ? (
+              <>
+                <h3>Errors to fix:</h3>
+                <ul>{renderedErrors}</ul>
+              </>
+            ) : (
+              <h3>🎊 No errors found! 🎊</h3>
+            )}
           </div>
         )}
       </div>
