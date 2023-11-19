@@ -58,7 +58,7 @@ function App() {
   const {
     data: returnedErrors,
     isLoading,
-    // error: contractReadError,
+    error: contractReadError,
   } = useContractRead({
     address: swapContractAddress,
     abi,
@@ -66,6 +66,8 @@ function App() {
     args: checkArgs,
     enabled: isEnableCheck,
   });
+
+  console.log('contractReadError:', contractReadError);
 
   const handleChangeTextArea = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setIsEnableCheck(false);

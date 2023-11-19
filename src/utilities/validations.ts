@@ -24,7 +24,7 @@ export const validateJson = (
     const isBytes32 = (jsonKey: string) =>
       !/^(0x)?[0-9a-fA-F]{64}$/.test(jsonKey);
     const isUint8 = (v: string) =>
-      /^(0|[1-9]\d?|1[0-9]{2}|2[0-4]\d|25[0-5])$/.test(v);
+      !/^(0|[1-9]\d?|1\d\d|2[0-4]\d|25[0-5])$/.test(v);
 
     // Check for valid values
     if (json) {
