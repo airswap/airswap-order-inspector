@@ -57,7 +57,7 @@ function App() {
   const {
     data: returnedErrors,
     isLoading,
-    error: contractReadError,
+    // error: contractReadError,
   } = useContractRead({
     address: swapContractAddress,
     abi,
@@ -82,7 +82,6 @@ function App() {
     }
 
     try {
-      // 1. check if valid JSON
       const parsedJsonString = jsonString && JSON.parse(jsonString);
       setParsedJSON(parsedJsonString);
     } catch (e) {
@@ -90,39 +89,32 @@ function App() {
     }
   };
 
-  // Use useEffect to perform actions after parsedJSON has been updated
+  // performs actions after parsedJSON has been updated
   useEffect(() => {
     // check that all required keys are present
     const isJsonValid = validateJson(parsedJSON);
-    console.log('isJsonValid (false means no errors):', isJsonValid);
-
-    // if validation errors, set, otherwise set errors to undefined.
     if (isJsonValid) {
       setErrors(isJsonValid);
-      console.log('There are json validation errors --> errors:', errors);
     }
 
-    // check returnedErrors from smart contract
+    // returnedErrors is data from smart contract
     const outputErrorsList = returnedErrors?.[1].map((error) => {
       return hexToString(error);
     });
-    console.log('outputErrorsList:', outputErrorsList);
 
-    // create an array with human-readable errors
+    // create array of human-readable errors
     const errorsList = displayErrors(outputErrorsList);
-    console.log('errorsList:', errorsList);
-
-    // add human-readable errors into errors array
     if (errorsList) {
       setErrors(errorsList);
-      console.log('errorsList:', errorsList);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parsedJSON, returnedErrors]);
 
+  /*
   // if errors from from useContractRead, this updates setErrors
   useEffect(() => {
-    if (contractReadError && jsonString && isEnableCheck && !errors) {
+    console.log(errors);
+    if (contractReadError && jsonString && isEnableCheck) {
       setErrors((prevErrors) => {
         const updatedErrors = [...prevErrors, contractReadError.message];
         const removeDuplicates = [...new Set(updatedErrors)];
@@ -132,21 +124,7 @@ function App() {
     // keep `errors` out of deps list, or it'll cause too many re-renders
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contractReadError, jsonString, isEnableCheck]);
-
-  // if data is returned from useContractRead, update setErrors
-  useEffect(() => {
-    if (returnedErrors) {
-      const outputErrorsList = returnedErrors[1].map((error) =>
-        hexToString(error)
-      );
-
-      const errorsList = displayErrors(outputErrorsList);
-
-      if (errorsList) {
-        setErrors(errorsList);
-      }
-    }
-  }, [returnedErrors]);
+  */
 
   useEffect(() => {
     const renderErrors = () => {
