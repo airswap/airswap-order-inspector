@@ -4,16 +4,14 @@ import { CheckParamsJSON } from '../../types';
 export const validateJson = (
   json: Partial<CheckParamsJSON> | undefined
 ): string[] | false => {
+  const errorsList: string[] = [];
   try {
-    const errorsList: string[] = [];
-
     const requiredKeys: (keyof CheckParamsJSON)[] = [
       'nonce',
       'expiry',
       'signerWallet',
       'signerToken',
       'signerAmount',
-      // 'senderWallet',
       'senderToken',
       'senderAmount',
       'v',
@@ -48,13 +46,6 @@ export const validateJson = (
           'senderAmount must be a number. Make sure it\'s wrapped in quotation marks, e.g. "100000000"'
         );
       }
-      // else if (json['v'] && isNaN(Number(json['v']))) {
-      //   errorsList.push('v must be a number. Make sure it\'s wrapped in quotation marks, e.g. "28"');
-      // } else if (json['r'] && typeof json['r'] === 'string') {
-      //   errorsList.push('r must be a hash in string format, e.g. "0x67e0723b0afd3..."');
-      // } else if (json['s'] && typeof json['s'] === 'string') {
-      //   errorsList.push('s must be a hash in string format, e.g. "0x67e0723b0afd3..."');
-      // }
     }
 
     // Check for missing keys
@@ -65,12 +56,16 @@ export const validateJson = (
     });
 
     if (errorsList.length === 0) {
+      // false means there are no errors here
       return false;
     } else {
       return errorsList;
     }
   } catch (e) {
-    console.error(e);
-    return ['An unexpected error occurred in the validateJson function.'];
+    console.error('console error', e);
+    errorsList.push(
+      'An unexpected error occurred in the validateJson function.'
+    );
+    return errorsList;
   }
 };

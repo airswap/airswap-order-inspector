@@ -61,6 +61,7 @@ li {
   text-align: left;
   align-self: start;
   display: flex;
+  max-width: 100%;
 }
 
 .header {
@@ -94,6 +95,8 @@ li {
   background-color: white;
   border: #ff0101 dashed 3px;
   border-radius: 3px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .icon-styles {

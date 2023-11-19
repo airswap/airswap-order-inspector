@@ -1,4 +1,4 @@
-import { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
+import { ChangeEvent, MouseEvent, ReactNode, useEffect, useState } from 'react';
 import './App.css';
 import { useContractRead } from 'wagmi';
 import { abi } from './contracts/swapERC20ABI';
@@ -17,6 +17,7 @@ function App() {
     undefined | Partial<CheckParamsJSON>
   >(undefined);
   const [errors, setErrors] = useState<string[]>([]);
+  const [renderedErrors, setRenderedErrors] = useState<ReactNode | undefined>();
   const [isEnableCheck, setIsEnableCheck] = useState(false);
 
   const senderWallet = parsedJSON?.senderWallet || zeroAddress;
@@ -53,12 +54,15 @@ function App() {
     s,
   ];
 
-  const { data: returnedErrors, isLoading } = useContractRead({
+  const {
+    data: returnedErrors,
+    isLoading,
+    error: contractReadError,
+  } = useContractRead({
     address: swapContractAddress,
     abi,
     functionName: 'check',
     args: checkArgs,
-    watch: true,
     enabled: isEnableCheck,
   });
 
@@ -69,10 +73,8 @@ function App() {
 
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setErrors([]);
     setIsEnableCheck(true);
 
-    // if input is blank, return
     if (!jsonString) {
       setErrors(['Input cannot be blank']);
       return;
@@ -83,52 +85,74 @@ function App() {
       const parsedJsonString = jsonString && JSON.parse(jsonString);
       setParsedJSON(parsedJsonString);
 
-      // 2. check that all required keys are present
+      // 2. check that all required keys are present. if isJsonValid is false, that means no errors come from validations.ts
       const isJsonValid = validateJson(parsedJSON);
+      console.log('isJsonValid', isJsonValid);
 
-      // 3. if validation errors, set, otherwise set errors to undefined
-      isJsonValid
-        ? setErrors((errors) => [...errors, ...isJsonValid])
-        : setErrors([]);
+      // 3. if validation errors, set, otherwise set errors to undefined.
+      if (isJsonValid) {
+        // we only want to use the spread operator when adding a new validation error on top of useContractRead errors, or a read error with useContractReact on top of other errors
+        setErrors((prevErrors) => [...prevErrors, ...isJsonValid]);
+      }
 
       // 4. check returnedErrors from smart contract
       const outputErrorsList = returnedErrors?.[1].map((error) => {
         return hexToString(error);
       });
+      console.log('outputErrorsList:', outputErrorsList);
 
       // create an array with human-readable errors
       const errorsList = displayErrors(outputErrorsList);
 
       // add human-readable errors into errors array
       if (errorsList) {
-        setErrors((errors) => [...errors, ...errorsList]);
+        setErrors(errorsList);
       }
     } catch (e) {
       setErrors([`Your input is not valid JSON format: ${e}`]);
     }
   };
 
-  const renderErrors = () => {
-    return errors?.map((error, i) => (
-      <li key={error + i}>
-        <div className="icon-styles">
-          <FaCheckCircle />
-        </div>
-        <span>{error}</span>
-      </li>
-    ));
-  };
+  useEffect(() => {
+    if (contractReadError && jsonString && isEnableCheck) {
+      setErrors((prevErrors) => {
+        const updatedErrors = [...prevErrors, contractReadError.message];
+        const removeDuplicates = [...new Set(updatedErrors)];
+        return removeDuplicates;
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [contractReadError, jsonString, isEnableCheck]);
 
   useEffect(() => {
     if (returnedErrors) {
       const outputErrorsList = returnedErrors[1].map((error) =>
         hexToString(error)
       );
+
       const errorsList = displayErrors(outputErrorsList);
-      setErrors(errorsList || []);
+
+      if (errorsList) {
+        setErrors(errorsList);
+      }
     }
-    console.log(returnedErrors);
   }, [returnedErrors]);
+
+  useEffect(() => {
+    const renderErrors = () => {
+      return errors?.map((error, i) => (
+        <li key={error + i}>
+          <div className="icon-styles">
+            <FaCheckCircle />
+          </div>
+          <span>{error}</span>
+        </li>
+      ));
+    };
+    const renderedErrors = renderErrors();
+
+    setRenderedErrors(renderedErrors);
+  }, [errors]);
 
   return (
     <>
@@ -160,7 +184,7 @@ function App() {
               Please fix the following error
               {errors.length > 1 ? 's' : null}:
             </h3>
-            <ul>{renderErrors()}</ul>
+            <ul>{renderedErrors}</ul>
           </div>
         )}
       </div>
