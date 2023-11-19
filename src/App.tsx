@@ -74,6 +74,7 @@ function App() {
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsEnableCheck(true);
+    setErrors([]);
 
     if (!jsonString) {
       setErrors(['Input cannot be blank']);
@@ -81,41 +82,45 @@ function App() {
     }
 
     try {
-      // 1. check if JSON is a valid JSON
+      // 1. check if valid JSON
       const parsedJsonString = jsonString && JSON.parse(jsonString);
       setParsedJSON(parsedJsonString);
-
-      // 2. check that all required keys are present. if isJsonValid is false, that means no errors come from validations.ts
-      const isJsonValid = validateJson(parsedJSON);
-
-      // 3. if validation errors, set, otherwise set errors to undefined.
-      if (isJsonValid) {
-        // we want to use the spread operator when adding a new validation error on top of useContractRead errors, or a read error with useContractReact on top of other errors
-        setErrors((prevErrors) => {
-          const updatedErrors = [...prevErrors, ...isJsonValid];
-          const removeDuplicates = [...new Set(updatedErrors)];
-          return removeDuplicates;
-        });
-      }
-
-      // 4. check returnedErrors from smart contract
-      const outputErrorsList = returnedErrors?.[1].map((error) => {
-        return hexToString(error);
-      });
-      console.log('outputErrorsList:', outputErrorsList);
-
-      // create an array with human-readable errors
-      const errorsList = displayErrors(outputErrorsList);
-
-      // add human-readable errors into errors array
-      if (errorsList) {
-        setErrors(errorsList);
-      }
     } catch (e) {
       setErrors([`Your input is not valid JSON format: ${e}`]);
     }
   };
 
+  // Use useEffect to perform actions after parsedJSON has been updated
+  useEffect(() => {
+    // check that all required keys are present
+    const isJsonValid = validateJson(parsedJSON);
+    console.log('isJsonValid (false means no errors):', isJsonValid);
+
+    // if validation errors, set, otherwise set errors to undefined.
+    if (isJsonValid) {
+      setErrors(isJsonValid);
+      console.log('There are json validation errors --> errors:', errors);
+    }
+
+    // check returnedErrors from smart contract
+    const outputErrorsList = returnedErrors?.[1].map((error) => {
+      return hexToString(error);
+    });
+    console.log('outputErrorsList:', outputErrorsList);
+
+    // create an array with human-readable errors
+    const errorsList = displayErrors(outputErrorsList);
+    console.log('errorsList:', errorsList);
+
+    // add human-readable errors into errors array
+    if (errorsList) {
+      setErrors(errorsList);
+      console.log('errorsList:', errorsList);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [parsedJSON, returnedErrors]);
+
+  // if errors from from useContractRead, this updates setErrors
   useEffect(() => {
     if (contractReadError && jsonString && isEnableCheck && !errors) {
       setErrors((prevErrors) => {
@@ -124,9 +129,11 @@ function App() {
         return removeDuplicates;
       });
     }
+    // keep `errors` out of deps list, or it'll cause too many re-renders
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contractReadError, jsonString, isEnableCheck]);
 
+  // if data is returned from useContractRead, update setErrors
   useEffect(() => {
     if (returnedErrors) {
       const outputErrorsList = returnedErrors[1].map((error) =>
@@ -157,6 +164,7 @@ function App() {
     setRenderedErrors(renderedErrors);
   }, [errors]);
 
+  // if input is not blank, and there are no errors, inform user
   useEffect(() => {
     if (parsedJSON && isEnableCheck && !errors) {
       setErrors(['No errors found!']);

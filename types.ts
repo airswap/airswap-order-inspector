@@ -1,14 +1,14 @@
 // checkParamsJSON is used for user-generated JSON
 export interface CheckParamsJSON {
   senderWallet: `0x${string}`;
-  nonce: number;
-  expiry: number;
+  nonce: string;
+  expiry: string;
   signerWallet: `0x${string}`;
   signerToken: `0x${string}`;
-  signerAmount: bigint;
+  signerAmount: string;
   senderToken: `0x${string}`;
-  senderAmount: bigint;
-  v: number;
+  senderAmount: string;
+  v: string;
   r: string;
   s: string;
 }

@@ -12,6 +12,7 @@ export const validateJson = (
       'signerWallet',
       'signerToken',
       'signerAmount',
+      'senderWallet',
       'senderToken',
       'senderAmount',
       'v',
@@ -19,29 +20,45 @@ export const validateJson = (
       's',
     ];
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const isNotValidNumberString = (value: string) => !/^\d+$/.test(value);
+
     // Check for valid values
     if (json) {
       if (json['senderWallet'] && !isAddress(json['senderWallet'])) {
         errorsList.push('senderWallet must be a valid ERC20 address');
-      } else if (json['nonce'] && isNaN(json['nonce'])) {
+      }
+      if (json['nonce'] && isNotValidNumberString(json['nonce'])) {
         errorsList.push(
           'nonce must be a number. Make sure it\'s wrapped in quotation marks, e.g. "99"'
         );
-      } else if (json['expiry'] && isNaN(json['expiry'])) {
+      }
+      if (json['expiry'] && isNotValidNumberString(json['expiry'])) {
         errorsList.push(
           'expiry must be a number. Make sure it\'s wrapped in quotation marks, e.g. "1566941284"'
         );
-      } else if (json['signerWallet'] && !isAddress(json['signerWallet'])) {
+      }
+      if (json['signerWallet'] && !isAddress(json['signerWallet'])) {
         errorsList.push('signerWallet must be a valid ERC20 address');
-      } else if (json['signerToken'] && !isAddress(json['signerToken'])) {
+      }
+      if (json['signerToken'] && !isAddress(json['signerToken'])) {
         errorsList.push('signerToken must be a valid ERC20 address');
-      } else if (json['signerAmount'] && isNaN(Number(json['signerAmount']))) {
+      }
+      if (
+        json['signerAmount'] &&
+        isNotValidNumberString(json['signerAmount'])
+      ) {
         errorsList.push(
           'signerAmount must be a number. Make sure it\'s wrapped in quotation marks, e.g. "100000000"'
         );
-      } else if (json['senderToken'] && !isAddress(json['senderToken'])) {
+      }
+      if (json['senderToken'] && !isAddress(json['senderToken'])) {
         errorsList.push('senderToken must be a valid ERC20 address');
-      } else if (json['senderAmount'] && isNaN(Number(json['senderAmount']))) {
+      }
+      if (
+        json['senderAmount'] &&
+        isNotValidNumberString(json['senderAmount'])
+      ) {
         errorsList.push(
           'senderAmount must be a number. Make sure it\'s wrapped in quotation marks, e.g. "100000000"'
         );
@@ -54,6 +71,7 @@ export const validateJson = (
     missingKeys.forEach((missingKey) => {
       errorsList.push(`Your JSON is missing a ${missingKey} key`);
     });
+    console.log('errorsList', errorsList);
 
     if (errorsList.length === 0) {
       // false means there are no errors here
