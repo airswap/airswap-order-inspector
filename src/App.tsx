@@ -9,6 +9,7 @@ import airswapLogo from '../src/assets/airswap-logo-with-text.svg';
 import { textareaPlaceholder } from './defaults/textareaPlaceholder';
 import { displayErrors } from './utilities/displayErrors';
 import { FaCheckCircle } from 'react-icons/fa';
+import { twMerge } from 'tailwind-merge';
 
 function App() {
   const [jsonString, setJsonString] = useState<undefined | string>(undefined);
@@ -145,56 +146,77 @@ function App() {
       <div className="h-fit p-4">
         <img src={airswapLogo} alt="AirSwap logo" className="mx-auto" />
       </div>
+      <h1 className="mb-4 text-2xl uppercase text-lightGray text-center font-medium">
+        Server Debugger:
+      </h1>
       <div
         id="container"
-        className="flex flex-col box-border pb-6 sm:w-[80%] md:w-[80%] lg:[60%] mx-auto text-center bg-lightGray text-black rounded-md"
-      >
-        <h1 className="mt-4 text-2xl uppercase text-blueDark font-semibold">
-          Server Debugger:
-        </h1>
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col sm:w-full md:w-3/4 lg:w-1/2 m-auto"
-        >
-          <label>Paste your server response JSON in the text area below:</label>
-          <textarea
-            id="json"
-            name="json"
-            placeholder={textareaPlaceholder}
-            autoComplete="off"
-            onChange={handleChangeTextArea}
-            className="my-2 mx-auto p-5 sm:w-full sm:min-w-full w-[80%] min-w-[60%] max-w-[90%] min-h-[325px] border-blueDark border radius-sm"
-          />
-          <input
-            name="submit"
-            type="submit"
-            value={!isLoading ? 'Check errors' : 'Loading...'}
-            disabled={isLoading}
-            className="mt-2 mx-auto sm:w-full md:w-[80%] lg:w-[60%] py-3 px-4 text-white bg-blueAirSwap border-darkgray border-1 radius-sm font-medium text-lg uppercase"
-          />
-        </form>
-
-        {errors.length > 0 && !isLoading && (
-          <div
-            id="errors-container"
-            className="sm:w-full md:w-[80%] lg:w-[80%] p-8 my-8 mx-auto text-redAlert whitespace-pre-line bg-white border-dashed border-2 border-redAlert rounded-md break-words"
-          >
-            {!isNoErrors ? (
-              <>
-                <h3 className="m-0 mb-1 text-blueExtraDark font-semibold uppercase">
-                  Errors to fix:
-                </h3>
-                <ul className="flex flex-col items-start w-fit m-auto p-0 list-none">
-                  {renderedErrors}
-                </ul>
-              </>
-            ) : (
-              <h3 className="m-0 mb-1 text-blueExtraDark font-semibold uppercase">
-                🎊 No errors found! 🎊
-              </h3>
-            )}
-          </div>
+        className={twMerge(
+          'flex flex-col md:flex-row box-border pb-6 mx-auto',
+          'w-full xs:w-[90%] sm:w-4/5 md:w-[95%] lg:w-[90%] xl:w-4/5',
+          'text-center bg-transparent text-black rounded-md'
         )}
+      >
+        <div className="md:w-full md:pt-4 md:pb-8 md:mr-2 bg-lightGray rounded-sm">
+          <form onSubmit={handleSubmit} className="flex flex-col m-auto w-full">
+            <label className="my-2 text-lg font-semibold uppercase">
+              Paste server response below:
+            </label>
+            <textarea
+              id="json"
+              name="json"
+              placeholder={textareaPlaceholder}
+              autoComplete="off"
+              onChange={handleChangeTextArea}
+              className={twMerge(
+                'w-full xs:w-[90%] sm:w-4/5 md:w-4/5',
+                'my-2 mx-auto p-5 min-h-[325px] border-blueDark border-2 rounded-sm'
+              )}
+            />
+            <input
+              name="submit"
+              type="submit"
+              value={!isLoading ? 'Check errors' : 'Loading...'}
+              disabled={isLoading}
+              className={twMerge(
+                'w-full xs:w-[90%] sm:w-4/5 md:w-4/5',
+                'mt-2 mx-auto py-3 px-4 text-white bg-blueAirSwap border-darkgray border-1 rounded-sm font-medium text-lg uppercase'
+              )}
+            />
+          </form>
+        </div>
+
+        <div
+          className={twMerge(
+            'md:w-full md:pt-4 md:pb-8 md:ml-2',
+            'pt-4 bg-lightGray rounded-sm'
+          )}
+        >
+          {errors.length > 0 && !isLoading && (
+            <>
+              <h3 className="mt-2 mb-4 px-2 text-lg text-redAlert font-semibold uppercase">
+                Errors to fix:
+              </h3>
+              <div
+                id="errors-container"
+                className={twMerge(
+                  'w-full xs:w-[90%] sm:w-4/5 ',
+                  'mt-2 mx-auto p-5 min-h-[325px] border-dashed border-2 border-redAlert rounded-sm text-redAlert'
+                )}
+              >
+                {!isNoErrors ? (
+                  <ul className="flex flex-col items-start w-fit m-auto p-0 list-none">
+                    {renderedErrors}
+                  </ul>
+                ) : (
+                  <h3 className="m-0 mb-1 text-blueExtraDark font-semibold uppercase">
+                    🎊 No errors found! 🎊
+                  </h3>
+                )}
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
