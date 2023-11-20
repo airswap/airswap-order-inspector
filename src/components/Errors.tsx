@@ -19,22 +19,20 @@ export const Errors = ({
     >
       {!isLoading && (
         <>
-          <h3 className="mt-2 mb-4 px-2 text-lg text-redAlert font-semibold uppercase">
-            Errors to fix:
+          <h3 className="mt-2 mb-4 px-2 text-xl text-redAlert font-semibold uppercase">
+            Errors:
           </h3>
           <div
             id="errors-container"
             className={twMerge(
-              'w-full xs:w-[90%] sm:w-4/5 ',
-              'mt-2 mx-auto p-5 min-h-[325px] border-dashed border-2 border-redAlert rounded-sm text-redAlert'
+              'xs:w-[90%] sm:w-4/5 w-full',
+              'mt-2 mx-auto p-4 lg:p-6 border-dashed border border-redAlert rounded-sm bg-white'
             )}
           >
             {!isNoErrors ? (
-              <ul className="flex flex-col items-start w-fit m-auto p-0 list-none">
-                {renderedErrors}
-              </ul>
+              <ul className="list-none">{renderedErrors}</ul>
             ) : (
-              <h3 className="m-0 mb-1 text-blueExtraDark font-semibold uppercase">
+              <h3 className="mb-1 text-blueExtraDark font-semibold uppercase">
                 🎊 No errors found! 🎊
               </h3>
             )}

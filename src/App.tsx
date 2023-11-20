@@ -140,7 +140,10 @@ function App() {
   useEffect(() => {
     const renderErrors = () => {
       return errors?.map((error, i) => (
-        <li key={error + i} className="flex max-w-full ml-2 mb-2 text-left">
+        <li
+          key={error + i}
+          className="flex max-w-full ml-2 mb-2 text-left last:mb-0"
+        >
           <input type="checkbox" className="flex self-start w-4 mr-2 mt-1.5" />
           <span className="flex">{error}</span>
         </li>
@@ -181,12 +184,14 @@ function App() {
             <JsonForm
               handleSubmit={handleSubmit}
               handleChangeTextArea={handleChangeTextAreaJson}
+              isEnableCheck={isEnableCheck}
               isLoading={isLoading}
             />
           ) : (
             <UrlForm
               handleSubmit={handleSubmit}
               handleChangeTextArea={handleChangeTextAreaUrl}
+              isEnableCheck={isEnableCheck}
               isLoading={isLoading}
             />
           )}
