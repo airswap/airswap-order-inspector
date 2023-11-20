@@ -12,10 +12,16 @@ import { JsonForm } from './components/forms/JsonForm';
 import { Header } from './components/Heaader';
 import { UrlForm } from './components/forms/UrlForm';
 import { Toggle } from './components/Toggle';
+import { decompressFullOrderERC20 } from '@airswap/utils';
+import { FullOrderERC20 } from '@airswap/types';
 
 function App() {
   const [inputType, setInputType] = useState<InputType>(InputType.JSON);
   const [jsonString, setJsonString] = useState<undefined | string>(undefined);
+  const [urlString, setUrlString] = useState<string | undefined>(undefined);
+  const [decompressedOrderJson, setDecompressedOrderJson] = useState<
+    FullOrderERC20 | undefined
+  >(undefined);
   const [parsedJSON, setParsedJSON] = useState<
     undefined | Partial<CheckParamsJSON>
   >(undefined);
@@ -72,9 +78,14 @@ function App() {
 
   console.log('contractReadError:', contractReadError);
 
-  const handleChangeTextArea = (e: ChangeEvent<HTMLTextAreaElement>) => {
+  const handleChangeTextAreaJson = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setIsEnableCheck(false);
     setJsonString(e.target.value);
+  };
+
+  const handleChangeTextAreaUrl = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setIsEnableCheck(false);
+    setUrlString(e.target.value);
   };
 
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
@@ -88,7 +99,16 @@ function App() {
       return;
     }
 
+    if (inputType === InputType.URL && urlString) {
+      // TODO: decompressFullOrderERC20 is causing an error
+      // const decompressedOrder = decompressFullOrderERC20(urlString);
+      // TODO: write a function that fixes the formatting of the decompressedOrder
+      // setDecompressedOrderJson(decompressedOrder);
+      // console.log(decompressedOrderJson);
+    }
+
     try {
+      // TODO: if inputType === InputType.JSON, pass in jsonString. If inputType === InputType.URL, pass in urlString to
       const parsedJsonString = jsonString && JSON.parse(jsonString);
       setParsedJSON(parsedJsonString);
     } catch (e) {
@@ -160,13 +180,13 @@ function App() {
           {inputType === InputType.JSON ? (
             <JsonForm
               handleSubmit={handleSubmit}
-              handleChangeTextArea={handleChangeTextArea}
+              handleChangeTextArea={handleChangeTextAreaJson}
               isLoading={isLoading}
             />
           ) : (
             <UrlForm
               handleSubmit={handleSubmit}
-              handleChangeTextArea={handleChangeTextArea}
+              handleChangeTextArea={handleChangeTextAreaUrl}
               isLoading={isLoading}
             />
           )}

@@ -13,18 +13,21 @@ export const JsonForm = ({
 }) => {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col m-auto w-full">
-      <label className="my-2 text-lg font-semibold uppercase">
-        JSON server response below:
+      <label
+        htmlFor="jsonInput"
+        className="mt-4 mb-2 text-lg font-semibold uppercase"
+      >
+        Paste JSON below:
       </label>
       <textarea
-        id="json"
-        name="json"
+        id="jsonInput"
+        name="jsonInput"
         placeholder={textareaPlaceholder}
         autoComplete="off"
         onChange={handleChangeTextArea}
         className={twMerge(
           'w-full xs:w-[90%] sm:w-4/5 md:w-4/5',
-          'my-2 mx-auto p-5 min-h-[325px] border-blueDark border-2 rounded-sm',
+          'mb-2 mx-auto p-5 min-h-[325px] border-blueDark border-2 rounded-sm',
           'placeholder:text-sm'
         )}
       />

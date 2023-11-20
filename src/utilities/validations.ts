@@ -1,5 +1,6 @@
 import { isAddress } from 'viem';
 import { CheckParamsJSON } from '../../types';
+import { ChainIds, swapContractAddress } from './constants';
 
 export const validateJson = (
   json: Partial<CheckParamsJSON> | undefined
@@ -79,7 +80,29 @@ export const validateJson = (
           `s: must be bytes32, a 64-character hex value, e.g. '0x4c1g...j4a0'.`
         );
       }
+      if (json['chainId']) {
+        const isValidChainId = Object.values(ChainIds).includes(
+          Number(json['chainId'])
+        );
+        if (!isValidChainId) {
+          errorsList.push(
+            'chainId: must be a valid chain ID. Check deployed AirSwap contracts here: https://about.airswap.io/technology/deployments.'
+          );
+        }
+      }
+      if (
+        json['swapContract'] &&
+        json['swapContract'] !== swapContractAddress
+      ) {
+        errorsList.push(
+          `swapContract should be ${swapContractAddress}. Check deployed AirSwap contracts here: https://about.airswap.io/technology/deployments.`
+        );
+      }
+      if (json['protocolFee'] && json['protocolFee'] !== '7') {
+        errorsList.push('protocolFee: input is not valid.');
+      }
     }
+    console.log(errorsList);
 
     // Check for missing keys
     const missingKeys = requiredKeys.filter((key) => json && !json[key]);

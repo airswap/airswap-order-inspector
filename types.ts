@@ -11,6 +11,9 @@ export interface CheckParamsJSON {
   v: string;
   r: string;
   s: string;
+  chainId: string;
+  swapContract: `0x${string}`;
+  protocolFee: '7';
 }
 
 // checekArgs is used for the smart contract function read
