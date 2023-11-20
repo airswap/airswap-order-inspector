@@ -1,20 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import './init';
 import App from './App.tsx';
 import './index.css';
-import { WagmiConfig, configureChains, createConfig, mainnet } from 'wagmi';
-import { publicProvider } from 'wagmi/providers/public';
-
-const { publicClient, webSocketPublicClient } = configureChains(
-  [mainnet],
-  [publicProvider()]
-);
-
-const config = createConfig({
-  autoConnect: true,
-  publicClient,
-  webSocketPublicClient,
-});
+import { WagmiConfig } from 'wagmi';
+import { config } from './wagmiConfig/config.ts';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
