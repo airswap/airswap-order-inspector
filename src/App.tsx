@@ -1,18 +1,27 @@
 import { ChangeEvent, MouseEvent, ReactNode, useEffect, useState } from 'react';
-import './App.css';
 import { useContractRead } from 'wagmi';
 import { abi } from './contracts/swapERC20ABI';
 import { hexToString, zeroAddress } from 'viem';
-import { CheckArgs, CheckParamsJSON } from '../types';
+import { CheckArgs, CheckParamsJSON, InputType } from '../types';
 import { validateJson } from './utilities/validations';
 import { swapContractAddress } from './utilities/constants';
-import airswapLogo from '../src/assets/airswap-logo-with-text.svg';
-import { textareaPlaceholder } from './defaults/textareaPlaceholder';
 import { displayErrors } from './utilities/displayErrors';
-import { FaCheckCircle } from 'react-icons/fa';
+import { twMerge } from 'tailwind-merge';
+import { Errors } from './components/Errors';
+import { JsonForm } from './components/forms/JsonForm';
+import { Header } from './components/Heaader';
+import { UrlForm } from './components/forms/UrlForm';
+import { Toggle } from './components/Toggle';
+// import { decompressFullOrderERC20 } from '@airswap/utils';
+// import { FullOrderERC20 } from '@airswap/types';
 
 function App() {
+  const [inputType, setInputType] = useState<InputType>(InputType.JSON);
   const [jsonString, setJsonString] = useState<undefined | string>(undefined);
+  const [urlString, setUrlString] = useState<string | undefined>(undefined);
+  // const [decompressedOrderJson, setDecompressedOrderJson] = useState<
+  //   FullOrderERC20 | undefined
+  // >(undefined);
   const [parsedJSON, setParsedJSON] = useState<
     undefined | Partial<CheckParamsJSON>
   >(undefined);
@@ -69,9 +78,14 @@ function App() {
 
   console.log('contractReadError:', contractReadError);
 
-  const handleChangeTextArea = (e: ChangeEvent<HTMLTextAreaElement>) => {
+  const handleChangeTextAreaJson = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setIsEnableCheck(false);
     setJsonString(e.target.value);
+  };
+
+  const handleChangeTextAreaUrl = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setIsEnableCheck(false);
+    setUrlString(e.target.value);
   };
 
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
@@ -85,7 +99,16 @@ function App() {
       return;
     }
 
+    if (inputType === InputType.URL && urlString) {
+      // TODO: decompressFullOrderERC20 is causing an error
+      // const decompressedOrder = decompressFullOrderERC20(urlString);
+      // TODO: write a function that fixes the formatting of the decompressedOrder
+      // setDecompressedOrderJson(decompressedOrder);
+      // console.log(decompressedOrderJson);
+    }
+
     try {
+      // TODO: if inputType === InputType.JSON, pass in jsonString. If inputType === InputType.URL, pass in urlString to
       const parsedJsonString = jsonString && JSON.parse(jsonString);
       setParsedJSON(parsedJsonString);
     } catch (e) {
@@ -109,7 +132,7 @@ function App() {
     // create array of human-readable errors
     const errorsList = displayErrors(outputErrorsList);
     if (errorsList) {
-      setErrors(errorsList);
+      setErrors((prevErrors) => [...prevErrors, ...errorsList]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parsedJSON, returnedErrors]);
@@ -117,11 +140,9 @@ function App() {
   useEffect(() => {
     const renderErrors = () => {
       return errors?.map((error, i) => (
-        <li key={error + i}>
-          <div className="icon-styles">
-            <FaCheckCircle />
-          </div>
-          <span>{error}</span>
+        <li key={error + i} className="flex max-w-full ml-2 mb-2 text-left">
+          <input type="checkbox" className="flex self-start w-4 mr-2 mt-1.5" />
+          <span className="flex">{error}</span>
         </li>
       ));
     };
@@ -139,43 +160,45 @@ function App() {
   }, [parsedJSON, isEnableCheck, errors]);
 
   return (
-    <>
-      <div className="header">
-        <img src={airswapLogo} alt="AirSwap logo" />
-      </div>
-      <div className="container">
-        <h1>Server Debugger:</h1>
-        <form onSubmit={handleSubmit}>
-          <label>Paste your server response JSON in the text area below:</label>
-          <textarea
-            id="json"
-            name="json"
-            placeholder={textareaPlaceholder}
-            autoComplete="off"
-            onChange={handleChangeTextArea}
-          />
-          <input
-            name="submit"
-            type="submit"
-            value={!isLoading ? 'Check errors' : 'Loading...'}
-            disabled={isLoading}
-          />
-        </form>
-
-        {errors.length > 0 && !isLoading && (
-          <div className="errors-container">
-            {!isNoErrors ? (
-              <>
-                <h3>Errors to fix:</h3>
-                <ul>{renderedErrors}</ul>
-              </>
-            ) : (
-              <h3>🎊 No errors found! 🎊</h3>
-            )}
-          </div>
+    <div className="flex flex-col font-sans">
+      <Header />
+      <div
+        id="container"
+        className={twMerge(
+          'flex flex-col md:flex-row box-border pb-6 px-1 mx-auto',
+          'w-full xs:w-[90%] sm:w-4/5 md:w-[95%] lg:w-[90%] xl:w-4/5',
+          'text-center bg-transparent text-black rounded-md'
         )}
+      >
+        <div className="md:w-full md:pt-4 md:pb-8 md:mr-2 bg-lightGray rounded-sm pb-6 px-1">
+          <Toggle
+            inputType={inputType}
+            clickTypeJson={() => setInputType(InputType.JSON)}
+            clickTypeUrl={() => setInputType(InputType.URL)}
+          />
+
+          {inputType === InputType.JSON ? (
+            <JsonForm
+              handleSubmit={handleSubmit}
+              handleChangeTextArea={handleChangeTextAreaJson}
+              isLoading={isLoading}
+            />
+          ) : (
+            <UrlForm
+              handleSubmit={handleSubmit}
+              handleChangeTextArea={handleChangeTextAreaUrl}
+              isLoading={isLoading}
+            />
+          )}
+        </div>
+
+        <Errors
+          isLoading={isLoading}
+          isNoErrors={isNoErrors}
+          renderedErrors={renderedErrors}
+        />
       </div>
-    </>
+    </div>
   );
 }
 

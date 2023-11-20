@@ -1,1 +1,1 @@
-export const swapContractAddress = '0x0C9b31Dc37718417608CE22bb1ba940f702BF90B';
+export const swapContractAddress = '0xd82FA167727a4dc6D6F55830A2c47aBbB4b3a0F8';

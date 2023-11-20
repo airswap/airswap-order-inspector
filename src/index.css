@@ -1,8 +1,11 @@
-body,
-html {
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  @apply bg-blueExtraDark;
+
+  overflow-x: hidden;
   padding: 0;
   margin: 0;
-  background-color: rgba(16, 24, 39, 1);
-  font-family: Arial, Helvetica, sans-serif;
-  overflow-x: hidden;
 }
