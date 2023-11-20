@@ -132,7 +132,11 @@ function App() {
     // create array of human-readable errors
     const errorsList = displayErrors(outputErrorsList);
     if (errorsList) {
-      setErrors((prevErrors) => [...prevErrors, ...errorsList]);
+      setErrors((prevErrors) => {
+        const updatedErrors = [...prevErrors, ...errorsList];
+        const uniqueErrors = [...new Set(updatedErrors)];
+        return uniqueErrors;
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parsedJSON, returnedErrors]);
