@@ -1,10 +1,13 @@
 import { isAddress } from 'viem';
 import { ChainIds, CheckParamsJSON } from '../../types';
-import { swapContractAddress } from './constants';
 
-export const validateJson = (
-  json: Partial<CheckParamsJSON> | undefined
-): string[] | false => {
+export const validateJson = ({
+  json,
+  swapContractAddress = '0xd82FA167727a4dc6D6F55830A2c47aBbB4b3a0F8',
+}: {
+  json: Partial<CheckParamsJSON> | undefined;
+  swapContractAddress: string | undefined;
+}): string[] | false => {
   const errorsList: string[] = [];
   try {
     const requiredKeys: (keyof CheckParamsJSON)[] = [
@@ -95,7 +98,7 @@ export const validateJson = (
         json['swapContract'] !== swapContractAddress
       ) {
         errorsList.push(
-          `swapContract should be ${swapContractAddress}. Check deployed AirSwap contracts here: https://about.airswap.io/technology/deployments.`
+          `swapContract: address is not valid. Check for deployed contracts on https://about.airswap.io/technology/deployments.`
         );
       }
       if (json['protocolFee'] && json['protocolFee'] !== '7') {

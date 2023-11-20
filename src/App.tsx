@@ -4,7 +4,6 @@ import { abi } from './contracts/swapERC20ABI';
 import { hexToString, zeroAddress } from 'viem';
 import { CheckArgs, CheckParamsJSON, InputType } from '../types';
 import { validateJson } from './utilities/validations';
-import { swapContractAddress } from './utilities/constants';
 import { displayErrors } from './utilities/displayErrors';
 import { twMerge } from 'tailwind-merge';
 import { Errors } from './components/Errors';
@@ -12,6 +11,7 @@ import { JsonForm } from './components/forms/JsonForm';
 import { Header } from './components/Heaader';
 import { UrlForm } from './components/forms/UrlForm';
 import { Toggle } from './components/Toggle';
+import { SwapERC20 } from '@airswap/libraries';
 // import { decompressFullOrderERC20 } from '@airswap/utils';
 // import { FullOrderERC20 } from '@airswap/types';
 
@@ -24,6 +24,9 @@ function App() {
   // >(undefined);
   const [parsedJSON, setParsedJSON] = useState<
     undefined | Partial<CheckParamsJSON>
+  >(undefined);
+  const [swapContractAddress, setSwapContractAddress] = useState<
+    string | undefined
   >(undefined);
   const [errors, setErrors] = useState<string[]>([]);
   const [renderedErrors, setRenderedErrors] = useState<ReactNode | undefined>();
@@ -74,7 +77,7 @@ function App() {
     error: contractReadError,
   } = useContractRead({
     chainId: chainId || 1,
-    address: swapContractAddress,
+    address: swapContractAddress as `0x${string}`,
     abi,
     functionName: 'check',
     args: checkArgs,
@@ -137,7 +140,10 @@ function App() {
       });
     }
 
-    const isJsonValid = validateJson(parsedJSON);
+    const isJsonValid = validateJson({
+      json: parsedJSON,
+      swapContractAddress: swapContractAddress,
+    });
     if (isJsonValid) {
       setErrors((prevErrors) => {
         const updatedErrors = [...prevErrors, ...isJsonValid];
@@ -147,6 +153,13 @@ function App() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parsedJSON, checkFunctionData]);
+
+  useEffect(() => {
+    if (chainId) {
+      const address = SwapERC20.getAddress(chainId);
+      address && setSwapContractAddress(address);
+    }
+  }, [chainId]);
 
   useEffect(() => {
     const renderErrors = () => {
