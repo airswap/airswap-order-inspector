@@ -27,3 +27,8 @@ export type CheckArgs = [
   `0x${string}`,
   `0x${string}`
 ];
+
+export enum InputType {
+  JSON,
+  URL,
+}

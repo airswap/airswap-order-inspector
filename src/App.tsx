@@ -2,15 +2,19 @@ import { ChangeEvent, MouseEvent, ReactNode, useEffect, useState } from 'react';
 import { useContractRead } from 'wagmi';
 import { abi } from './contracts/swapERC20ABI';
 import { hexToString, zeroAddress } from 'viem';
-import { CheckArgs, CheckParamsJSON } from '../types';
+import { CheckArgs, CheckParamsJSON, InputType } from '../types';
 import { validateJson } from './utilities/validations';
 import { swapContractAddress } from './utilities/constants';
-import airswapLogo from '../src/assets/airswap-logo.svg';
-import { textareaPlaceholder } from './defaults/textareaPlaceholder';
 import { displayErrors } from './utilities/displayErrors';
 import { twMerge } from 'tailwind-merge';
+import { Errors } from './components/Errors';
+import { JsonForm } from './components/forms/JsonForm';
+import { Header } from './components/Heaader';
+import { UrlForm } from './components/forms/UrlForm';
+import { Toggle } from './components/Toggle';
 
 function App() {
+  const [inputType, setInputType] = useState<InputType>(InputType.JSON);
   const [jsonString, setJsonString] = useState<undefined | string>(undefined);
   const [parsedJSON, setParsedJSON] = useState<
     undefined | Partial<CheckParamsJSON>
@@ -137,14 +141,7 @@ function App() {
 
   return (
     <div className="flex flex-col font-sans">
-      <div
-        className={twMerge(
-          'flex flex-row my-4 mx-auto p-2 text-2xl xs:text-3xl uppercase text-lightGray font-medium'
-        )}
-      >
-        <img src={airswapLogo} alt="AirSwap logo" className="mr-3" />
-        <h1>Server Debugger</h1>
-      </div>
+      <Header />
       <div
         id="container"
         className={twMerge(
@@ -154,65 +151,32 @@ function App() {
         )}
       >
         <div className="md:w-full md:pt-4 md:pb-8 md:mr-2 bg-lightGray rounded-sm pb-6 px-1">
-          <form onSubmit={handleSubmit} className="flex flex-col m-auto w-full">
-            <label className="my-2 text-lg font-semibold uppercase">
-              Paste server response below:
-            </label>
-            <textarea
-              id="json"
-              name="json"
-              placeholder={textareaPlaceholder}
-              autoComplete="off"
-              onChange={handleChangeTextArea}
-              className={twMerge(
-                'w-full xs:w-[90%] sm:w-4/5 md:w-4/5',
-                'my-2 mx-auto p-5 min-h-[325px] border-blueDark border-2 rounded-sm'
-              )}
+          <Toggle
+            inputType={inputType}
+            clickTypeJson={() => setInputType(InputType.JSON)}
+            clickTypeUrl={() => setInputType(InputType.URL)}
+          />
+
+          {inputType === InputType.JSON ? (
+            <JsonForm
+              handleSubmit={handleSubmit}
+              handleChangeTextArea={handleChangeTextArea}
+              isLoading={isLoading}
             />
-            <input
-              name="submit"
-              type="submit"
-              value={!isLoading ? 'Check errors' : 'Loading...'}
-              disabled={isLoading}
-              className={twMerge(
-                'w-full xs:w-[90%] sm:w-4/5 md:w-4/5',
-                'mt-2 mx-auto py-3 px-4 text-white bg-blueAirSwap border-darkgray border-1 rounded-sm font-medium text-lg uppercase'
-              )}
+          ) : (
+            <UrlForm
+              handleSubmit={handleSubmit}
+              handleChangeTextArea={handleChangeTextArea}
+              isLoading={isLoading}
             />
-          </form>
+          )}
         </div>
 
-        <div
-          className={twMerge(
-            'md:w-full md:pt-4 md:ml-2 md:mt-0',
-            'mt-4 pt-4 pb-8 px-1 bg-lightGray rounded-sm'
-          )}
-        >
-          {!isLoading && (
-            <>
-              <h3 className="mt-2 mb-4 px-2 text-lg text-redAlert font-semibold uppercase">
-                Errors to fix:
-              </h3>
-              <div
-                id="errors-container"
-                className={twMerge(
-                  'w-full xs:w-[90%] sm:w-4/5 ',
-                  'mt-2 mx-auto p-5 min-h-[325px] border-dashed border-2 border-redAlert rounded-sm text-redAlert'
-                )}
-              >
-                {!isNoErrors ? (
-                  <ul className="flex flex-col items-start w-fit m-auto p-0 list-none">
-                    {renderedErrors}
-                  </ul>
-                ) : (
-                  <h3 className="m-0 mb-1 text-blueExtraDark font-semibold uppercase">
-                    🎊 No errors found! 🎊
-                  </h3>
-                )}
-              </div>
-            </>
-          )}
-        </div>
+        <Errors
+          isLoading={isLoading}
+          isNoErrors={isNoErrors}
+          renderedErrors={renderedErrors}
+        />
       </div>
     </div>
   );
