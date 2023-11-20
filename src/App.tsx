@@ -30,19 +30,21 @@ function App() {
   const [isEnableCheck, setIsEnableCheck] = useState(false);
   const [isNoErrors, setIsNoErrors] = useState(false);
 
-  const senderWallet = parsedJSON?.senderWallet || zeroAddress;
+  const chainId = Number(parsedJSON?.chainId);
+
+  const senderWallet = parsedJSON?.senderWallet;
   const nonce = isNaN(Number(parsedJSON?.nonce))
     ? BigInt(0)
     : BigInt(Number(parsedJSON?.nonce));
   const expiry = isNaN(Number(parsedJSON?.expiry))
     ? BigInt(0)
     : BigInt(Number(parsedJSON?.expiry));
-  const signerWallet = parsedJSON?.signerWallet || zeroAddress;
-  const signerToken = parsedJSON?.signerToken || zeroAddress;
+  const signerWallet = parsedJSON?.signerWallet;
+  const signerToken = parsedJSON?.signerToken;
   const signerAmount = isNaN(Number(parsedJSON?.signerAmount))
     ? BigInt(0)
     : BigInt(Number(parsedJSON?.signerAmount));
-  const senderToken = parsedJSON?.senderToken || zeroAddress;
+  const senderToken = parsedJSON?.senderToken;
   const senderAmount = isNaN(Number(parsedJSON?.senderAmount))
     ? BigInt(0)
     : BigInt(Number(parsedJSON?.senderAmount));
@@ -51,31 +53,34 @@ function App() {
   const s = (parsedJSON?.s as `0x${string}`) || `0x`;
 
   const checkArgs: CheckArgs = [
-    senderWallet,
+    senderWallet || zeroAddress,
     nonce,
     expiry,
-    signerWallet,
-    signerToken,
+    signerWallet || zeroAddress,
+    signerToken || zeroAddress,
     signerAmount,
-    senderToken,
+    senderToken || zeroAddress,
     senderAmount,
     v,
     r,
     s,
   ];
 
+  console.log(checkArgs);
+
   const {
-    data: returnedErrors,
+    data: checkFunctionData,
     isLoading,
     error: contractReadError,
   } = useContractRead({
+    chainId: chainId || 1,
     address: swapContractAddress,
     abi,
     functionName: 'check',
     args: checkArgs,
     enabled: isEnableCheck,
   });
-
+  console.log('checkFunctionData:', checkFunctionData);
   console.log('contractReadError:', contractReadError);
 
   const handleChangeTextAreaJson = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -118,14 +123,12 @@ function App() {
 
   // performs actions after parsedJSON has been updated
   useEffect(() => {
-    // check that all required keys are present
     const isJsonValid = validateJson(parsedJSON);
     if (isJsonValid) {
       setErrors(isJsonValid);
     }
 
-    // returnedErrors is data from smart contract
-    const outputErrorsList = returnedErrors?.[1].map((error) => {
+    const outputErrorsList = checkFunctionData?.[1].map((error) => {
       return hexToString(error);
     });
 
@@ -139,7 +142,7 @@ function App() {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsedJSON, returnedErrors]);
+  }, [parsedJSON, checkFunctionData]);
 
   useEffect(() => {
     const renderErrors = () => {
@@ -158,7 +161,7 @@ function App() {
     setRenderedErrors(renderedErrors);
   }, [errors]);
 
-  // if input is not blank, and there are no errors, JSON is okay
+  // if input is not blank, and no errors, JSON is okay
   useEffect(() => {
     if (parsedJSON && isEnableCheck && !errors) {
       setErrors(['🎊 No errors found! 🎊']);

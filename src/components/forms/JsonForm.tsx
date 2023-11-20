@@ -13,7 +13,6 @@ export const JsonForm = ({
   isEnableCheck: boolean;
   isLoading: boolean;
 }) => {
-  console.log('isEnableCheck', isEnableCheck);
   return (
     <form onSubmit={handleSubmit} className="flex flex-col m-auto w-full">
       <label

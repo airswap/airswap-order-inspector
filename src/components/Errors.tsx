@@ -32,7 +32,7 @@ export const Errors = ({
             {!isNoErrors ? (
               <ul className="list-none">{renderedErrors}</ul>
             ) : (
-              <h3 className="mb-1 text-blueExtraDark font-semibold uppercase">
+              <h3 className="mb-1 text-blueDark font-semibold uppercase">
                 🎊 No errors found! 🎊
               </h3>
             )}
