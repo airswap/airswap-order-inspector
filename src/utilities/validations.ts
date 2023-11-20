@@ -1,6 +1,6 @@
 import { isAddress } from 'viem';
-import { CheckParamsJSON } from '../../types';
-import { ChainIds, swapContractAddress } from './constants';
+import { ChainIds, CheckParamsJSON } from '../../types';
+import { swapContractAddress } from './constants';
 
 export const validateJson = (
   json: Partial<CheckParamsJSON> | undefined

@@ -12,16 +12,16 @@ import { JsonForm } from './components/forms/JsonForm';
 import { Header } from './components/Heaader';
 import { UrlForm } from './components/forms/UrlForm';
 import { Toggle } from './components/Toggle';
-import { decompressFullOrderERC20 } from '@airswap/utils';
-import { FullOrderERC20 } from '@airswap/types';
+// import { decompressFullOrderERC20 } from '@airswap/utils';
+// import { FullOrderERC20 } from '@airswap/types';
 
 function App() {
   const [inputType, setInputType] = useState<InputType>(InputType.JSON);
   const [jsonString, setJsonString] = useState<undefined | string>(undefined);
   const [urlString, setUrlString] = useState<string | undefined>(undefined);
-  const [decompressedOrderJson, setDecompressedOrderJson] = useState<
-    FullOrderERC20 | undefined
-  >(undefined);
+  // const [decompressedOrderJson, setDecompressedOrderJson] = useState<
+  //   FullOrderERC20 | undefined
+  // >(undefined);
   const [parsedJSON, setParsedJSON] = useState<
     undefined | Partial<CheckParamsJSON>
   >(undefined);
@@ -132,7 +132,7 @@ function App() {
     // create array of human-readable errors
     const errorsList = displayErrors(outputErrorsList);
     if (errorsList) {
-      setErrors(errorsList);
+      setErrors((prevErrors) => [...prevErrors, ...errorsList]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parsedJSON, returnedErrors]);

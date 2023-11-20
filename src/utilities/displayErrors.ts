@@ -2,7 +2,7 @@
 export const displayErrors = (
   errorsList: string[] | undefined
 ): string[] | undefined => {
-  // if no errors are returned from the contract, return
+  // if contract returns no errors returned, return
   if (!errorsList) {
     return undefined;
   }
