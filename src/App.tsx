@@ -123,11 +123,6 @@ function App() {
 
   // performs actions after parsedJSON has been updated
   useEffect(() => {
-    const isJsonValid = validateJson(parsedJSON);
-    if (isJsonValid) {
-      setErrors(isJsonValid);
-    }
-
     const outputErrorsList = checkFunctionData?.[1].map((error) => {
       return hexToString(error);
     });
@@ -137,6 +132,15 @@ function App() {
     if (errorsList) {
       setErrors((prevErrors) => {
         const updatedErrors = [...prevErrors, ...errorsList];
+        const uniqueErrors = [...new Set(updatedErrors)];
+        return uniqueErrors;
+      });
+    }
+
+    const isJsonValid = validateJson(parsedJSON);
+    if (isJsonValid) {
+      setErrors((prevErrors) => {
+        const updatedErrors = [...prevErrors, ...isJsonValid];
         const uniqueErrors = [...new Set(updatedErrors)];
         return uniqueErrors;
       });
