@@ -1,7 +1,7 @@
 // checkParamsJSON is used to validate JSON, not for smart contract read function
 export interface CheckParamsJSON {
   senderWallet: `0x${string}`;
-  nonce: string;
+  nonce: string | number;
   expiry: string;
   signerWallet: `0x${string}`;
   signerToken: `0x${string}`;

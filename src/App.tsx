@@ -36,44 +36,66 @@ function App() {
 
   const chainId = Number(parsedJSON?.chainId) || 1;
 
-  const senderWallet = parsedJSON?.senderWallet;
-  const nonce = isNaN(Number(parsedJSON?.nonce))
-    ? BigInt(0)
-    : BigInt(Number(parsedJSON?.nonce));
-  const expiry = isNaN(Number(parsedJSON?.expiry))
-    ? BigInt(0)
-    : BigInt(Number(parsedJSON?.expiry));
-  const signerWallet = parsedJSON?.signerWallet;
-  const signerToken = parsedJSON?.signerToken;
-  const signerAmount = isNaN(Number(parsedJSON?.signerAmount))
-    ? BigInt(0)
-    : BigInt(Number(parsedJSON?.signerAmount));
-  const senderToken = parsedJSON?.senderToken;
-  const senderAmount = isNaN(Number(parsedJSON?.senderAmount))
-    ? BigInt(0)
-    : BigInt(Number(parsedJSON?.senderAmount));
-  const v = Number(parsedJSON?.v) || 0;
-  const r = (parsedJSON?.r as `0x${string}`) || `0x`;
-  const s = (parsedJSON?.s as `0x${string}`) || `0x`;
+  let senderWallet;
+  let nonce;
+  let expiry;
+  let signerWallet;
+  let signerToken;
+  let signerAmount;
+  let senderToken;
+  let senderAmount;
+  let v;
+  let r;
+  let s;
+
+  const setJsonValues = () => {
+    let json;
+    if (inputType === InputType.JSON) {
+      json = parsedJSON;
+    } else {
+      json = decompressedOrderFromUrl;
+    }
+
+    senderWallet = json?.senderWallet;
+    nonce = isNaN(Number(json?.nonce))
+      ? BigInt(0)
+      : BigInt(Number(json?.nonce));
+    expiry = isNaN(Number(json?.expiry))
+      ? BigInt(0)
+      : BigInt(Number(json?.expiry));
+    signerWallet = json?.signerWallet;
+    signerToken = json?.signerToken;
+    signerAmount = isNaN(Number(json?.signerAmount))
+      ? BigInt(0)
+      : BigInt(Number(json?.signerAmount));
+    senderToken = json?.senderToken;
+    senderAmount = isNaN(Number(json?.senderAmount))
+      ? BigInt(0)
+      : BigInt(Number(json?.senderAmount));
+    v = Number(json?.v);
+    r = json?.r as `0x${string}`;
+    s = json?.s as `0x${string}`;
+  };
+  setJsonValues();
 
   const checkArgs: CheckArgs = [
-    senderWallet || zeroAddress,
-    nonce,
-    expiry,
+    (senderWallet && senderWallet) || zeroAddress,
+    nonce || BigInt(0),
+    expiry || BigInt(0),
     signerWallet || zeroAddress,
     signerToken || zeroAddress,
-    signerAmount,
+    signerAmount || BigInt(0),
     senderToken || zeroAddress,
-    senderAmount,
-    v,
-    r,
-    s,
+    senderAmount || BigInt(0),
+    v || 0,
+    r || '0x',
+    s || '0x',
   ];
 
   const {
     data: checkFunctionData,
     isLoading,
-    error: contractReadError,
+    // error: contractReadError,
   } = useContractRead({
     chainId: chainId,
     address: swapContractAddress as `0x${string}`,
@@ -115,10 +137,7 @@ function App() {
         decompressedOrderJsonFromUrl
       );
       const parsedDecompressedOrderString = JSON.parse(decompressedOrderString);
-      console.log(
-        'parsedDecompressedOrderString',
-        parsedDecompressedOrderString
-      );
+
       setParsedJSON(parsedDecompressedOrderString);
       console.log('parsedJSON', parsedJSON);
     }
@@ -169,6 +188,10 @@ function App() {
         return uniqueErrors;
       });
     }
+
+    if (!isJsonValid && errorsList?.length === 0) {
+      setIsNoErrors(true);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parsedJSON, checkFunctionData]);
 
@@ -176,7 +199,6 @@ function App() {
     if (chainId) {
       const address = SwapERC20.getAddress(chainId);
       address && setSwapContractAddress(address);
-      console.log('swapContractAddress', swapContractAddress);
     }
   }, [chainId, swapContractAddress]);
 

@@ -35,7 +35,7 @@ export const validateJson = ({
       if (json['senderWallet'] && !isAddress(json['senderWallet'])) {
         errorsList.push('senderWallet must be a valid ERC20 address');
       }
-      if (json['nonce'] && isNotValidNumberString(json['nonce'])) {
+      if (json['nonce'] && isNotValidNumberString(json['nonce'].toString())) {
         errorsList.push(
           'nonce: must be a number. Make sure it\'s wrapped in quotation marks, e.g. "99"'
         );
