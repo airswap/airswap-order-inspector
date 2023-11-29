@@ -12,15 +12,12 @@ import { Header } from './components/Heaader';
 import { UrlForm } from './components/forms/UrlForm';
 import { Toggle } from './components/Toggle';
 import { SwapERC20 } from '@airswap/libraries';
-import { FullOrderERC20 } from '@airswap/types';
 import { useDecompressedOrderFromUrl } from './hooks/useDecompressedOrderFromUrl';
 
 function App() {
   const [inputType, setInputType] = useState<InputType>(InputType.JSON);
   const [jsonString, setJsonString] = useState<undefined | string>(undefined);
   const [urlString, setUrlString] = useState<string | undefined>(undefined);
-  const [decompressedOrderJsonFromUrl, setDecompressedOrderJsonFromUrl] =
-    useState<FullOrderERC20 | undefined>(undefined);
   const [parsedJSON, setParsedJSON] = useState<
     undefined | Partial<CheckParamsJSON>
   >(undefined);
@@ -50,11 +47,9 @@ function App() {
 
   const setJsonValues = () => {
     let json;
-    if (inputType === InputType.JSON) {
-      json = parsedJSON;
-    } else {
-      json = decompressedOrderFromUrl;
-    }
+    inputType === InputType.JSON
+      ? (json = parsedJSON)
+      : (json = decompressedOrderFromUrl);
 
     senderWallet = json?.senderWallet;
     nonce = isNaN(Number(json?.nonce))
@@ -106,13 +101,11 @@ function App() {
   });
 
   const handleChangeTextAreaJson = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setUrlString(undefined);
     setIsEnableCheck(false);
     setJsonString(e.target.value);
   };
 
   const handleChangeTextAreaUrl = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setJsonString(undefined);
     setIsEnableCheck(false);
     setUrlString(e.target.value);
   };
@@ -126,61 +119,36 @@ function App() {
     if (inputType === InputType.JSON && !jsonString) {
       setErrors(['Input cannot be blank']);
       return;
-    } else if (inputType === InputType.URL && !decompressedOrderFromUrl) {
-      setErrors(['Input cannot be blank']);
+    }
+    if (inputType === InputType.URL && !decompressedOrderFromUrl) {
+      setErrors([
+        'Something is wrong with your URL. Try copy pasting it again',
+      ]);
       return;
     }
 
-    if (inputType === InputType.URL) {
-      setDecompressedOrderJsonFromUrl(decompressedOrderFromUrl);
-      const decompressedOrderString = JSON.stringify(
-        decompressedOrderJsonFromUrl
-      );
-      const parsedDecompressedOrderString = JSON.parse(decompressedOrderString);
-
-      setParsedJSON(parsedDecompressedOrderString);
-      console.log('parsedJSON', parsedJSON);
-    }
     try {
       if (inputType === InputType.URL) {
-        setDecompressedOrderJsonFromUrl(decompressedOrderFromUrl);
-        const jsonString = JSON.stringify(decompressedOrderJsonFromUrl);
+        const jsonString = JSON.stringify(decompressedOrderFromUrl);
         const parsedJsonString = JSON.parse(jsonString);
         setParsedJSON(parsedJsonString);
-        console.log('parsedJSON', parsedJSON);
       } else {
-        const parsedJsonString = jsonString && JSON.parse(jsonString);
-        setParsedJSON(parsedJsonString);
+        const parsedJsonObject = jsonString && JSON.parse(jsonString);
+        setParsedJSON(parsedJsonObject);
       }
     } catch (e) {
+      console.error(e);
       setErrors([`Your input is not valid JSON format: ${e}`]);
     }
   };
 
   // performs actions after parsedJSON has been updated
   useEffect(() => {
-    const outputErrorsList = checkFunctionData?.[1].map((error) => {
-      return hexToString(error);
-    });
-    console.log(outputErrorsList);
-
-    // create array of human-readable errors
-    const errorsList = displayErrors(outputErrorsList);
-
-    console.log('errorsList', errorsList);
-
-    if (errorsList) {
-      setErrors((prevErrors) => {
-        const updatedErrors = [...prevErrors, ...errorsList];
-        const uniqueErrors = [...new Set(updatedErrors)];
-        return uniqueErrors;
-      });
-    }
-
     const isJsonValid = validateJson({
       json: parsedJSON,
       swapContractAddress: swapContractAddress,
     });
+
     if (isJsonValid) {
       setErrors((prevErrors) => {
         const updatedErrors = [...prevErrors, ...isJsonValid];
@@ -189,11 +157,29 @@ function App() {
       });
     }
 
-    if (!isJsonValid && errorsList?.length === 0) {
-      setIsNoErrors(true);
+    const outputErrorsList = checkFunctionData?.[1].map((error) => {
+      return hexToString(error);
+    });
+    // create array of human-readable errors
+    const errorsList = displayErrors(outputErrorsList);
+
+    console.log(
+      errorsList?.length === 0 ? 'NO ERRORS 🎊' : `'errorsList': ${errorsList}`
+    );
+
+    if (errorsList && errorsList.length > 0) {
+      setErrors((prevErrors) => {
+        const updatedErrors = [...prevErrors, ...errorsList];
+        const uniqueErrors = [...new Set(updatedErrors)];
+        return uniqueErrors;
+      });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsedJSON, checkFunctionData]);
+
+    if (!isJsonValid && errorsList && errorsList.length === 0) {
+      setIsNoErrors(true);
+      setErrors(['🎊 No errors found! 🎊']);
+    }
+  }, [parsedJSON, checkFunctionData, swapContractAddress]);
 
   useEffect(() => {
     if (chainId) {
@@ -218,14 +204,6 @@ function App() {
 
     setRenderedErrors(renderedErrors);
   }, [errors]);
-
-  // if input is not blank, and no errors, JSON is okay
-  useEffect(() => {
-    if (parsedJSON && isEnableCheck && !errors) {
-      setErrors(['🎊 No errors found! 🎊']);
-      setIsNoErrors(true);
-    }
-  }, [parsedJSON, isEnableCheck, errors]);
 
   return (
     <div className="flex flex-col font-sans">
