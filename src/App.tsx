@@ -12,16 +12,15 @@ import { Header } from './components/Heaader';
 import { UrlForm } from './components/forms/UrlForm';
 import { Toggle } from './components/Toggle';
 import { SwapERC20 } from '@airswap/libraries';
-// import { decompressFullOrderERC20 } from '@airswap/utils';
-// import { FullOrderERC20 } from '@airswap/types';
+import { FullOrderERC20 } from '@airswap/types';
+import { useDecompressedOrderFromUrl } from './hooks/useDecompressedOrderFromUrl';
 
 function App() {
   const [inputType, setInputType] = useState<InputType>(InputType.JSON);
   const [jsonString, setJsonString] = useState<undefined | string>(undefined);
   const [urlString, setUrlString] = useState<string | undefined>(undefined);
-  // const [decompressedOrderJson, setDecompressedOrderJson] = useState<
-  //   FullOrderERC20 | undefined
-  // >(undefined);
+  const [decompressedOrderJsonFromUrl, setDecompressedOrderJsonFromUrl] =
+    useState<FullOrderERC20 | undefined>(undefined);
   const [parsedJSON, setParsedJSON] = useState<
     undefined | Partial<CheckParamsJSON>
   >(undefined);
@@ -33,65 +32,87 @@ function App() {
   const [isEnableCheck, setIsEnableCheck] = useState(false);
   const [isNoErrors, setIsNoErrors] = useState(false);
 
-  const chainId = Number(parsedJSON?.chainId);
+  const decompressedOrderFromUrl = useDecompressedOrderFromUrl(urlString);
 
-  const senderWallet = parsedJSON?.senderWallet;
-  const nonce = isNaN(Number(parsedJSON?.nonce))
-    ? BigInt(0)
-    : BigInt(Number(parsedJSON?.nonce));
-  const expiry = isNaN(Number(parsedJSON?.expiry))
-    ? BigInt(0)
-    : BigInt(Number(parsedJSON?.expiry));
-  const signerWallet = parsedJSON?.signerWallet;
-  const signerToken = parsedJSON?.signerToken;
-  const signerAmount = isNaN(Number(parsedJSON?.signerAmount))
-    ? BigInt(0)
-    : BigInt(Number(parsedJSON?.signerAmount));
-  const senderToken = parsedJSON?.senderToken;
-  const senderAmount = isNaN(Number(parsedJSON?.senderAmount))
-    ? BigInt(0)
-    : BigInt(Number(parsedJSON?.senderAmount));
-  const v = Number(parsedJSON?.v) || 0;
-  const r = (parsedJSON?.r as `0x${string}`) || `0x`;
-  const s = (parsedJSON?.s as `0x${string}`) || `0x`;
+  const chainId = Number(parsedJSON?.chainId) || 1;
+
+  let senderWallet;
+  let nonce;
+  let expiry;
+  let signerWallet;
+  let signerToken;
+  let signerAmount;
+  let senderToken;
+  let senderAmount;
+  let v;
+  let r;
+  let s;
+
+  const setJsonValues = () => {
+    let json;
+    if (inputType === InputType.JSON) {
+      json = parsedJSON;
+    } else {
+      json = decompressedOrderFromUrl;
+    }
+
+    senderWallet = json?.senderWallet;
+    nonce = isNaN(Number(json?.nonce))
+      ? BigInt(0)
+      : BigInt(Number(json?.nonce));
+    expiry = isNaN(Number(json?.expiry))
+      ? BigInt(0)
+      : BigInt(Number(json?.expiry));
+    signerWallet = json?.signerWallet;
+    signerToken = json?.signerToken;
+    signerAmount = isNaN(Number(json?.signerAmount))
+      ? BigInt(0)
+      : BigInt(Number(json?.signerAmount));
+    senderToken = json?.senderToken;
+    senderAmount = isNaN(Number(json?.senderAmount))
+      ? BigInt(0)
+      : BigInt(Number(json?.senderAmount));
+    v = Number(json?.v);
+    r = json?.r as `0x${string}`;
+    s = json?.s as `0x${string}`;
+  };
+  setJsonValues();
 
   const checkArgs: CheckArgs = [
-    senderWallet || zeroAddress,
-    nonce,
-    expiry,
+    (senderWallet && senderWallet) || zeroAddress,
+    nonce || BigInt(0),
+    expiry || BigInt(0),
     signerWallet || zeroAddress,
     signerToken || zeroAddress,
-    signerAmount,
+    signerAmount || BigInt(0),
     senderToken || zeroAddress,
-    senderAmount,
-    v,
-    r,
-    s,
+    senderAmount || BigInt(0),
+    v || 0,
+    r || '0x',
+    s || '0x',
   ];
-
-  console.log(checkArgs);
 
   const {
     data: checkFunctionData,
     isLoading,
-    error: contractReadError,
+    // error: contractReadError,
   } = useContractRead({
-    chainId: chainId || 1,
+    chainId: chainId,
     address: swapContractAddress as `0x${string}`,
     abi,
     functionName: 'check',
     args: checkArgs,
     enabled: isEnableCheck,
   });
-  console.log('checkFunctionData:', checkFunctionData);
-  console.log('contractReadError:', contractReadError);
 
   const handleChangeTextAreaJson = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setUrlString(undefined);
     setIsEnableCheck(false);
     setJsonString(e.target.value);
   };
 
   const handleChangeTextAreaUrl = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setJsonString(undefined);
     setIsEnableCheck(false);
     setUrlString(e.target.value);
   };
@@ -102,23 +123,35 @@ function App() {
     setErrors([]);
     setIsNoErrors(false);
 
-    if (!jsonString) {
+    if (inputType === InputType.JSON && !jsonString) {
+      setErrors(['Input cannot be blank']);
+      return;
+    } else if (inputType === InputType.URL && !decompressedOrderFromUrl) {
       setErrors(['Input cannot be blank']);
       return;
     }
 
-    if (inputType === InputType.URL && urlString) {
-      // TODO: decompressFullOrderERC20 is causing an error
-      // const decompressedOrder = decompressFullOrderERC20(urlString);
-      // TODO: write a function that fixes the formatting of the decompressedOrder
-      // setDecompressedOrderJson(decompressedOrder);
-      // console.log(decompressedOrderJson);
-    }
+    if (inputType === InputType.URL) {
+      setDecompressedOrderJsonFromUrl(decompressedOrderFromUrl);
+      const decompressedOrderString = JSON.stringify(
+        decompressedOrderJsonFromUrl
+      );
+      const parsedDecompressedOrderString = JSON.parse(decompressedOrderString);
 
+      setParsedJSON(parsedDecompressedOrderString);
+      console.log('parsedJSON', parsedJSON);
+    }
     try {
-      // TODO: if inputType === InputType.JSON, pass in jsonString. If inputType === InputType.URL, pass in urlString to
-      const parsedJsonString = jsonString && JSON.parse(jsonString);
-      setParsedJSON(parsedJsonString);
+      if (inputType === InputType.URL) {
+        setDecompressedOrderJsonFromUrl(decompressedOrderFromUrl);
+        const jsonString = JSON.stringify(decompressedOrderJsonFromUrl);
+        const parsedJsonString = JSON.parse(jsonString);
+        setParsedJSON(parsedJsonString);
+        console.log('parsedJSON', parsedJSON);
+      } else {
+        const parsedJsonString = jsonString && JSON.parse(jsonString);
+        setParsedJSON(parsedJsonString);
+      }
     } catch (e) {
       setErrors([`Your input is not valid JSON format: ${e}`]);
     }
@@ -129,9 +162,13 @@ function App() {
     const outputErrorsList = checkFunctionData?.[1].map((error) => {
       return hexToString(error);
     });
+    console.log(outputErrorsList);
 
     // create array of human-readable errors
     const errorsList = displayErrors(outputErrorsList);
+
+    console.log('errorsList', errorsList);
+
     if (errorsList) {
       setErrors((prevErrors) => {
         const updatedErrors = [...prevErrors, ...errorsList];
@@ -151,6 +188,10 @@ function App() {
         return uniqueErrors;
       });
     }
+
+    if (!isJsonValid && errorsList?.length === 0) {
+      setIsNoErrors(true);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parsedJSON, checkFunctionData]);
 
@@ -159,7 +200,7 @@ function App() {
       const address = SwapERC20.getAddress(chainId);
       address && setSwapContractAddress(address);
     }
-  }, [chainId]);
+  }, [chainId, swapContractAddress]);
 
   useEffect(() => {
     const renderErrors = () => {
@@ -200,8 +241,14 @@ function App() {
         <div className="md:w-full md:pt-4 md:pb-8 md:mr-2 bg-lightGray rounded-sm pb-6 px-1">
           <Toggle
             inputType={inputType}
-            clickTypeJson={() => setInputType(InputType.JSON)}
-            clickTypeUrl={() => setInputType(InputType.URL)}
+            clickTypeJson={() => {
+              setInputType(InputType.JSON);
+              setErrors([]);
+            }}
+            clickTypeUrl={() => {
+              setInputType(InputType.URL);
+              setErrors([]);
+            }}
           />
 
           {inputType === InputType.JSON ? (

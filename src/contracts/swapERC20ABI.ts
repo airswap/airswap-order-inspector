@@ -2,22 +2,11 @@ export const abi = [
   {
     inputs: [
       { internalType: 'uint256', name: '_protocolFee', type: 'uint256' },
-      {
-        internalType: 'uint256',
-        name: '_protocolFeeLight',
-        type: 'uint256',
-      },
-      {
-        internalType: 'address',
-        name: '_protocolFeeWallet',
-        type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: '_discountScale',
-        type: 'uint256',
-      },
-      { internalType: 'uint256', name: '_discountMax', type: 'uint256' },
+      { internalType: 'uint256', name: '_protocolFeeLight', type: 'uint256' },
+      { internalType: 'address', name: '_protocolFeeWallet', type: 'address' },
+      { internalType: 'uint256', name: '_rebateScale', type: 'uint256' },
+      { internalType: 'uint256', name: '_rebateMax', type: 'uint256' },
+      { internalType: 'address', name: '_staking', type: 'address' },
     ],
     stateMutability: 'nonpayable',
     type: 'constructor',
@@ -26,7 +15,6 @@ export const abi = [
   { inputs: [], name: 'InvalidFee', type: 'error' },
   { inputs: [], name: 'InvalidFeeLight', type: 'error' },
   { inputs: [], name: 'InvalidFeeWallet', type: 'error' },
-  { inputs: [], name: 'InvalidShortString', type: 'error' },
   { inputs: [], name: 'InvalidStaking', type: 'error' },
   { inputs: [], name: 'MaxTooHigh', type: 'error' },
   {
@@ -39,11 +27,6 @@ export const abi = [
   { inputs: [], name: 'SignatoryInvalid', type: 'error' },
   { inputs: [], name: 'SignatoryUnauthorized', type: 'error' },
   { inputs: [], name: 'SignatureInvalid', type: 'error' },
-  {
-    inputs: [{ internalType: 'string', name: 'str', type: 'string' }],
-    name: 'StringTooLong',
-    type: 'error',
-  },
   { inputs: [], name: 'Unauthorized', type: 'error' },
   {
     anonymous: false,
@@ -85,8 +68,21 @@ export const abi = [
   },
   {
     anonymous: false,
-    inputs: [],
-    name: 'EIP712DomainChanged',
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'previousOwner',
+        type: 'address',
+      },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'newOwner',
+        type: 'address',
+      },
+    ],
+    name: 'OwnershipTransferStarted',
     type: 'event',
   },
   {
@@ -133,32 +129,6 @@ export const abi = [
       {
         indexed: false,
         internalType: 'uint256',
-        name: 'discountMax',
-        type: 'uint256',
-      },
-    ],
-    name: 'SetDiscountMax',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'discountScale',
-        type: 'uint256',
-      },
-    ],
-    name: 'SetDiscountScale',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: 'uint256',
         name: 'protocolFee',
         type: 'uint256',
       },
@@ -196,6 +166,32 @@ export const abi = [
     anonymous: false,
     inputs: [
       {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'rebateMax',
+        type: 'uint256',
+      },
+    ],
+    name: 'SetRebateMax',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'rebateScale',
+        type: 'uint256',
+      },
+    ],
+    name: 'SetRebateScale',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: true,
         internalType: 'address',
         name: 'staking',
@@ -219,6 +215,42 @@ export const abi = [
         internalType: 'address',
         name: 'signerWallet',
         type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'signerToken',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'signerAmount',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'protocolFee',
+        type: 'uint256',
+      },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'senderWallet',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'senderToken',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'senderAmount',
+        type: 'uint256',
       },
     ],
     name: 'SwapERC20',
@@ -267,6 +299,13 @@ export const abi = [
     type: 'function',
   },
   {
+    inputs: [],
+    name: 'acceptOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
     inputs: [{ internalType: 'address', name: 'signatory', type: 'address' }],
     name: 'authorize',
     outputs: [],
@@ -282,11 +321,7 @@ export const abi = [
   },
   {
     inputs: [
-      {
-        internalType: 'uint256',
-        name: 'stakingBalance',
-        type: 'uint256',
-      },
+      { internalType: 'uint256', name: 'stakingBalance', type: 'uint256' },
       { internalType: 'uint256', name: 'feeAmount', type: 'uint256' },
     ],
     name: 'calculateDiscount',
@@ -334,39 +369,6 @@ export const abi = [
     type: 'function',
   },
   {
-    inputs: [],
-    name: 'discountMax',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'discountScale',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'eip712Domain',
-    outputs: [
-      { internalType: 'bytes1', name: 'fields', type: 'bytes1' },
-      { internalType: 'string', name: 'name', type: 'string' },
-      { internalType: 'string', name: 'version', type: 'string' },
-      { internalType: 'uint256', name: 'chainId', type: 'uint256' },
-      {
-        internalType: 'address',
-        name: 'verifyingContract',
-        type: 'address',
-      },
-      { internalType: 'bytes32', name: 'salt', type: 'bytes32' },
-      { internalType: 'uint256[]', name: 'extensions', type: 'uint256[]' },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
     inputs: [
       { internalType: 'address', name: 'signer', type: 'address' },
       { internalType: 'uint256', name: 'nonce', type: 'uint256' },
@@ -379,6 +381,13 @@ export const abi = [
   {
     inputs: [],
     name: 'owner',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'pendingOwner',
     outputs: [{ internalType: 'address', name: '', type: 'address' }],
     stateMutability: 'view',
     type: 'function',
@@ -406,6 +415,20 @@ export const abi = [
   },
   {
     inputs: [],
+    name: 'rebateMax',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'rebateScale',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
     name: 'renounceOwnership',
     outputs: [],
     stateMutability: 'nonpayable',
@@ -414,24 +437,6 @@ export const abi = [
   {
     inputs: [],
     name: 'revoke',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      { internalType: 'uint256', name: '_discountMax', type: 'uint256' },
-    ],
-    name: 'setDiscountMax',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      { internalType: 'uint256', name: '_discountScale', type: 'uint256' },
-    ],
-    name: 'setDiscountScale',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
@@ -447,11 +452,7 @@ export const abi = [
   },
   {
     inputs: [
-      {
-        internalType: 'uint256',
-        name: '_protocolFeeLight',
-        type: 'uint256',
-      },
+      { internalType: 'uint256', name: '_protocolFeeLight', type: 'uint256' },
     ],
     name: 'setProtocolFeeLight',
     outputs: [],
@@ -460,11 +461,7 @@ export const abi = [
   },
   {
     inputs: [
-      {
-        internalType: 'address',
-        name: '_protocolFeeWallet',
-        type: 'address',
-      },
+      { internalType: 'address', name: '_protocolFeeWallet', type: 'address' },
     ],
     name: 'setProtocolFeeWallet',
     outputs: [],
@@ -472,9 +469,23 @@ export const abi = [
     type: 'function',
   },
   {
+    inputs: [{ internalType: 'uint256', name: '_rebateMax', type: 'uint256' }],
+    name: 'setRebateMax',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
     inputs: [
-      { internalType: 'address', name: '_stakingToken', type: 'address' },
+      { internalType: 'uint256', name: '_rebateScale', type: 'uint256' },
     ],
+    name: 'setRebateScale',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'address', name: 'newstaking', type: 'address' }],
     name: 'setStaking',
     outputs: [],
     stateMutability: 'nonpayable',
@@ -482,7 +493,7 @@ export const abi = [
   },
   {
     inputs: [],
-    name: 'stakingToken',
+    name: 'staking',
     outputs: [{ internalType: 'address', name: '', type: 'address' }],
     stateMutability: 'view',
     type: 'function',

@@ -43,7 +43,8 @@ const { publicClient, webSocketPublicClient } = configureChains(
     arbitrumGoerli,
     sepolia,
   ],
-  [publicProvider()]
+  [publicProvider()],
+  { batch: { multicall: false } }
 );
 
 export const config = createConfig({
