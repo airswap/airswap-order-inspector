@@ -12,16 +12,15 @@ import { Header } from './components/Heaader';
 import { UrlForm } from './components/forms/UrlForm';
 import { Toggle } from './components/Toggle';
 import { SwapERC20 } from '@airswap/libraries';
-// import { decompressFullOrderERC20 } from '@airswap/utils';
-// import { FullOrderERC20 } from '@airswap/types';
+import { FullOrderERC20 } from '@airswap/types';
+import { useDecompressedOrderFromUrl } from './hooks/useDecompressedOrderFromUrl';
 
 function App() {
   const [inputType, setInputType] = useState<InputType>(InputType.JSON);
   const [jsonString, setJsonString] = useState<undefined | string>(undefined);
   const [urlString, setUrlString] = useState<string | undefined>(undefined);
-  // const [decompressedOrderJson, setDecompressedOrderJson] = useState<
-  //   FullOrderERC20 | undefined
-  // >(undefined);
+  const [decompressedOrderJsonFromUrl, setDecompressedOrderJsonFromUrl] =
+    useState<FullOrderERC20 | undefined>(undefined);
   const [parsedJSON, setParsedJSON] = useState<
     undefined | Partial<CheckParamsJSON>
   >(undefined);
@@ -33,7 +32,9 @@ function App() {
   const [isEnableCheck, setIsEnableCheck] = useState(false);
   const [isNoErrors, setIsNoErrors] = useState(false);
 
-  const chainId = Number(parsedJSON?.chainId);
+  const decompressedOrderFromUrl = useDecompressedOrderFromUrl(urlString);
+
+  const chainId = Number(parsedJSON?.chainId) || 1;
 
   const senderWallet = parsedJSON?.senderWallet;
   const nonce = isNaN(Number(parsedJSON?.nonce))
@@ -69,29 +70,27 @@ function App() {
     s,
   ];
 
-  console.log(checkArgs);
-
   const {
     data: checkFunctionData,
     isLoading,
     error: contractReadError,
   } = useContractRead({
-    chainId: chainId || 1,
+    chainId: chainId,
     address: swapContractAddress as `0x${string}`,
     abi,
     functionName: 'check',
     args: checkArgs,
     enabled: isEnableCheck,
   });
-  console.log('checkFunctionData:', checkFunctionData);
-  console.log('contractReadError:', contractReadError);
 
   const handleChangeTextAreaJson = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setUrlString(undefined);
     setIsEnableCheck(false);
     setJsonString(e.target.value);
   };
 
   const handleChangeTextAreaUrl = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setJsonString(undefined);
     setIsEnableCheck(false);
     setUrlString(e.target.value);
   };
@@ -102,23 +101,38 @@ function App() {
     setErrors([]);
     setIsNoErrors(false);
 
-    if (!jsonString) {
+    if (inputType === InputType.JSON && !jsonString) {
+      setErrors(['Input cannot be blank']);
+      return;
+    } else if (inputType === InputType.URL && !decompressedOrderFromUrl) {
       setErrors(['Input cannot be blank']);
       return;
     }
 
-    if (inputType === InputType.URL && urlString) {
-      // TODO: decompressFullOrderERC20 is causing an error
-      // const decompressedOrder = decompressFullOrderERC20(urlString);
-      // TODO: write a function that fixes the formatting of the decompressedOrder
-      // setDecompressedOrderJson(decompressedOrder);
-      // console.log(decompressedOrderJson);
+    if (inputType === InputType.URL) {
+      setDecompressedOrderJsonFromUrl(decompressedOrderFromUrl);
+      const decompressedOrderString = JSON.stringify(
+        decompressedOrderJsonFromUrl
+      );
+      const parsedDecompressedOrderString = JSON.parse(decompressedOrderString);
+      console.log(
+        'parsedDecompressedOrderString',
+        parsedDecompressedOrderString
+      );
+      setParsedJSON(parsedDecompressedOrderString);
+      console.log('parsedJSON', parsedJSON);
     }
-
     try {
-      // TODO: if inputType === InputType.JSON, pass in jsonString. If inputType === InputType.URL, pass in urlString to
-      const parsedJsonString = jsonString && JSON.parse(jsonString);
-      setParsedJSON(parsedJsonString);
+      if (inputType === InputType.URL) {
+        setDecompressedOrderJsonFromUrl(decompressedOrderFromUrl);
+        const jsonString = JSON.stringify(decompressedOrderJsonFromUrl);
+        const parsedJsonString = JSON.parse(jsonString);
+        setParsedJSON(parsedJsonString);
+        console.log('parsedJSON', parsedJSON);
+      } else {
+        const parsedJsonString = jsonString && JSON.parse(jsonString);
+        setParsedJSON(parsedJsonString);
+      }
     } catch (e) {
       setErrors([`Your input is not valid JSON format: ${e}`]);
     }
@@ -129,9 +143,13 @@ function App() {
     const outputErrorsList = checkFunctionData?.[1].map((error) => {
       return hexToString(error);
     });
+    console.log(outputErrorsList);
 
     // create array of human-readable errors
     const errorsList = displayErrors(outputErrorsList);
+
+    console.log('errorsList', errorsList);
+
     if (errorsList) {
       setErrors((prevErrors) => {
         const updatedErrors = [...prevErrors, ...errorsList];
@@ -158,8 +176,9 @@ function App() {
     if (chainId) {
       const address = SwapERC20.getAddress(chainId);
       address && setSwapContractAddress(address);
+      console.log('swapContractAddress', swapContractAddress);
     }
-  }, [chainId]);
+  }, [chainId, swapContractAddress]);
 
   useEffect(() => {
     const renderErrors = () => {
@@ -200,8 +219,14 @@ function App() {
         <div className="md:w-full md:pt-4 md:pb-8 md:mr-2 bg-lightGray rounded-sm pb-6 px-1">
           <Toggle
             inputType={inputType}
-            clickTypeJson={() => setInputType(InputType.JSON)}
-            clickTypeUrl={() => setInputType(InputType.URL)}
+            clickTypeJson={() => {
+              setInputType(InputType.JSON);
+              setErrors([]);
+            }}
+            clickTypeUrl={() => {
+              setInputType(InputType.URL);
+              setErrors([]);
+            }}
           />
 
           {inputType === InputType.JSON ? (

@@ -6,7 +6,7 @@ export const validateJson = ({
   swapContractAddress = '0xd82FA167727a4dc6D6F55830A2c47aBbB4b3a0F8',
 }: {
   json: Partial<CheckParamsJSON> | undefined;
-  swapContractAddress: string | undefined;
+  swapContractAddress?: string;
 }): string[] | false => {
   const errorsList: string[] = [];
   try {
@@ -93,19 +93,20 @@ export const validateJson = ({
           );
         }
       }
-      if (
-        json['swapContract'] &&
-        json['swapContract'] !== swapContractAddress
-      ) {
-        errorsList.push(
-          `swapContract: address is not valid. Check for deployed contracts on https://about.airswap.io/technology/deployments.`
-        );
+      if (json['swapContract'] && !isAddress(json['swapContract'])) {
+        // first check if valid ERC20 address
+        errorsList.push('swapContract: must be a valid ERC20 address');
+        // then check if address is correct
+        if (json['swapContract'] !== swapContractAddress) {
+          errorsList.push(
+            `swapContract: address is not valid. Check for deployed contracts on https://about.airswap.io/technology/deployments.`
+          );
+        }
       }
       if (json['protocolFee'] && json['protocolFee'] !== '7') {
         errorsList.push('protocolFee: input is not valid.');
       }
     }
-    console.log(errorsList);
 
     // Check for missing keys
     const missingKeys = requiredKeys.filter((key) => json && !json[key]);
@@ -118,6 +119,7 @@ export const validateJson = ({
       // false means there are no errors here
       return false;
     } else {
+      console.log(errorsList);
       return errorsList;
     }
   } catch (e) {
