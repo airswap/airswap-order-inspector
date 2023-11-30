@@ -90,7 +90,7 @@ function App() {
   const {
     data: checkFunctionData,
     isLoading,
-    // error: contractReadError,
+    error: contractReadError,
   } = useContractRead({
     chainId: chainId,
     address: swapContractAddress as `0x${string}`,
@@ -99,6 +99,8 @@ function App() {
     args: checkArgs,
     enabled: isEnableCheck,
   });
+
+  console.log('contractReadError:', contractReadError && contractReadError);
 
   const handleChangeTextAreaJson = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setIsEnableCheck(false);
