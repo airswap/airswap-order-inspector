@@ -22,7 +22,7 @@ export const Toggle = ({
           className={`${
             inputType === InputType.JSON
               ? 'text-white bg-blueGray'
-              : 'bg-darkGray text-blueGray border border-blueGray'
+              : 'bg-darkGray text-grayDark border border-blueGray'
           } rounded-l-md py-2`}
         />
         <Button
@@ -31,7 +31,7 @@ export const Toggle = ({
           className={`${
             inputType === InputType.URL
               ? 'bg-blueGray text-white'
-              : 'bg-darkGray text-blueGray border-blueGray border'
+              : 'bg-darkGray text-grayDark border-blueGray border'
           } rounded-r-md py-2`}
         />
       </div>

@@ -90,7 +90,7 @@ function App() {
   const {
     data: checkFunctionData,
     isLoading,
-    // error: contractReadError,
+    error: contractReadError,
   } = useContractRead({
     chainId: chainId,
     address: swapContractAddress as `0x${string}`,
@@ -99,6 +99,8 @@ function App() {
     args: checkArgs,
     enabled: isEnableCheck,
   });
+
+  console.log('contractReadError:', contractReadError && contractReadError);
 
   const handleChangeTextAreaJson = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setIsEnableCheck(false);
@@ -173,7 +175,6 @@ function App() {
 
     if (!isJsonValid && errorsList && errorsList.length === 0) {
       setIsNoErrors(true);
-      setErrors(['🎊 No errors found! 🎊']);
     }
   }, [parsedJSON, checkFunctionData, swapContractAddress]);
 
@@ -214,8 +215,8 @@ function App() {
       >
         <div
           className={twMerge(
-            'md:w-full md:pt-4 md:pb-8 md:mr-2 bg-blueDark rounded-md pb-6 px-1 drop-shadow-md',
-            'border border-blueGray backdrop:bg-gray-900 backdrop:bg-opacity-[85%] backdrop:backdrop-blur-[2px]'
+            'md:w-full md:pt-4 md:pb-8 md:mr-2 bg-blueDark rounded-md pb-6 px-1',
+            'border border-blueGray shadow-sm shadow-grayDark'
           )}
         >
           <Toggle
