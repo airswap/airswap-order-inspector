@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  @apply bg-blueDark;
+  @apply bg-blueExtraDark;
 
   overflow-x: hidden;
   padding: 0;

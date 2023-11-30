@@ -11,8 +11,9 @@ export default {
       xl: '1280px',
     },
     colors: {
+      blueExtraDark: 'rgba(3, 7, 18, 1)',
       blueDark: 'rgba(16, 24, 39, 1)',
-      blueMidnightSelected: 'rgba(31, 41, 55, 1)',
+      blueGray: 'rgba(31, 41, 55, 1)',
       blueAirSwap: 'rgba(44, 112, 255, 1)',
       grayDark: 'rgba(107, 114, 128, 1)',
       redAlert: '#ff0101',
