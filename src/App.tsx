@@ -8,7 +8,7 @@ import { displayErrors } from './utilities/displayErrors';
 import { twMerge } from 'tailwind-merge';
 import { Errors } from './components/Errors';
 import { JsonForm } from './components/forms/JsonForm';
-import { Header } from './components/Heaader';
+import { Header } from './components/Header';
 import { UrlForm } from './components/forms/UrlForm';
 import { Toggle } from './components/Toggle';
 import { SwapERC20 } from '@airswap/libraries';
@@ -163,10 +163,6 @@ function App() {
     // create array of human-readable errors
     const errorsList = displayErrors(outputErrorsList);
 
-    console.log(
-      errorsList?.length === 0 ? 'NO ERRORS 🎊' : `'errorsList': ${errorsList}`
-    );
-
     if (errorsList && errorsList.length > 0) {
       setErrors((prevErrors) => {
         const updatedErrors = [...prevErrors, ...errorsList];
@@ -211,20 +207,27 @@ function App() {
       <div
         id="container"
         className={twMerge(
-          'flex flex-col md:flex-row box-border pb-6 px-1 mx-auto',
+          'flex flex-col md:flex-row box-border px-1 mx-auto',
           'w-full xs:w-[90%] sm:w-4/5 md:w-[95%] lg:w-[90%] xl:w-4/5',
-          'text-center bg-transparent text-black rounded-md'
+          'text-center bg-transparent text-lightGray rounded-md'
         )}
       >
-        <div className="md:w-full md:pt-4 md:pb-8 md:mr-2 bg-lightGray rounded-sm pb-6 px-1">
+        <div
+          className={twMerge(
+            'md:w-full md:pt-4 md:pb-8 md:mr-2 bg-blueDark rounded-md pb-6 px-1 drop-shadow-md',
+            'border border-blueGray backdrop:bg-gray-900 backdrop:bg-opacity-[85%] backdrop:backdrop-blur-[2px]'
+          )}
+        >
           <Toggle
             inputType={inputType}
             clickTypeJson={() => {
               setInputType(InputType.JSON);
+              setIsNoErrors(false);
               setErrors([]);
             }}
             clickTypeUrl={() => {
               setInputType(InputType.URL);
+              setIsNoErrors(false);
               setErrors([]);
             }}
           />
@@ -248,6 +251,7 @@ function App() {
 
         <Errors
           isLoading={isLoading}
+          errors={errors}
           isNoErrors={isNoErrors}
           renderedErrors={renderedErrors}
         />
