@@ -13,6 +13,7 @@ import { UrlForm } from './components/forms/UrlForm';
 import { Toggle } from './components/Toggle';
 import { SwapERC20 } from '@airswap/libraries';
 import { useDecompressedOrderFromUrl } from './hooks/useDecompressedOrderFromUrl';
+// import { DecodedJson } from './components/DecodedJson';
 
 function App() {
   const [inputType, setInputType] = useState<InputType>(InputType.JSON);
@@ -90,9 +91,9 @@ function App() {
   const {
     data: checkFunctionData,
     isLoading,
-    error: contractReadError,
+    // error: contractReadError,
   } = useContractRead({
-    chainId: chainId,
+    chainId,
     address: swapContractAddress as `0x${string}`,
     abi,
     functionName: 'check',
@@ -100,7 +101,15 @@ function App() {
     enabled: isEnableCheck,
   });
 
-  console.log('contractReadError:', contractReadError && contractReadError);
+  const { data: protocolFeeData, isLoading: isLoadingProtocolFee } =
+    useContractRead({
+      chainId,
+      address: swapContractAddress as `0x${string}`,
+      abi,
+      functionName: 'protocolFee',
+    });
+
+  console.log(protocolFeeData);
 
   const handleChangeTextAreaJson = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setIsEnableCheck(false);
@@ -183,7 +192,8 @@ function App() {
       const address = SwapERC20.getAddress(chainId);
       address && setSwapContractAddress(address);
     }
-  }, [chainId, swapContractAddress]);
+    if (parsedJSON) console.log(parsedJSON);
+  }, [chainId, swapContractAddress, parsedJSON]);
 
   useEffect(() => {
     const renderErrors = () => {
@@ -204,7 +214,10 @@ function App() {
 
   return (
     <div className="flex flex-col font-sans">
-      <Header />
+      <Header
+        protocolFee={protocolFeeData}
+        isLoadingProtocolFee={isLoadingProtocolFee}
+      />
       <div
         id="container"
         className={twMerge(
@@ -215,7 +228,7 @@ function App() {
       >
         <div
           className={twMerge(
-            'md:w-full md:pt-4 md:pb-8 md:mr-2 bg-blueDark rounded-md pb-6 px-1',
+            'md:w-full lg:w-1/2 md:pt-4 md:pb-8 md:mr-2 bg-blueDark rounded-md pb-6 px-1',
             'border border-blueGray shadow-sm shadow-grayDark'
           )}
         >
@@ -249,13 +262,23 @@ function App() {
             />
           )}
         </div>
-
-        <Errors
-          isLoading={isLoading}
-          errors={errors}
-          isNoErrors={isNoErrors}
-          renderedErrors={renderedErrors}
-        />
+        <div
+          className={twMerge(
+            'md:w-full md:pt-4 md:ml-2 md:mt-0',
+            'lg:w-1/2 mt-4 pt-4 pb-8 px-1 bg-blueDark text-lightGray',
+            'border border-blueGray rounded-md shadow-sm shadow-grayDark'
+          )}
+        >
+          {/* {inputType === InputType.URL && (
+            <DecodedJson decodedJson={parsedJSON} />
+          )} */}
+          <Errors
+            isLoading={isLoading}
+            errors={errors}
+            isNoErrors={isNoErrors}
+            renderedErrors={renderedErrors}
+          />
+        </div>
       </div>
     </div>
   );

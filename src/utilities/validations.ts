@@ -18,6 +18,7 @@ export const validateJson = ({
       'signerAmount',
       'senderToken',
       'senderAmount',
+      'protocolFee',
       'v',
       'r',
       's',
