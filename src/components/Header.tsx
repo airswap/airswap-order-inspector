@@ -27,7 +27,7 @@ export const Header = ({
       </div>
       <div
         className={twMerge(
-          'flex md:absolute md:right-0 mx-auto md:h-full md:py-2 text-sm font-light text-blueAirSwap uppercase'
+          'flex md:absolute md:right-0 mx-auto md:h-full md:py-2 text-sm font-light text-white uppercase'
         )}
       >
         Protocol fee:{' '}

@@ -1,7 +1,13 @@
+import { RequiredValues } from '../../types';
+
 /* eslint-disable no-control-regex */
-export const displayErrors = (
-  errorsList: string[] | undefined
-): string[] | undefined => {
+export const displayErrors = ({
+  errorsList,
+  requiredValues,
+}: {
+  errorsList: string[] | undefined;
+  requiredValues: RequiredValues;
+}): string[] | undefined => {
   // if contract returns no errors returned, return
   if (!errorsList) {
     return undefined;
@@ -15,14 +21,22 @@ export const displayErrors = (
     })
     .map((error) => error.replace(/\x00/g, '').toLowerCase());
 
+  const requiredValuesText = `
+  domain chainId = ${requiredValues.domainChainId}
+  domain verifyingContract: ${requiredValues.domainVerifyingContract}
+  domain name = ${requiredValues.domainName}
+  domain version = ${requiredValues.domainVersion}
+  protocolFee: ${requiredValues.protocolFee}`;
+
+  // console.log(requiredValuesText);
+
   const errorMessages = filteredErrors.map((error) => {
     if (
       error.includes(
         'unauthorized' || 'SignatoryUnauthorized' || 'Unauthorized'
       )
     ) {
-      return 'Your signatures are incorrect. Please double check your EIP712 domain values (JSON inputs).';
-      // return `Provided signature does not match. Double check your values for: "signerWallet", "v", "r" and "s".`;
+      return `Signature invalid. Check that you're using the required values: ${requiredValuesText}`;
     } else if (error.includes('NonceAlreadyUsed')) {
       return `Nonce: the nonce entered is invalid.`;
     } else if (error.includes('expired')) {

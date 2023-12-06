@@ -13,6 +13,7 @@ import { UrlForm } from './components/forms/UrlForm';
 import { Toggle } from './components/Toggle';
 import { SwapERC20 } from '@airswap/libraries';
 import { useDecompressedOrderFromUrl } from './hooks/useDecompressedOrderFromUrl';
+import { formatErrorsList } from './utilities/formatErrorsList';
 // import { DecodedJson } from './components/DecodedJson';
 
 function App() {
@@ -88,28 +89,44 @@ function App() {
     s || '0x',
   ];
 
-  const {
-    data: checkFunctionData,
-    isLoading,
-    // error: contractReadError,
-  } = useContractRead({
-    chainId,
-    address: swapContractAddress as `0x${string}`,
-    abi,
-    functionName: 'check',
-    args: checkArgs,
-    enabled: isEnableCheck,
-  });
-
-  const { data: protocolFeeData, isLoading: isLoadingProtocolFee } =
+  const { data: checkFunctionData, isLoading: isLoadingCheck } =
     useContractRead({
       chainId,
-      address: swapContractAddress as `0x${string}`,
       abi,
+      address: swapContractAddress as `0x${string}`,
+      functionName: 'check',
+      args: checkArgs,
+      enabled: isEnableCheck,
+    });
+
+  const { data: protocolFee, isLoading: isLoadingProtocolFee } =
+    useContractRead({
+      chainId,
+      abi,
+      address: swapContractAddress as `0x${string}`,
       functionName: 'protocolFee',
     });
 
-  console.log(protocolFeeData);
+  const { data: domainName } = useContractRead({
+    chainId,
+    abi,
+    address: swapContractAddress as `0x${string}`,
+    functionName: 'DOMAIN_NAME',
+  });
+
+  const { data: domainChainId } = useContractRead({
+    chainId,
+    abi,
+    address: swapContractAddress as `0x${string}`,
+    functionName: 'DOMAIN_CHAIN_ID',
+  });
+
+  const { data: domainVersion } = useContractRead({
+    chainId,
+    abi,
+    address: swapContractAddress as `0x${string}`,
+    functionName: 'DOMAIN_VERSION',
+  });
 
   const handleChangeTextAreaJson = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setIsEnableCheck(false);
@@ -171,12 +188,23 @@ function App() {
     const outputErrorsList = checkFunctionData?.[1].map((error) => {
       return hexToString(error);
     });
-    // create array of human-readable errors
-    const errorsList = displayErrors(outputErrorsList);
 
-    if (errorsList && errorsList.length > 0) {
+    // create array of human-readable errors
+    const errorsList = displayErrors({
+      errorsList: outputErrorsList,
+      requiredValues: {
+        domainChainId,
+        domainVerifyingContract: swapContractAddress,
+        domainName,
+        domainVersion,
+        protocolFee,
+      },
+    });
+    const formattedErrorsList = formatErrorsList(errorsList);
+
+    if (formattedErrorsList && formattedErrorsList.length > 0) {
       setErrors((prevErrors) => {
-        const updatedErrors = [...prevErrors, ...errorsList];
+        const updatedErrors = [...prevErrors, ...formattedErrorsList];
         const uniqueErrors = [...new Set(updatedErrors)];
         return uniqueErrors;
       });
@@ -185,7 +213,15 @@ function App() {
     if (!isJsonValid && errorsList && errorsList.length === 0) {
       setIsNoErrors(true);
     }
-  }, [parsedJSON, checkFunctionData, swapContractAddress]);
+  }, [
+    parsedJSON,
+    checkFunctionData,
+    swapContractAddress,
+    domainChainId,
+    domainName,
+    domainVersion,
+    protocolFee,
+  ]);
 
   useEffect(() => {
     if (chainId) {
@@ -215,7 +251,7 @@ function App() {
   return (
     <div className="flex flex-col font-sans">
       <Header
-        protocolFee={protocolFeeData}
+        protocolFee={protocolFee}
         isLoadingProtocolFee={isLoadingProtocolFee}
       />
       <div
@@ -251,14 +287,14 @@ function App() {
               handleSubmit={handleSubmit}
               handleChangeTextArea={handleChangeTextAreaJson}
               isEnableCheck={isEnableCheck}
-              isLoading={isLoading}
+              isLoading={isLoadingCheck}
             />
           ) : (
             <UrlForm
               handleSubmit={handleSubmit}
               handleChangeTextArea={handleChangeTextAreaUrl}
               isEnableCheck={isEnableCheck}
-              isLoading={isLoading}
+              isLoading={isLoadingCheck}
             />
           )}
         </div>
@@ -273,7 +309,7 @@ function App() {
             <DecodedJson decodedJson={parsedJSON} />
           )} */}
           <Errors
-            isLoading={isLoading}
+            isLoading={isLoadingCheck}
             errors={errors}
             isNoErrors={isNoErrors}
             renderedErrors={renderedErrors}
