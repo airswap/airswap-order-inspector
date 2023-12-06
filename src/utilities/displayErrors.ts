@@ -21,7 +21,8 @@ export const displayErrors = (
         'unauthorized' || 'SignatoryUnauthorized' || 'Unauthorized'
       )
     ) {
-      return `Provided signature does not match. Double check your values for: "signerWallet", "v", "r" and "s".`;
+      return 'Your signatures are incorrect. Please double check your EIP712 domain values (JSON inputs).';
+      // return `Provided signature does not match. Double check your values for: "signerWallet", "v", "r" and "s".`;
     } else if (error.includes('NonceAlreadyUsed')) {
       return `Nonce: the nonce entered is invalid.`;
     } else if (error.includes('expired')) {
