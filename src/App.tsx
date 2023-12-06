@@ -201,6 +201,7 @@ function App() {
       },
     });
     const formattedErrorsList = formatErrorsList(errorsList);
+    console.log(formattedErrorsList);
 
     if (formattedErrorsList && formattedErrorsList.length > 0) {
       setErrors((prevErrors) => {
@@ -232,8 +233,8 @@ function App() {
   }, [chainId, swapContractAddress, parsedJSON]);
 
   useEffect(() => {
-    const renderErrors = () => {
-      return errors?.map((error, i) => (
+    const renderErrors = () =>
+      errors?.map((error, i) => (
         <li
           key={error + i}
           className="flex max-w-full ml-2 mb-2 text-left last:mb-0"
@@ -242,7 +243,7 @@ function App() {
           <span className="flex">{error}</span>
         </li>
       ));
-    };
+
     const renderedErrors = renderErrors();
 
     setRenderedErrors(renderedErrors);

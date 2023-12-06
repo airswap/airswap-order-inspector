@@ -3,10 +3,10 @@ import { ChainIds, CheckParamsJSON } from '../../types';
 
 export const validateJson = ({
   json,
-  swapContractAddress = '0xd82FA167727a4dc6D6F55830A2c47aBbB4b3a0F8',
+  swapContractAddress,
 }: {
   json: Partial<CheckParamsJSON> | undefined;
-  swapContractAddress?: string;
+  swapContractAddress: string | undefined;
 }): string[] | false => {
   const errorsList: string[] = [];
   try {
@@ -18,7 +18,6 @@ export const validateJson = ({
       'signerAmount',
       'senderToken',
       'senderAmount',
-      'protocolFee',
       'v',
       'r',
       's',
@@ -104,9 +103,6 @@ export const validateJson = ({
           );
         }
       }
-      if (json['protocolFee'] && json['protocolFee'] !== '7') {
-        errorsList.push('protocolFee: input is not valid.');
-      }
     }
 
     // Check for missing keys
@@ -120,7 +116,6 @@ export const validateJson = ({
       // false means there are no errors here
       return false;
     } else {
-      console.log(errorsList);
       return errorsList;
     }
   } catch (e) {

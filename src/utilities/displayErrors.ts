@@ -28,8 +28,6 @@ export const displayErrors = ({
   domain version = ${requiredValues.domainVersion}
   protocolFee: ${requiredValues.protocolFee}`;
 
-  // console.log(requiredValuesText);
-
   const errorMessages = filteredErrors.map((error) => {
     if (
       error.includes(
