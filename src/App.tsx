@@ -26,7 +26,7 @@ function App() {
   const [swapContractAddress, setSwapContractAddress] = useState<
     string | undefined
   >(undefined);
-  const [selectedChainId, setSelectedChainId] = useState(1);
+  const [selectedChainId, setSelectedChainId] = useState<number | undefined>();
   const [errors, setErrors] = useState<string[]>([]);
   const [renderedErrors, setRenderedErrors] = useState<ReactNode | undefined>();
   const [isEnableCheck, setIsEnableCheck] = useState(false);
@@ -51,10 +51,8 @@ function App() {
   let s;
 
   const setJsonValues = () => {
-    let json;
-    inputType === InputType.JSON
-      ? (json = parsedJSON)
-      : (json = decompressedOrderFromUrl);
+    const json =
+      inputType === InputType.JSON ? parsedJSON : decompressedOrderFromUrl;
 
     senderWallet = json?.senderWallet;
     nonce = isNaN(Number(json?.nonce))
@@ -76,6 +74,7 @@ function App() {
     r = json?.r as `0x${string}`;
     s = json?.s as `0x${string}`;
   };
+
   setJsonValues();
 
   const checkArgs: CheckArgs = [
@@ -92,15 +91,18 @@ function App() {
     s || '0x',
   ];
 
-  const { data: checkFunctionData, isLoading: isLoadingCheck } =
-    useContractRead({
-      chainId,
-      abi,
-      address: swapContractAddress as `0x${string}`,
-      functionName: 'check',
-      args: checkArgs,
-      enabled: isEnableCheck,
-    });
+  const {
+    data: checkFunctionData,
+    isLoading: isLoadingCheck,
+    error: errorCheck,
+  } = useContractRead({
+    chainId,
+    abi,
+    address: swapContractAddress as `0x${string}`,
+    functionName: 'check',
+    args: checkArgs,
+    enabled: isEnableCheck,
+  });
 
   const { data: protocolFee, isLoading: isLoadingProtocolFee } =
     useContractRead({
@@ -178,6 +180,7 @@ function App() {
     const isJsonValid = validateJson({
       json: parsedJSON,
       swapContractAddress: swapContractAddress,
+      chainId,
     });
 
     if (isJsonValid) {
@@ -217,6 +220,7 @@ function App() {
       setIsNoErrors(true);
     }
   }, [
+    chainId,
     parsedJSON,
     checkFunctionData,
     swapContractAddress,
@@ -233,6 +237,19 @@ function App() {
     }
     if (parsedJSON) console.log(parsedJSON);
   }, [chainId, swapContractAddress, parsedJSON]);
+
+  // check for unknown error from smart contract
+  useEffect(() => {
+    if (errorCheck?.message.includes('unknown')) {
+      const unknownError =
+        'Unknown error from SwapERC20 contract. Please double check all your inputs';
+
+      setErrors((prevErrors) => {
+        const updatedErrors = [unknownError, ...prevErrors];
+        return [...new Set(updatedErrors)];
+      });
+    }
+  }, [errorCheck?.message]);
 
   useEffect(() => {
     const renderErrors = () =>

@@ -15,7 +15,7 @@ export const Select = ({
       <RadixSelect.Item
         value={chain.value}
         key={chain.value}
-        className="py-1 px-2 bg-blueGray text-lightGray border border-grayDark first:rounded-t-sm last:rounded-b-sm hover:bg-blueExtraDark active:border-white"
+        className="py-1 px-2 bg-blueGray text-lightGray border border-blueExtraDark first:rounded-t-sm last:rounded-b-sm hover:bg-blueExtraDark hover:border-blueExtraDark active:border-white"
       >
         <RadixSelect.ItemText>
           {chain.label}: {chain.value}
@@ -35,9 +35,9 @@ export const Select = ({
       <RadixSelect.Root onValueChange={(val) => handleSelectChange(val)}>
         <RadixSelect.Trigger
           className="flex items-center px-3 py-1 bg-blueGray border border-blueGray rounded-md font-semibold uppercase"
-          aria-label="network"
+          aria-label="chain"
         >
-          <RadixSelect.Value placeholder="network" />
+          <RadixSelect.Value placeholder="chain" />
           <RadixSelect.Icon className="ml-2">
             <FaChevronDown />
           </RadixSelect.Icon>

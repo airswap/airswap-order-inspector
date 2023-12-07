@@ -22,12 +22,12 @@ export const JsonForm = ({
       <div
         className={twMerge(
           'xs:w-[90%] sm:w-4/5 md:w-full lg:w-4/5',
-          'flex flex-row w-full justify-between items-center py-2 m-auto'
+          'flex flex-row w-full justify-between items-center py-2 m-auto '
         )}
       >
         <label
           htmlFor="jsonInput"
-          className="ml-1 w-fit font-semibold uppercase"
+          className="ml-1 w-fit font-semibold uppercase "
         >
           Paste JSON below:
         </label>
@@ -38,6 +38,7 @@ export const JsonForm = ({
           />
         </div>
       </div>
+
       <textarea
         id="jsonInput"
         name="jsonInput"

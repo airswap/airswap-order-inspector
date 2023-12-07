@@ -4,9 +4,11 @@ import { ChainIds, CheckParamsJSON } from '../../types';
 export const validateJson = ({
   json,
   swapContractAddress,
+  chainId,
 }: {
   json: Partial<CheckParamsJSON> | undefined;
   swapContractAddress: string | undefined;
+  chainId: number | undefined;
 }): string[] | false => {
   const errorsList: string[] = [];
   try {
@@ -32,6 +34,11 @@ export const validateJson = ({
 
     // Check for valid values
     if (json) {
+      if (!json['chainId'] || !chainId) {
+        errorsList.push(
+          'chainId: double check your chain id, select one, or enter "chainId" to your JSON'
+        );
+      }
       if (json['senderWallet'] && !isAddress(json['senderWallet'])) {
         errorsList.push('senderWallet must be a valid ERC20 address');
       }
