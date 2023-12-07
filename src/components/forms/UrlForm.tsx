@@ -28,7 +28,7 @@ export const UrlForm = ({
         autoComplete="off"
         onChange={handleChangeTextArea}
         className={twMerge(
-          'w-full xs:w-[90%] sm:w-4/5 md:w-4/5',
+          'w-full xs:w-[90%] sm:w-4/5 md:w-full lg:w-4/5',
           'mb-2 mx-auto p-5 min-h-[325px] bg-blueExtraDark border-blueGray border rounded-sm',
           'placeholder:text-sm'
         )}
@@ -44,7 +44,7 @@ export const UrlForm = ({
         value={!isLoading ? 'Check errors' : 'Loading...'}
         disabled={isLoading}
         className={twMerge(
-          'w-full xs:w-[90%] sm:w-4/5 md:w-4/5',
+          'w-full xs:w-[90%] sm:w-4/5 md:w-full lg:w-4/5',
           'mt-4 mx-auto py-3 px-4 text-white bg-blueAirSwap border-darkgray border-1 rounded-sm font-medium text-lg uppercase'
         )}
       />

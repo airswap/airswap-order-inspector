@@ -3,10 +3,12 @@ import { ChainIds, CheckParamsJSON } from '../../types';
 
 export const validateJson = ({
   json,
-  swapContractAddress = '0xd82FA167727a4dc6D6F55830A2c47aBbB4b3a0F8',
+  swapContractAddress,
+  chainId,
 }: {
   json: Partial<CheckParamsJSON> | undefined;
-  swapContractAddress?: string;
+  swapContractAddress: string | undefined;
+  chainId: number | undefined;
 }): string[] | false => {
   const errorsList: string[] = [];
   try {
@@ -32,6 +34,11 @@ export const validateJson = ({
 
     // Check for valid values
     if (json) {
+      if (!json['chainId'] && !chainId) {
+        errorsList.push(
+          'chainId: double check your chain id. Either select one in the dropdown, or enter "chainId" and its value into your JSON'
+        );
+      }
       if (json['senderWallet'] && !isAddress(json['senderWallet'])) {
         errorsList.push('senderWallet must be a valid ERC20 address');
       }
@@ -103,9 +110,6 @@ export const validateJson = ({
           );
         }
       }
-      if (json['protocolFee'] && json['protocolFee'] !== '7') {
-        errorsList.push('protocolFee: input is not valid.');
-      }
     }
 
     // Check for missing keys
@@ -119,7 +123,6 @@ export const validateJson = ({
       // false means there are no errors here
       return false;
     } else {
-      console.log(errorsList);
       return errorsList;
     }
   } catch (e) {

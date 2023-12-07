@@ -57,3 +57,16 @@ export enum ChainIds {
   ArbitrumGoerli = 421613,
   Sepolia = 11155111,
 }
+
+export type RequiredValues = {
+  domainChainId: bigint | undefined;
+  domainVerifyingContract: string | undefined;
+  domainName: string | undefined;
+  domainVersion: string | undefined;
+  protocolFee: bigint | undefined;
+};
+
+export type SelectOptions = {
+  value: string;
+  label: string;
+}[];

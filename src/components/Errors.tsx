@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 export const Errors = ({
@@ -13,13 +13,7 @@ export const Errors = ({
   renderedErrors: ReactNode;
 }) => {
   return (
-    <div
-      className={twMerge(
-        'md:w-full md:pt-4 md:ml-2 md:mt-0',
-        'mt-4 pt-4 pb-8 px-1 bg-blueDark text-lightGray',
-        'border border-blueGray rounded-md shadow-sm shadow-grayDark'
-      )}
-    >
+    <React.Fragment>
       {!isLoading && (
         <>
           <h3 className="mt-2 mb-4 px-2 text-xl font-semibold uppercase">
@@ -45,6 +39,6 @@ export const Errors = ({
           </div>
         </>
       )}
-    </div>
+    </React.Fragment>
   );
 };

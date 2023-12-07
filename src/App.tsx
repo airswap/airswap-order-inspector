@@ -13,6 +13,8 @@ import { UrlForm } from './components/forms/UrlForm';
 import { Toggle } from './components/Toggle';
 import { SwapERC20 } from '@airswap/libraries';
 import { useDecompressedOrderFromUrl } from './hooks/useDecompressedOrderFromUrl';
+import { formatErrorsList } from './utilities/formatErrorsList';
+// import { DecodedJson } from './components/DecodedJson';
 
 function App() {
   const [inputType, setInputType] = useState<InputType>(InputType.JSON);
@@ -24,6 +26,7 @@ function App() {
   const [swapContractAddress, setSwapContractAddress] = useState<
     string | undefined
   >(undefined);
+  const [selectedChainId, setSelectedChainId] = useState<number | undefined>();
   const [errors, setErrors] = useState<string[]>([]);
   const [renderedErrors, setRenderedErrors] = useState<ReactNode | undefined>();
   const [isEnableCheck, setIsEnableCheck] = useState(false);
@@ -31,7 +34,9 @@ function App() {
 
   const decompressedOrderFromUrl = useDecompressedOrderFromUrl(urlString);
 
-  const chainId = Number(parsedJSON?.chainId) || 1;
+  const chainId = parsedJSON?.chainId
+    ? Number(parsedJSON?.chainId)
+    : selectedChainId;
 
   let senderWallet;
   let nonce;
@@ -46,10 +51,8 @@ function App() {
   let s;
 
   const setJsonValues = () => {
-    let json;
-    inputType === InputType.JSON
-      ? (json = parsedJSON)
-      : (json = decompressedOrderFromUrl);
+    const json =
+      inputType === InputType.JSON ? parsedJSON : decompressedOrderFromUrl;
 
     senderWallet = json?.senderWallet;
     nonce = isNaN(Number(json?.nonce))
@@ -89,18 +92,45 @@ function App() {
 
   const {
     data: checkFunctionData,
-    isLoading,
-    error: contractReadError,
+    isLoading: isLoadingCheck,
+    error: errorCheck,
   } = useContractRead({
-    chainId: chainId,
-    address: swapContractAddress as `0x${string}`,
+    chainId,
     abi,
+    address: swapContractAddress as `0x${string}`,
     functionName: 'check',
     args: checkArgs,
     enabled: isEnableCheck,
   });
 
-  console.log('contractReadError:', contractReadError && contractReadError);
+  const { data: protocolFee, isLoading: isLoadingProtocolFee } =
+    useContractRead({
+      chainId,
+      abi,
+      address: swapContractAddress as `0x${string}`,
+      functionName: 'protocolFee',
+    });
+
+  const { data: domainName } = useContractRead({
+    chainId,
+    abi,
+    address: swapContractAddress as `0x${string}`,
+    functionName: 'DOMAIN_NAME',
+  });
+
+  const { data: domainChainId } = useContractRead({
+    chainId,
+    abi,
+    address: swapContractAddress as `0x${string}`,
+    functionName: 'DOMAIN_CHAIN_ID',
+  });
+
+  const { data: domainVersion } = useContractRead({
+    chainId,
+    abi,
+    address: swapContractAddress as `0x${string}`,
+    functionName: 'DOMAIN_VERSION',
+  });
 
   const handleChangeTextAreaJson = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setIsEnableCheck(false);
@@ -110,6 +140,23 @@ function App() {
   const handleChangeTextAreaUrl = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setIsEnableCheck(false);
     setUrlString(e.target.value);
+  };
+
+  // check for unknown error from smart contract
+  const checkSmartContractError = () => {
+    if (
+      errorCheck?.message.includes('unknown') ||
+      errorCheck?.message.includes('reverted')
+    ) {
+      console.log('reverted');
+      const unknownError =
+        'Unknown error from SwapERC20 contract. Please double check all your inputs';
+
+      setErrors((prevErrors) => {
+        const updatedErrors = [unknownError, ...prevErrors];
+        return [...new Set(updatedErrors)];
+      });
+    }
   };
 
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
@@ -137,6 +184,7 @@ function App() {
       } else {
         const parsedJsonObject = jsonString && JSON.parse(jsonString);
         setParsedJSON(parsedJsonObject);
+        checkSmartContractError();
       }
     } catch (e) {
       console.error(e);
@@ -149,6 +197,7 @@ function App() {
     const isJsonValid = validateJson({
       json: parsedJSON,
       swapContractAddress: swapContractAddress,
+      chainId: selectedChainId,
     });
 
     if (isJsonValid) {
@@ -162,12 +211,23 @@ function App() {
     const outputErrorsList = checkFunctionData?.[1].map((error) => {
       return hexToString(error);
     });
-    // create array of human-readable errors
-    const errorsList = displayErrors(outputErrorsList);
 
-    if (errorsList && errorsList.length > 0) {
+    // create array of human-readable errors
+    const errorsList = displayErrors({
+      errorsList: outputErrorsList,
+      requiredValues: {
+        domainChainId,
+        domainVerifyingContract: swapContractAddress,
+        domainName,
+        domainVersion,
+        protocolFee,
+      },
+    });
+    const formattedErrorsList = formatErrorsList(errorsList);
+
+    if (formattedErrorsList && formattedErrorsList.length > 0) {
       setErrors((prevErrors) => {
-        const updatedErrors = [...prevErrors, ...errorsList];
+        const updatedErrors = [...prevErrors, ...formattedErrorsList];
         const uniqueErrors = [...new Set(updatedErrors)];
         return uniqueErrors;
       });
@@ -176,18 +236,29 @@ function App() {
     if (!isJsonValid && errorsList && errorsList.length === 0) {
       setIsNoErrors(true);
     }
-  }, [parsedJSON, checkFunctionData, swapContractAddress]);
+  }, [
+    chainId,
+    parsedJSON,
+    checkFunctionData,
+    swapContractAddress,
+    domainChainId,
+    domainName,
+    domainVersion,
+    protocolFee,
+    selectedChainId,
+  ]);
 
   useEffect(() => {
     if (chainId) {
       const address = SwapERC20.getAddress(chainId);
       address && setSwapContractAddress(address);
     }
-  }, [chainId, swapContractAddress]);
+    if (parsedJSON) console.log(parsedJSON);
+  }, [chainId, swapContractAddress, parsedJSON]);
 
   useEffect(() => {
-    const renderErrors = () => {
-      return errors?.map((error, i) => (
+    const renderErrors = () =>
+      errors?.map((error, i) => (
         <li
           key={error + i}
           className="flex max-w-full ml-2 mb-2 text-left last:mb-0"
@@ -196,7 +267,7 @@ function App() {
           <span className="flex">{error}</span>
         </li>
       ));
-    };
+
     const renderedErrors = renderErrors();
 
     setRenderedErrors(renderedErrors);
@@ -204,7 +275,10 @@ function App() {
 
   return (
     <div className="flex flex-col font-sans">
-      <Header />
+      <Header
+        protocolFee={protocolFee}
+        isLoadingProtocolFee={isLoadingProtocolFee}
+      />
       <div
         id="container"
         className={twMerge(
@@ -215,7 +289,7 @@ function App() {
       >
         <div
           className={twMerge(
-            'md:w-full md:pt-4 md:pb-8 md:mr-2 bg-blueDark rounded-md pb-6 px-1',
+            'md:w-full lg:w-1/2 md:pt-4 md:pb-8 md:mr-2 bg-blueDark rounded-md pb-6 px-1',
             'border border-blueGray shadow-sm shadow-grayDark'
           )}
         >
@@ -238,24 +312,36 @@ function App() {
               handleSubmit={handleSubmit}
               handleChangeTextArea={handleChangeTextAreaJson}
               isEnableCheck={isEnableCheck}
-              isLoading={isLoading}
+              isLoading={isLoadingCheck}
+              setIsEnableCheck={setIsEnableCheck}
+              setSelectedChainId={setSelectedChainId}
             />
           ) : (
             <UrlForm
               handleSubmit={handleSubmit}
               handleChangeTextArea={handleChangeTextAreaUrl}
               isEnableCheck={isEnableCheck}
-              isLoading={isLoading}
+              isLoading={isLoadingCheck}
             />
           )}
         </div>
-
-        <Errors
-          isLoading={isLoading}
-          errors={errors}
-          isNoErrors={isNoErrors}
-          renderedErrors={renderedErrors}
-        />
+        <div
+          className={twMerge(
+            'md:w-full md:pt-4 md:ml-2 md:mt-0',
+            'lg:w-1/2 mt-4 pt-4 pb-8 px-1 bg-blueDark text-lightGray',
+            'border border-blueGray rounded-md shadow-sm shadow-grayDark'
+          )}
+        >
+          {/* {inputType === InputType.URL && (
+            <DecodedJson decodedJson={parsedJSON} />
+          )} */}
+          <Errors
+            isLoading={isLoadingCheck}
+            errors={errors}
+            isNoErrors={isNoErrors}
+            renderedErrors={renderedErrors}
+          />
+        </div>
       </div>
     </div>
   );
