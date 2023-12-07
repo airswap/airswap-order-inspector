@@ -26,6 +26,7 @@ function App() {
   const [swapContractAddress, setSwapContractAddress] = useState<
     string | undefined
   >(undefined);
+  const [selectedChainId, setSelectedChainId] = useState(1);
   const [errors, setErrors] = useState<string[]>([]);
   const [renderedErrors, setRenderedErrors] = useState<ReactNode | undefined>();
   const [isEnableCheck, setIsEnableCheck] = useState(false);
@@ -33,7 +34,9 @@ function App() {
 
   const decompressedOrderFromUrl = useDecompressedOrderFromUrl(urlString);
 
-  const chainId = Number(parsedJSON?.chainId) || 1;
+  const chainId = parsedJSON?.chainId
+    ? Number(parsedJSON?.chainId)
+    : selectedChainId;
 
   let senderWallet;
   let nonce;
@@ -201,7 +204,6 @@ function App() {
       },
     });
     const formattedErrorsList = formatErrorsList(errorsList);
-    console.log(formattedErrorsList);
 
     if (formattedErrorsList && formattedErrorsList.length > 0) {
       setErrors((prevErrors) => {
@@ -289,6 +291,7 @@ function App() {
               handleChangeTextArea={handleChangeTextAreaJson}
               isEnableCheck={isEnableCheck}
               isLoading={isLoadingCheck}
+              setSelectedChainId={setSelectedChainId}
             />
           ) : (
             <UrlForm

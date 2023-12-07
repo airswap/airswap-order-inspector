@@ -65,3 +65,8 @@ export type RequiredValues = {
   domainVersion: string | undefined;
   protocolFee: bigint | undefined;
 };
+
+export type SelectOptions = {
+  value: string;
+  label: string;
+}[];

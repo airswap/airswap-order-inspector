@@ -13,7 +13,7 @@ export const Button = ({
     <button
       onClick={clickAction}
       className={twMerge(
-        'flex flex-row space-x-2 w-full text-black text-sm font-semibold justify-center p-1.5 border-blueGray',
+        'flex flex-row space-x-2 w-full py-1.5 text-black text-sm font-semibold justify-center border-blueGray',
         className
       )}
     >
