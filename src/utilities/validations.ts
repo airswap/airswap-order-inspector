@@ -34,9 +34,9 @@ export const validateJson = ({
 
     // Check for valid values
     if (json) {
-      if (!json['chainId'] || !chainId) {
+      if (!json['chainId'] && !chainId) {
         errorsList.push(
-          'chainId: double check your chain id, select one, or enter "chainId" to your JSON'
+          'chainId: double check your chain id. Either select one in the dropdown, or enter "chainId" and its value into your JSON'
         );
       }
       if (json['senderWallet'] && !isAddress(json['senderWallet'])) {

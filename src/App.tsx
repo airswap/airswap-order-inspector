@@ -74,7 +74,6 @@ function App() {
     r = json?.r as `0x${string}`;
     s = json?.s as `0x${string}`;
   };
-
   setJsonValues();
 
   const checkArgs: CheckArgs = [
@@ -143,6 +142,23 @@ function App() {
     setUrlString(e.target.value);
   };
 
+  // check for unknown error from smart contract
+  const checkSmartContractError = () => {
+    if (
+      errorCheck?.message.includes('unknown') ||
+      errorCheck?.message.includes('reverted')
+    ) {
+      console.log('reverted');
+      const unknownError =
+        'Unknown error from SwapERC20 contract. Please double check all your inputs';
+
+      setErrors((prevErrors) => {
+        const updatedErrors = [unknownError, ...prevErrors];
+        return [...new Set(updatedErrors)];
+      });
+    }
+  };
+
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsEnableCheck(true);
@@ -168,6 +184,7 @@ function App() {
       } else {
         const parsedJsonObject = jsonString && JSON.parse(jsonString);
         setParsedJSON(parsedJsonObject);
+        checkSmartContractError();
       }
     } catch (e) {
       console.error(e);
@@ -180,7 +197,7 @@ function App() {
     const isJsonValid = validateJson({
       json: parsedJSON,
       swapContractAddress: swapContractAddress,
-      chainId,
+      chainId: selectedChainId,
     });
 
     if (isJsonValid) {
@@ -228,6 +245,7 @@ function App() {
     domainName,
     domainVersion,
     protocolFee,
+    selectedChainId,
   ]);
 
   useEffect(() => {
@@ -237,19 +255,6 @@ function App() {
     }
     if (parsedJSON) console.log(parsedJSON);
   }, [chainId, swapContractAddress, parsedJSON]);
-
-  // check for unknown error from smart contract
-  useEffect(() => {
-    if (errorCheck?.message.includes('unknown')) {
-      const unknownError =
-        'Unknown error from SwapERC20 contract. Please double check all your inputs';
-
-      setErrors((prevErrors) => {
-        const updatedErrors = [unknownError, ...prevErrors];
-        return [...new Set(updatedErrors)];
-      });
-    }
-  }, [errorCheck?.message]);
 
   useEffect(() => {
     const renderErrors = () =>
@@ -308,6 +313,7 @@ function App() {
               handleChangeTextArea={handleChangeTextAreaJson}
               isEnableCheck={isEnableCheck}
               isLoading={isLoadingCheck}
+              setIsEnableCheck={setIsEnableCheck}
               setSelectedChainId={setSelectedChainId}
             />
           ) : (
