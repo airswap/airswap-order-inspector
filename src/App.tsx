@@ -148,7 +148,7 @@ function App() {
       errorCheck?.message.includes('unknown') ||
       errorCheck?.message.includes('reverted')
     ) {
-      console.log('reverted');
+      console.error(errorCheck);
       const unknownError =
         'Unknown error from SwapERC20 contract. Please double check all your inputs';
 
