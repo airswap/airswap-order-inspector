@@ -1,5 +1,6 @@
 import { SelectOptions } from '../../types';
 import * as RadixSelect from '@radix-ui/react-select';
+import { useState } from 'react';
 import { FaChevronDown } from 'react-icons/fa';
 
 export const Select = ({
@@ -11,6 +12,12 @@ export const Select = ({
   setSelectedChainId: (value: number) => void;
   selectOptions: SelectOptions;
 }) => {
+  const [isSelectOpen, setIsSelectOpen] = useState(false);
+
+  const handleIsSelectOpen = () => {
+    setIsSelectOpen((isSelectOpen) => !isSelectOpen);
+  };
+
   const renderOptions = () => {
     return selectOptions.map((chain) => (
       <RadixSelect.Item
@@ -34,14 +41,25 @@ export const Select = ({
 
   return (
     <>
-      <RadixSelect.Root onValueChange={(val) => handleSelectChange(val)}>
+      <RadixSelect.Root
+        onValueChange={(val) => handleSelectChange(val)}
+        onOpenChange={handleIsSelectOpen}
+      >
         <RadixSelect.Trigger
           className="flex items-center px-3 py-1 bg-blueGray border border-blueGray rounded-md font-semibold uppercase"
           aria-label="chain"
         >
           <RadixSelect.Value placeholder="chain" />
           <RadixSelect.Icon className="ml-2">
-            <FaChevronDown />
+            <div
+              className={`${
+                isSelectOpen
+                  ? 'transition-transform rotate-180'
+                  : 'transition-transform rotate-0'
+              }`}
+            >
+              <FaChevronDown />
+            </div>
           </RadixSelect.Icon>
         </RadixSelect.Trigger>
         <RadixSelect.Portal>
