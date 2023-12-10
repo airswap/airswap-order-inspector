@@ -6,7 +6,7 @@ export const Button = ({
   className,
 }: {
   text: string;
-  clickAction: () => void;
+  clickAction?: () => void;
   className?: string | null;
 }) => {
   return (
