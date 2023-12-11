@@ -53,7 +53,7 @@ export const Dialog = ({
             <AlertDialog.Title className="flex justify-center m-0 text-[17px] font-medium uppercase">
               Decompressed URL:
             </AlertDialog.Title>
-            <AlertDialog.Description className="text-mauve11 mt-4 mb-5 text-[15px] leading-normal">
+            <AlertDialog.Description className="mt-4 mb-5 p-4 text-lightGray bg-blueDark leading-normal border border-blueGray rounded">
               {decompressedJson}
             </AlertDialog.Description>
             <div className="flex justify-end gap-[25px]">

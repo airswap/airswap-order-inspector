@@ -307,8 +307,7 @@ function App() {
             clickTypeUrl={() => {
               setInputType(InputType.URL);
               setIsNoErrors(false);
-              setDecompressedJson(undefined);
-              setParsedJSON(undefined);
+              setUrlString(undefined);
               setErrors([]);
             }}
           />
