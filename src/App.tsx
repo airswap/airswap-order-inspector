@@ -308,6 +308,7 @@ function App() {
             clickTypeUrl={() => {
               setInputType(InputType.URL);
               setIsNoErrors(false);
+              // we need to reset the following 2 values because they affect the behavior of `decompressedJson` in Dilog.tsx
               setUrlString(undefined);
               setIsEnableCheck(false);
               setErrors([]);
