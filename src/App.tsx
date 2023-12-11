@@ -164,6 +164,7 @@ function App() {
 
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setParsedJSON(undefined);
     setIsEnableCheck(true);
     setErrors([]);
     setIsNoErrors(false);
@@ -306,6 +307,8 @@ function App() {
             clickTypeUrl={() => {
               setInputType(InputType.URL);
               setIsNoErrors(false);
+              setDecompressedJson(undefined);
+              setParsedJSON(undefined);
               setErrors([]);
             }}
           />

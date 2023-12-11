@@ -1,5 +1,5 @@
 import * as AlertDialog from '@radix-ui/react-alert-dialog';
-import React, { Dispatch, SetStateAction, useEffect } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { CheckParamsJSON } from '../../types';
 
@@ -14,26 +14,31 @@ export const Dialog = ({
   decompressedJson: string | undefined;
   setDecompressedJson: Dispatch<SetStateAction<string | undefined>>;
 }) => {
-  console.log('decompressedJson', decompressedJson);
+  const [open, setOpen] = useState(false);
 
-  const stringifyJson = JSON.stringify(parsedJson, null, 2);
-
-  const handleCopyJson = (decompressedJson: string | undefined) => {
+  const handleCopyJson = async (decompressedJson: string | undefined) => {
     if (!decompressedJson) {
       return;
-    } else {
-      navigator.clipboard.writeText(decompressedJson);
     }
+
+    await navigator.clipboard.writeText(decompressedJson);
   };
 
   useEffect(() => {
-    if (stringifyJson) {
-      setDecompressedJson(stringifyJson);
+    if (!parsedJson) {
+      setDecompressedJson(undefined);
     }
-  }, [stringifyJson, setDecompressedJson]);
+
+    if (parsedJson) {
+      const stringifyJson = JSON.stringify(parsedJson, null, 2);
+      setDecompressedJson(stringifyJson);
+      setOpen(true);
+      console.log('decompressedJson', decompressedJson);
+    }
+  }, [parsedJson, setDecompressedJson, decompressedJson]);
 
   return (
-    <AlertDialog.Root>
+    <AlertDialog.Root open={open} onOpenChange={setOpen}>
       <AlertDialog.Trigger asChild>{inputButton}</AlertDialog.Trigger>
       {!!decompressedJson && (
         <AlertDialog.Portal>
@@ -41,12 +46,12 @@ export const Dialog = ({
           <AlertDialog.Content
             className={twMerge(
               'data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] max-w-full rounded-md overflow-scroll focus:outline-none',
-              'bg-blueExtraDark text-white p-[25px] border border-blueGray',
+              'bg-blueExtraDark text-lightGray p-[25px] border border-blueGray',
               'shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px]'
             )}
           >
-            <AlertDialog.Title className="flex justify-center text-mauve12 m-0 text-[17px] font-medium">
-              Your decompressed URL is below:
+            <AlertDialog.Title className="flex justify-center m-0 text-[17px] font-medium uppercase">
+              Decompressed URL:
             </AlertDialog.Title>
             <AlertDialog.Description className="text-mauve11 mt-4 mb-5 text-[15px] leading-normal">
               {decompressedJson}
@@ -60,7 +65,7 @@ export const Dialog = ({
                     'mt-4 mx-auto py-3 px-4 text-white bg-blueGray border-darkgray border-1 rounded-sm font-medium text-lg uppercase'
                   )}
                 >
-                  Copy
+                  Copy JSON
                 </button>
               </AlertDialog.Cancel>
               <AlertDialog.Action asChild>
