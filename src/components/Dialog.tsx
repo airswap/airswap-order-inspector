@@ -14,8 +14,6 @@ export const Dialog = ({
   decompressedJson: string | undefined;
   setDecompressedJson: Dispatch<SetStateAction<string | undefined>>;
 }) => {
-  console.log('decompressedJson', decompressedJson);
-
   const stringifyJson = JSON.stringify(parsedJson, null, 2);
 
   const handleCopyJson = (decompressedJson: string | undefined) => {
