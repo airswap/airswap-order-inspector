@@ -14,6 +14,8 @@ export const Dialog = ({
   decompressedJson: string | undefined;
   setDecompressedJson: Dispatch<SetStateAction<string | undefined>>;
 }) => {
+  console.log('decompressedJson', decompressedJson);
+
   const stringifyJson = JSON.stringify(parsedJson, null, 2);
 
   const handleCopyJson = (decompressedJson: string | undefined) => {
@@ -33,7 +35,7 @@ export const Dialog = ({
   return (
     <AlertDialog.Root>
       <AlertDialog.Trigger asChild>{inputButton}</AlertDialog.Trigger>
-      {!!parsedJson && (
+      {!!decompressedJson && (
         <AlertDialog.Portal>
           <AlertDialog.Overlay className="bg-blackA6 data-[state=open]:animate-overlayShow fixed inset-0" />
           <AlertDialog.Content
