@@ -65,6 +65,7 @@ export const UrlForm = ({
         parsedJson={parsedJson}
         decompressedJson={decompressedJson}
         setDecompressedJson={setDecompressedJson}
+        isEnableCheck={isEnableCheck}
       />
     </form>
   );

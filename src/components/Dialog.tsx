@@ -8,11 +8,13 @@ export const Dialog = ({
   parsedJson,
   decompressedJson,
   setDecompressedJson,
+  isEnableCheck,
 }: {
   inputButton: React.ReactNode;
   parsedJson: Partial<CheckParamsJSON> | undefined;
   decompressedJson: string | undefined;
   setDecompressedJson: Dispatch<SetStateAction<string | undefined>>;
+  isEnableCheck: boolean;
 }) => {
   const [open, setOpen] = useState(false);
 
@@ -29,13 +31,12 @@ export const Dialog = ({
       setDecompressedJson(undefined);
     }
 
-    if (parsedJson) {
+    if (parsedJson && isEnableCheck) {
       const stringifyJson = JSON.stringify(parsedJson, null, 2);
       setDecompressedJson(stringifyJson);
       setOpen(true);
-      console.log('decompressedJson', decompressedJson);
     }
-  }, [parsedJson, setDecompressedJson, decompressedJson]);
+  }, [parsedJson, setDecompressedJson, isEnableCheck]);
 
   return (
     <AlertDialog.Root open={open} onOpenChange={setOpen}>

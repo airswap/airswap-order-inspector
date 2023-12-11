@@ -302,12 +302,14 @@ function App() {
             clickTypeJson={() => {
               setInputType(InputType.JSON);
               setIsNoErrors(false);
+              setIsEnableCheck(false);
               setErrors([]);
             }}
             clickTypeUrl={() => {
               setInputType(InputType.URL);
               setIsNoErrors(false);
               setUrlString(undefined);
+              setIsEnableCheck(false);
               setErrors([]);
             }}
           />
