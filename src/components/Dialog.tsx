@@ -1,7 +1,7 @@
 import * as AlertDialog from '@radix-ui/react-alert-dialog';
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
-import { CheckParamsJSON } from '../../types';
+import { ParsedJsonParams } from '../../types';
 import { formatJsonString } from '../utilities/formatJsonString';
 
 export const Dialog = ({
@@ -12,7 +12,7 @@ export const Dialog = ({
   isEnableCheck,
 }: {
   inputButton: React.ReactNode;
-  parsedJson: Partial<CheckParamsJSON> | undefined;
+  parsedJson: Partial<ParsedJsonParams> | undefined;
   decompressedJson: string | undefined;
   setDecompressedJson: Dispatch<SetStateAction<string | undefined>>;
   isEnableCheck: boolean;
@@ -44,7 +44,7 @@ export const Dialog = ({
       <AlertDialog.Trigger asChild>{inputButton}</AlertDialog.Trigger>
       {!!decompressedJson && (
         <AlertDialog.Portal>
-          <AlertDialog.Overlay className="bg-blackA6 data-[state=open]:animate-overlayShow fixed inset-0" />
+          <AlertDialog.Overlay className="data-[state=open]:animate-overlayShow fixed inset-0" />
           <AlertDialog.Content
             className={twMerge(
               'w-[95%] md:w-4/5 lg:w-1/2 max-w-full p-2 xs:p-4 sm:p-6 md:p-8',
@@ -53,9 +53,12 @@ export const Dialog = ({
               'shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px]'
             )}
           >
-            <AlertDialog.Title className="flex justify-center m-0 text-[17px] font-medium uppercase">
+            <AlertDialog.Title className="flex justify-center mx-0 mb-1 text-[17px] font-medium uppercase">
               Decompressed URL:
             </AlertDialog.Title>
+            <h3 className="flex justify-center text-sm">
+              (Close this dialog to view errors)
+            </h3>
             <AlertDialog.Description className="mt-4 mb-5 p-4 text-lightGray bg-blueDark leading-normal border border-blueGray rounded">
               {decompressedJson}
             </AlertDialog.Description>

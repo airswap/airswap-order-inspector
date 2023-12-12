@@ -1,9 +1,9 @@
 import { ChangeEvent, MouseEvent, ReactNode, useEffect, useState } from 'react';
 import { useContractRead } from 'wagmi';
 import { abi } from './contracts/swapERC20ABI';
-import { hexToString, zeroAddress } from 'viem';
-import { CheckArgs, CheckParamsJSON, InputType } from '../types';
-import { validateJson } from './utilities/validations';
+import { zeroAddress } from 'viem';
+import { CheckFunctionArgs, ParsedJsonParams, InputType } from '../types';
+import { validateJson } from './utilities/validateJson';
 import { displayErrors } from './utilities/displayErrors';
 import { twMerge } from 'tailwind-merge';
 import { Errors } from './components/Errors';
@@ -14,13 +14,16 @@ import { Toggle } from './components/Toggle';
 import { SwapERC20 } from '@airswap/libraries';
 import { useDecompressedOrderFromUrl } from './hooks/useDecompressedOrderFromUrl';
 import { formatErrorsList } from './utilities/formatErrorsList';
+import { useJsonValues } from './hooks/useJsonValues';
+import { checkSmartContractError } from './utilities/checkSmartContractError';
+import { getOutputErrorsList } from './utilities/getOutputErrorsList';
 
 function App() {
   const [inputType, setInputType] = useState<InputType>(InputType.JSON);
   const [jsonString, setJsonString] = useState<undefined | string>(undefined);
   const [urlString, setUrlString] = useState<string | undefined>(undefined);
-  const [parsedJSON, setParsedJSON] = useState<
-    undefined | Partial<CheckParamsJSON>
+  const [parsedJson, setParsedJson] = useState<
+    undefined | Partial<ParsedJsonParams>
   >(undefined);
   const [decompressedJson, setDecompressedJson] = useState<string | undefined>(
     undefined
@@ -36,56 +39,32 @@ function App() {
 
   const decompressedOrderFromUrl = useDecompressedOrderFromUrl(urlString);
 
-  const chainId = parsedJSON?.chainId
-    ? Number(parsedJSON?.chainId)
+  const chainId = parsedJson?.chainId
+    ? Number(parsedJson?.chainId)
     : selectedChainId;
 
-  let senderWallet;
-  let nonce;
-  let expiry;
-  let signerWallet;
-  let signerToken;
-  let signerAmount;
-  let senderToken;
-  let senderAmount;
-  let v;
-  let r;
-  let s;
+  const {
+    senderWallet,
+    nonce,
+    expiry,
+    signerWallet,
+    signerToken,
+    signerAmount,
+    senderToken,
+    senderAmount,
+    v,
+    r,
+    s,
+  } = useJsonValues({ inputType, parsedJson, decompressedOrderFromUrl });
 
-  const setJsonValues = () => {
-    const json =
-      inputType === InputType.JSON ? parsedJSON : decompressedOrderFromUrl;
-
-    senderWallet = json?.senderWallet;
-    nonce = isNaN(Number(json?.nonce))
-      ? BigInt(0)
-      : BigInt(Number(json?.nonce));
-    expiry = isNaN(Number(json?.expiry))
-      ? BigInt(0)
-      : BigInt(Number(json?.expiry));
-    signerWallet = json?.signerWallet;
-    signerToken = json?.signerToken;
-    signerAmount = isNaN(Number(json?.signerAmount))
-      ? BigInt(0)
-      : BigInt(Number(json?.signerAmount));
-    senderToken = json?.senderToken;
-    senderAmount = isNaN(Number(json?.senderAmount))
-      ? BigInt(0)
-      : BigInt(Number(json?.senderAmount));
-    v = Number(json?.v);
-    r = json?.r as `0x${string}`;
-    s = json?.s as `0x${string}`;
-  };
-  setJsonValues();
-
-  const checkArgs: CheckArgs = [
-    (senderWallet && senderWallet) || zeroAddress,
+  const checkFunctionArgs: CheckFunctionArgs = [
+    (senderWallet as `0x${string}`) || zeroAddress,
     nonce || BigInt(0),
     expiry || BigInt(0),
-    signerWallet || zeroAddress,
-    signerToken || zeroAddress,
+    (signerWallet as `0x${string}`) || zeroAddress,
+    (signerToken as `0x${string}`) || zeroAddress,
     signerAmount || BigInt(0),
-    senderToken || zeroAddress,
+    (senderToken as `0x${string}`) || zeroAddress,
     senderAmount || BigInt(0),
     v || 0,
     r || '0x',
@@ -101,7 +80,7 @@ function App() {
     abi,
     address: swapContractAddress as `0x${string}`,
     functionName: 'check',
-    args: checkArgs,
+    args: checkFunctionArgs,
     enabled: isEnableCheck,
   });
 
@@ -141,65 +120,66 @@ function App() {
 
   const handleChangeTextAreaUrl = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setIsEnableCheck(false);
-    setParsedJSON(undefined);
+    setParsedJson(undefined);
     setUrlString(e.target.value);
   };
 
-  // check for unknown error from smart contract
-  const checkSmartContractError = () => {
-    if (
-      errorCheck?.message.includes('unknown') ||
-      errorCheck?.message.includes('reverted')
-    ) {
-      console.error(errorCheck);
-      const unknownError =
-        'Unknown error from SwapERC20 contract. Please double check all your inputs';
-
-      setErrors((prevErrors) => {
-        const updatedErrors = [unknownError, ...prevErrors];
-        return [...new Set(updatedErrors)];
-      });
-    }
+  // Start of smaller functions used in handleSubmit
+  const handleError = (errorMessage: string) => {
+    console.error(errorMessage);
+    setErrors([errorMessage]);
   };
+
+  const handleJsonSubmission = () => {
+    const parsedJsonObject = jsonString && JSON.parse(jsonString);
+    setParsedJson(parsedJsonObject);
+    checkSmartContractError({ errorCheck, setErrors });
+  };
+
+  const handleUrlSubmission = () => {
+    const jsonString = JSON.stringify(decompressedOrderFromUrl);
+    const parsedJsonString = JSON.parse(jsonString);
+    setParsedJson(parsedJsonString);
+  };
+
+  const validateInputs = () => {
+    if (inputType === InputType.JSON && !jsonString) {
+      setErrors(['Input cannot be blank']);
+      return false;
+    }
+    if (inputType === InputType.URL && !decompressedOrderFromUrl) {
+      setErrors([
+        'Something is wrong with your URL. Try copy-pasting it again',
+      ]);
+      return false;
+    }
+    return true;
+  };
+  // End of functions used in handleSubmit
 
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setParsedJSON(undefined);
+    setParsedJson(undefined);
     setIsEnableCheck(true);
     setErrors([]);
     setIsNoErrors(false);
 
-    if (inputType === InputType.JSON && !jsonString) {
-      setErrors(['Input cannot be blank']);
+    if (!validateInputs()) {
       return;
     }
-    if (inputType === InputType.URL && !decompressedOrderFromUrl) {
-      setErrors([
-        'Something is wrong with your URL. Try copy pasting it again',
-      ]);
-      return;
-    }
-
     try {
-      if (inputType === InputType.URL) {
-        const jsonString = JSON.stringify(decompressedOrderFromUrl);
-        const parsedJsonString = JSON.parse(jsonString);
-        setParsedJSON(parsedJsonString);
-      } else {
-        const parsedJsonObject = jsonString && JSON.parse(jsonString);
-        setParsedJSON(parsedJsonObject);
-        checkSmartContractError();
-      }
+      inputType === InputType.JSON
+        ? handleJsonSubmission()
+        : handleUrlSubmission();
     } catch (e) {
-      console.error(e);
-      setErrors([`Your input is not valid JSON format: ${e}`]);
+      handleError(`Error processing URL: ${e}`);
     }
   };
 
   // performs actions after parsedJSON has been updated
   useEffect(() => {
     const isJsonValid = validateJson({
-      json: parsedJSON,
+      json: parsedJson,
       swapContractAddress: swapContractAddress,
       chainId: selectedChainId,
     });
@@ -212,9 +192,7 @@ function App() {
       });
     }
 
-    const outputErrorsList = checkFunctionData?.[1].map((error) => {
-      return hexToString(error);
-    });
+    const outputErrorsList = getOutputErrorsList(checkFunctionData);
 
     // create array of human-readable errors
     const errorsList = displayErrors({
@@ -242,7 +220,7 @@ function App() {
     }
   }, [
     chainId,
-    parsedJSON,
+    parsedJson,
     checkFunctionData,
     swapContractAddress,
     domainChainId,
@@ -257,7 +235,6 @@ function App() {
       const address = SwapERC20.getAddress(chainId);
       address && setSwapContractAddress(address);
     }
-    // if (parsedJSON) console.log(parsedJSON);
   }, [chainId, swapContractAddress]);
 
   useEffect(() => {
@@ -330,7 +307,7 @@ function App() {
               handleChangeTextArea={handleChangeTextAreaUrl}
               isEnableCheck={isEnableCheck}
               isLoading={isLoadingCheck}
-              parsedJson={parsedJSON}
+              parsedJson={parsedJson}
               decompressedJson={decompressedJson}
               setDecompressedJson={setDecompressedJson}
             />

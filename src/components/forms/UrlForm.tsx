@@ -2,7 +2,7 @@ import { ChangeEvent, Dispatch, MouseEvent, SetStateAction } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { textareaUrlPlaceholder } from '../../placeholders/textareaUrlPlaceholder';
 import { Dialog } from '../Dialog';
-import { CheckParamsJSON } from '../../../types';
+import { ParsedJsonParams } from '../../../types';
 
 export const UrlForm = ({
   handleSubmit,
@@ -17,7 +17,7 @@ export const UrlForm = ({
   handleChangeTextArea: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   isEnableCheck: boolean;
   isLoading: boolean;
-  parsedJson: Partial<CheckParamsJSON> | undefined;
+  parsedJson: Partial<ParsedJsonParams> | undefined;
   decompressedJson: string | undefined;
   setDecompressedJson: Dispatch<SetStateAction<string | undefined>>;
 }) => {

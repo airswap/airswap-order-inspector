@@ -16,6 +16,7 @@ export const displayErrors = ({
   // remove null values
   const filteredErrors = errorsList
     .filter((error) => {
+      // reget checks for null values (x00...), which indicates no error
       const nullRegex = /^[\x00]+$/;
       return !nullRegex.test(error);
     })

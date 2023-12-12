@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './init';
-import App from './App.tsx';
 import './index.css';
 import { WagmiConfig } from 'wagmi';
 import { config } from './wagmiConfig/config.ts';
+import App from './App.tsx';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
