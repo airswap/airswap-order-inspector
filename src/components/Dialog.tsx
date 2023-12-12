@@ -2,6 +2,7 @@ import * as AlertDialog from '@radix-ui/react-alert-dialog';
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { CheckParamsJSON } from '../../types';
+import { formatJsonString } from '../utilities/formatJsonString';
 
 export const Dialog = ({
   inputButton,
@@ -32,8 +33,8 @@ export const Dialog = ({
     }
 
     if (parsedJson && isEnableCheck) {
-      const stringifyJson = JSON.stringify(parsedJson, null, 2);
-      setDecompressedJson(stringifyJson);
+      const stringifiedJson = formatJsonString(parsedJson);
+      setDecompressedJson(stringifiedJson);
       setOpen(true);
     }
   }, [parsedJson, setDecompressedJson, isEnableCheck]);
@@ -46,8 +47,9 @@ export const Dialog = ({
           <AlertDialog.Overlay className="bg-blackA6 data-[state=open]:animate-overlayShow fixed inset-0" />
           <AlertDialog.Content
             className={twMerge(
-              'data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] max-w-full rounded-md overflow-scroll focus:outline-none',
-              'bg-blueExtraDark text-lightGray p-[25px] border border-blueGray',
+              'w-[95%] md:w-4/5 lg:w-1/2 max-w-full p-2 xs:p-4 sm:p-6 md:p-8',
+              'data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] rounded-md break-words focus:outline-none',
+              'bg-blueExtraDark text-lightGray border border-blueGray',
               'shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px]'
             )}
           >
