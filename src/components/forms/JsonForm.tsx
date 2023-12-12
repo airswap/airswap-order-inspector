@@ -41,7 +41,6 @@ export const JsonForm = ({
           />
         </div>
       </div>
-
       <textarea
         id="jsonInput"
         name="jsonInput"

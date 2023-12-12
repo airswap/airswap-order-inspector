@@ -126,8 +126,8 @@ function App() {
 
   // Start of smaller functions used in handleSubmit
   const handleError = (errorMessage: string) => {
-    setErrors([errorMessage]);
     console.error(errorMessage);
+    setErrors([errorMessage]);
   };
 
   const handleJsonSubmission = () => {
