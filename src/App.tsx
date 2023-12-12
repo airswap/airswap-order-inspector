@@ -3,7 +3,7 @@ import { useContractRead } from 'wagmi';
 import { abi } from './contracts/swapERC20ABI';
 import { zeroAddress } from 'viem';
 import { CheckFunctionArgs, ParsedJsonParams, InputType } from '../types';
-import { validateJson } from './utilities/validations';
+import { validateJson } from './utilities/validateJson';
 import { displayErrors } from './utilities/displayErrors';
 import { twMerge } from 'tailwind-merge';
 import { Errors } from './components/Errors';
