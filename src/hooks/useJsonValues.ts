@@ -1,7 +1,7 @@
 import { FullOrderERC20 } from '@airswap/types';
 import { CheckParamsJson, InputType } from '../../types';
 
-export const setJsonValues = ({
+export const useJsonValues = ({
   inputType,
   parsedJson,
   decompressedOrderFromUrl,

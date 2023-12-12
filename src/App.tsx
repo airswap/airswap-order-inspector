@@ -14,7 +14,8 @@ import { Toggle } from './components/Toggle';
 import { SwapERC20 } from '@airswap/libraries';
 import { useDecompressedOrderFromUrl } from './hooks/useDecompressedOrderFromUrl';
 import { formatErrorsList } from './utilities/formatErrorsList';
-import { setJsonValues } from './utilities/setJsonValues';
+import { useJsonValues } from './hooks/useJsonValues';
+import { checkSmartContractError } from './utilities/checkSmartContractError';
 
 function App() {
   const [inputType, setInputType] = useState<InputType>(InputType.JSON);
@@ -53,7 +54,7 @@ function App() {
     v,
     r,
     s,
-  } = setJsonValues({ inputType, parsedJson, decompressedOrderFromUrl });
+  } = useJsonValues({ inputType, parsedJson, decompressedOrderFromUrl });
 
   const checkFunctionArgs: CheckFunctionArgs = [
     (senderWallet as `0x${string}`) || zeroAddress,
@@ -122,23 +123,6 @@ function App() {
     setUrlString(e.target.value);
   };
 
-  // check for unknown error from smart contract
-  const checkSmartContractError = () => {
-    if (
-      errorCheck?.message.includes('unknown') ||
-      errorCheck?.message.includes('reverted')
-    ) {
-      console.error(errorCheck);
-      const unknownError =
-        'Unknown error from SwapERC20 contract. Please double check all your inputs';
-
-      setErrors((prevErrors) => {
-        const updatedErrors = [unknownError, ...prevErrors];
-        return [...new Set(updatedErrors)];
-      });
-    }
-  };
-
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
     setParsedJson(undefined);
@@ -165,7 +149,7 @@ function App() {
       } else {
         const parsedJsonObject = jsonString && JSON.parse(jsonString);
         setParsedJson(parsedJsonObject);
-        checkSmartContractError();
+        checkSmartContractError({ errorCheck, setErrors });
       }
     } catch (e) {
       console.error(e);
