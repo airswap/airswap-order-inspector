@@ -1,6 +1,5 @@
-// checkParamsJSON is used to validate JSON, not for smart contract read function
-export interface CheckParamsJson {
-  senderWallet: `0x${string}`;
+// ParsedJsonParams is used to validate JSON, not for smart contract read function
+export interface ParsedJsonParams {
   nonce: string | number;
   expiry: string;
   signerWallet: `0x${string}`;
@@ -11,9 +10,10 @@ export interface CheckParamsJson {
   v: string;
   r: string;
   s: string;
-  chainId: string;
-  swapContract: `0x${string}`;
-  protocolFee: '7';
+  senderWallet?: `0x${string}`;
+  chainId?: string;
+  swapContract?: `0x${string}`;
+  protocolFee?: '7';
 }
 
 // checkArgs is used for the smart contract read function

@@ -1,6 +1,6 @@
-import { CheckParamsJSON } from '../../types';
+import { ParsedJsonParams } from '../../types';
 
-export const formatJsonString = (json: Partial<CheckParamsJSON>): string => {
+export const formatJsonString = (json: Partial<ParsedJsonParams>): string => {
   const stringifiedJson = JSON.stringify(json);
   let formattedJsonString = '';
 

@@ -1,7 +1,7 @@
 import * as AlertDialog from '@radix-ui/react-alert-dialog';
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
-import { CheckParamsJSON } from '../../types';
+import { ParsedJsonParams } from '../../types';
 import { formatJsonString } from '../utilities/formatJsonString';
 
 export const Dialog = ({
@@ -12,7 +12,7 @@ export const Dialog = ({
   isEnableCheck,
 }: {
   inputButton: React.ReactNode;
-  parsedJson: Partial<CheckParamsJSON> | undefined;
+  parsedJson: Partial<ParsedJsonParams> | undefined;
   decompressedJson: string | undefined;
   setDecompressedJson: Dispatch<SetStateAction<string | undefined>>;
   isEnableCheck: boolean;

@@ -1,5 +1,5 @@
 import { FullOrderERC20 } from '@airswap/types';
-import { CheckParamsJson, InputType } from '../../types';
+import { ParsedJsonParams, InputType } from '../../types';
 
 export const useJsonValues = ({
   inputType,
@@ -7,7 +7,7 @@ export const useJsonValues = ({
   decompressedOrderFromUrl,
 }: {
   inputType: InputType;
-  parsedJson: Partial<CheckParamsJson> | undefined;
+  parsedJson: Partial<ParsedJsonParams> | undefined;
   decompressedOrderFromUrl: FullOrderERC20 | undefined;
 }) => {
   const json =

@@ -1,8 +1,8 @@
 import { ChangeEvent, MouseEvent, ReactNode, useEffect, useState } from 'react';
 import { useContractRead } from 'wagmi';
 import { abi } from './contracts/swapERC20ABI';
-import { hexToString, zeroAddress } from 'viem';
-import { CheckFunctionArgs, CheckParamsJson, InputType } from '../types';
+import { zeroAddress } from 'viem';
+import { CheckFunctionArgs, ParsedJsonParams, InputType } from '../types';
 import { validateJson } from './utilities/validations';
 import { displayErrors } from './utilities/displayErrors';
 import { twMerge } from 'tailwind-merge';
@@ -16,13 +16,14 @@ import { useDecompressedOrderFromUrl } from './hooks/useDecompressedOrderFromUrl
 import { formatErrorsList } from './utilities/formatErrorsList';
 import { useJsonValues } from './hooks/useJsonValues';
 import { checkSmartContractError } from './utilities/checkSmartContractError';
+import { getOutputErrorsList } from './utilities/getOutputErrorsList';
 
 function App() {
   const [inputType, setInputType] = useState<InputType>(InputType.JSON);
   const [jsonString, setJsonString] = useState<undefined | string>(undefined);
   const [urlString, setUrlString] = useState<string | undefined>(undefined);
   const [parsedJson, setParsedJson] = useState<
-    undefined | Partial<CheckParamsJson>
+    undefined | Partial<ParsedJsonParams>
   >(undefined);
   const [decompressedJson, setDecompressedJson] = useState<string | undefined>(
     undefined
@@ -123,6 +124,39 @@ function App() {
     setUrlString(e.target.value);
   };
 
+  // Start of smaller functions used in handleSubmit
+  const handleError = (errorMessage: string) => {
+    setErrors([errorMessage]);
+    console.error(errorMessage);
+  };
+
+  const handleJsonSubmission = () => {
+    const parsedJsonObject = jsonString && JSON.parse(jsonString);
+    setParsedJson(parsedJsonObject);
+    checkSmartContractError({ errorCheck, setErrors });
+  };
+
+  const handleUrlSubmission = () => {
+    const jsonString = JSON.stringify(decompressedOrderFromUrl);
+    const parsedJsonString = JSON.parse(jsonString);
+    setParsedJson(parsedJsonString);
+  };
+
+  const validateInputs = () => {
+    if (inputType === InputType.JSON && !jsonString) {
+      setErrors(['Input cannot be blank']);
+      return false;
+    }
+    if (inputType === InputType.URL && !decompressedOrderFromUrl) {
+      setErrors([
+        'Something is wrong with your URL. Try copy-pasting it again',
+      ]);
+      return false;
+    }
+    return true;
+  };
+  // End of functions used in handleSubmit
+
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
     setParsedJson(undefined);
@@ -130,30 +164,15 @@ function App() {
     setErrors([]);
     setIsNoErrors(false);
 
-    if (inputType === InputType.JSON && !jsonString) {
-      setErrors(['Input cannot be blank']);
+    if (!validateInputs()) {
       return;
     }
-    if (inputType === InputType.URL && !decompressedOrderFromUrl) {
-      setErrors([
-        'Something is wrong with your URL. Try copy pasting it again',
-      ]);
-      return;
-    }
-
     try {
-      if (inputType === InputType.URL) {
-        const jsonString = JSON.stringify(decompressedOrderFromUrl);
-        const parsedJsonString = JSON.parse(jsonString);
-        setParsedJson(parsedJsonString);
-      } else {
-        const parsedJsonObject = jsonString && JSON.parse(jsonString);
-        setParsedJson(parsedJsonObject);
-        checkSmartContractError({ errorCheck, setErrors });
-      }
+      inputType === InputType.JSON
+        ? handleJsonSubmission()
+        : handleUrlSubmission();
     } catch (e) {
-      console.error(e);
-      setErrors([`Your input is not valid JSON format: ${e}`]);
+      handleError(`Error processing URL: ${e}`);
     }
   };
 
@@ -173,9 +192,7 @@ function App() {
       });
     }
 
-    const outputErrorsList = checkFunctionData?.[1].map((error) => {
-      return hexToString(error);
-    });
+    const outputErrorsList = getOutputErrorsList(checkFunctionData);
 
     // create array of human-readable errors
     const errorsList = displayErrors({

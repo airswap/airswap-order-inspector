@@ -1,18 +1,18 @@
 import { isAddress } from 'viem';
-import { ChainIds, CheckParamsJSON } from '../../types';
+import { ChainIds, ParsedJsonParams } from '../../types';
 
 export const validateJson = ({
   json,
   swapContractAddress,
   chainId,
 }: {
-  json: Partial<CheckParamsJSON> | undefined;
+  json: Partial<ParsedJsonParams> | undefined;
   swapContractAddress: string | undefined;
   chainId: number | undefined;
 }): string[] | false => {
   const errorsList: string[] = [];
   try {
-    const requiredKeys: (keyof CheckParamsJSON)[] = [
+    const requiredKeys: (keyof ParsedJsonParams)[] = [
       'nonce',
       'expiry',
       'signerWallet',
