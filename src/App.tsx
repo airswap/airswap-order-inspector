@@ -14,7 +14,6 @@ import { Toggle } from './components/Toggle';
 import { SwapERC20 } from '@airswap/libraries';
 import { useDecompressedOrderFromUrl } from './hooks/useDecompressedOrderFromUrl';
 import { formatErrorsList } from './utilities/formatErrorsList';
-// import { DecodedJson } from './components/DecodedJson';
 
 function App() {
   const [inputType, setInputType] = useState<InputType>(InputType.JSON);
@@ -23,6 +22,9 @@ function App() {
   const [parsedJSON, setParsedJSON] = useState<
     undefined | Partial<CheckParamsJSON>
   >(undefined);
+  const [decompressedJson, setDecompressedJson] = useState<string | undefined>(
+    undefined
+  );
   const [swapContractAddress, setSwapContractAddress] = useState<
     string | undefined
   >(undefined);
@@ -139,6 +141,7 @@ function App() {
 
   const handleChangeTextAreaUrl = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setIsEnableCheck(false);
+    setParsedJSON(undefined);
     setUrlString(e.target.value);
   };
 
@@ -161,6 +164,7 @@ function App() {
 
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setParsedJSON(undefined);
     setIsEnableCheck(true);
     setErrors([]);
     setIsNoErrors(false);
@@ -253,8 +257,8 @@ function App() {
       const address = SwapERC20.getAddress(chainId);
       address && setSwapContractAddress(address);
     }
-    if (parsedJSON) console.log(parsedJSON);
-  }, [chainId, swapContractAddress, parsedJSON]);
+    // if (parsedJSON) console.log(parsedJSON);
+  }, [chainId, swapContractAddress]);
 
   useEffect(() => {
     const renderErrors = () =>
@@ -298,11 +302,15 @@ function App() {
             clickTypeJson={() => {
               setInputType(InputType.JSON);
               setIsNoErrors(false);
+              setIsEnableCheck(false);
               setErrors([]);
             }}
             clickTypeUrl={() => {
               setInputType(InputType.URL);
               setIsNoErrors(false);
+              // we need to reset the following 2 values because they affect the behavior of `decompressedJson` in Dilog.tsx
+              setUrlString(undefined);
+              setIsEnableCheck(false);
               setErrors([]);
             }}
           />
@@ -322,6 +330,9 @@ function App() {
               handleChangeTextArea={handleChangeTextAreaUrl}
               isEnableCheck={isEnableCheck}
               isLoading={isLoadingCheck}
+              parsedJson={parsedJSON}
+              decompressedJson={decompressedJson}
+              setDecompressedJson={setDecompressedJson}
             />
           )}
         </div>
@@ -332,9 +343,6 @@ function App() {
             'border border-blueGray rounded-md shadow-sm shadow-grayDark'
           )}
         >
-          {/* {inputType === InputType.URL && (
-            <DecodedJson decodedJson={parsedJSON} />
-          )} */}
           <Errors
             isLoading={isLoadingCheck}
             errors={errors}
