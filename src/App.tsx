@@ -17,6 +17,7 @@ import { formatErrorsList } from './utilities/formatErrorsList';
 import { useJsonValues } from './hooks/useJsonValues';
 import { checkSmartContractError } from './utilities/checkSmartContractError';
 import { getOutputErrorsList } from './utilities/getOutputErrorsList';
+import { renderErrors } from './components/ErrorsList';
 
 function App() {
   const [inputType, setInputType] = useState<InputType>(InputType.JSON);
@@ -238,19 +239,7 @@ function App() {
   }, [chainId, swapContractAddress]);
 
   useEffect(() => {
-    const renderErrors = () =>
-      errors?.map((error, i) => (
-        <li
-          key={error + i}
-          className="flex max-w-full ml-2 mb-2 text-left last:mb-0"
-        >
-          <input type="checkbox" className="flex self-start w-4 mr-2 mt-1.5" />
-          <span className="flex">{error}</span>
-        </li>
-      ));
-
-    const renderedErrors = renderErrors();
-
+    const renderedErrors = renderErrors({ errors });
     setRenderedErrors(renderedErrors);
   }, [errors]);
 
