@@ -7,7 +7,7 @@ export const Button = ({
 }: {
   text: string;
   clickAction?: () => void;
-  className?: string | null;
+  className?: string;
 }) => {
   return (
     <button
