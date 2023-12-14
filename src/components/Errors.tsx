@@ -1,17 +1,18 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 import { twMerge } from 'tailwind-merge';
+import { renderErrors } from './ErrorsList';
 
 export const Errors = ({
   isLoading,
   errors,
   isNoErrors,
-  renderedErrors,
 }: {
   isLoading: boolean;
   errors: string[];
   isNoErrors: boolean;
-  renderedErrors: ReactNode;
 }) => {
+  const renderedErrors = renderErrors({ errors });
+
   return (
     <React.Fragment>
       {!isLoading && (
