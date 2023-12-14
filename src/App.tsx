@@ -1,4 +1,4 @@
-import { ChangeEvent, MouseEvent, ReactNode, useEffect, useState } from 'react';
+import { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
 import { useContractRead } from 'wagmi';
 import { abi } from './contracts/swapERC20ABI';
 import { zeroAddress } from 'viem';
@@ -17,7 +17,6 @@ import { formatErrorsList } from './utilities/formatErrorsList';
 import { useJsonValues } from './hooks/useJsonValues';
 import { checkSmartContractError } from './utilities/checkSmartContractError';
 import { getOutputErrorsList } from './utilities/getOutputErrorsList';
-import { renderErrors } from './components/ErrorsList';
 
 function App() {
   const [inputType, setInputType] = useState<InputType>(InputType.JSON);
@@ -34,7 +33,6 @@ function App() {
   >(undefined);
   const [selectedChainId, setSelectedChainId] = useState<number | undefined>();
   const [errors, setErrors] = useState<string[]>([]);
-  const [renderedErrors, setRenderedErrors] = useState<ReactNode | undefined>();
   const [isEnableCheck, setIsEnableCheck] = useState(false);
   const [isNoErrors, setIsNoErrors] = useState(false);
 
@@ -238,11 +236,6 @@ function App() {
     }
   }, [chainId, swapContractAddress]);
 
-  useEffect(() => {
-    const renderedErrors = renderErrors({ errors });
-    setRenderedErrors(renderedErrors);
-  }, [errors]);
-
   return (
     <div className="flex flex-col font-sans">
       <Header
@@ -313,7 +306,6 @@ function App() {
             isLoading={isLoadingCheck}
             errors={errors}
             isNoErrors={isNoErrors}
-            renderedErrors={renderedErrors}
           />
         </div>
       </div>
