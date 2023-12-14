@@ -171,6 +171,18 @@ function App() {
     }
   };
 
+  const handleFormattedListErrors = (errorsList: string[] | undefined) => {
+    const formattedErrorsList = formatErrorsList(errorsList);
+
+    if (formattedErrorsList && formattedErrorsList.length > 0) {
+      setErrors((prevErrors) => {
+        const updatedErrors = [...prevErrors, ...formattedErrorsList];
+        const uniqueErrors = [...new Set(updatedErrors)];
+        return uniqueErrors;
+      });
+    }
+  };
+
   // performs actions after parsedJSON has been updated
   useEffect(() => {
     const isJsonValid = validateJson({
@@ -200,15 +212,8 @@ function App() {
         protocolFee,
       },
     });
-    const formattedErrorsList = formatErrorsList(errorsList);
 
-    if (formattedErrorsList && formattedErrorsList.length > 0) {
-      setErrors((prevErrors) => {
-        const updatedErrors = [...prevErrors, ...formattedErrorsList];
-        const uniqueErrors = [...new Set(updatedErrors)];
-        return uniqueErrors;
-      });
-    }
+    handleFormattedListErrors(errorsList);
 
     if (!isJsonValid && errorsList && errorsList.length === 0) {
       setIsNoErrors(true);
