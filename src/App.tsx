@@ -124,11 +124,6 @@ function App() {
   };
 
   // Start of smaller functions used in handleSubmit
-  const handleError = (errorMessage: string) => {
-    console.error(errorMessage);
-    setErrors([errorMessage]);
-  };
-
   const handleJsonSubmission = () => {
     const parsedJsonObject = jsonString && JSON.parse(jsonString);
     setParsedJson(parsedJsonObject);
@@ -171,7 +166,8 @@ function App() {
         ? handleJsonSubmission()
         : handleUrlSubmission();
     } catch (e) {
-      handleError(`Error processing URL: ${e}`);
+      console.error(e);
+      setErrors([`Error processing URL: ${e}`]);
     }
   };
 
