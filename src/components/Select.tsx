@@ -47,9 +47,9 @@ export const Select = ({
       >
         <RadixSelect.Trigger
           className="flex items-center px-3 py-1 bg-blueGray border border-blueGray rounded-md font-semibold uppercase"
-          aria-label="chain"
+          aria-label="chain id"
         >
-          <RadixSelect.Value placeholder="chain" />
+          <RadixSelect.Value placeholder="chain id" />
           <RadixSelect.Icon className="ml-2">
             <div
               className={`${

@@ -3,6 +3,7 @@ import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { ParsedJsonParams } from '../../types';
 import { formatJsonString } from '../utilities/formatJsonString';
+import { Button } from './Button';
 
 export const Dialog = ({
   inputButton,
@@ -23,9 +24,11 @@ export const Dialog = ({
     if (!decompressedJson) {
       return;
     }
-
     await navigator.clipboard.writeText(decompressedJson);
+    setOpen(false);
   };
+
+  const handleClose = () => setOpen(false);
 
   useEffect(() => {
     if (!parsedJson) {
@@ -64,25 +67,18 @@ export const Dialog = ({
             </AlertDialog.Description>
             <div className="flex justify-end gap-[25px]">
               <AlertDialog.Cancel asChild>
-                <button
-                  onClick={() => handleCopyJson(decompressedJson)}
-                  className={twMerge(
-                    'w-full xs:w-[90%] sm:w-4/5 md:w-full lg:w-4/5',
-                    'mt-4 mx-auto py-3 px-4 text-white bg-blueGray border-darkgray border-1 rounded-sm font-medium text-lg uppercase'
-                  )}
-                >
-                  Copy JSON
-                </button>
+                <Button
+                  text="copy json"
+                  clickAction={() => handleCopyJson(decompressedJson)}
+                  variant="dialog"
+                />
               </AlertDialog.Cancel>
               <AlertDialog.Action asChild>
-                <button
-                  className={twMerge(
-                    'w-full xs:w-[90%] sm:w-4/5 md:w-full lg:w-4/5',
-                    'mt-4 mx-auto py-3 px-4 text-white bg-blueGray border-darkgray border-1 rounded-sm font-medium text-lg uppercase'
-                  )}
-                >
-                  Close
-                </button>
+                <Button
+                  text="close"
+                  clickAction={handleClose}
+                  variant="dialog"
+                />
               </AlertDialog.Action>
             </div>
           </AlertDialog.Content>

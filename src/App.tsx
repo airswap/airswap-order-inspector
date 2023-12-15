@@ -253,53 +253,56 @@ function App() {
       >
         <div
           className={twMerge(
-            'md:w-full lg:w-1/2 md:pt-4 md:pb-8 md:mr-2 bg-blueDark rounded-md pb-6 px-1',
+            'md:w-full lg:w-1/2',
+            'md:pt-4 md:pb-8 md:mr-2 bg-blueDark rounded-md pb-6 px-1',
             'border border-blueGray shadow-sm shadow-grayDark'
           )}
         >
-          <Toggle
-            inputType={inputType}
-            clickTypeJson={() => {
-              setInputType(InputType.JSON);
-              setIsNoErrors(false);
-              setIsEnableCheck(false);
-              setErrors([]);
-            }}
-            clickTypeUrl={() => {
-              setInputType(InputType.URL);
-              setIsNoErrors(false);
-              // we need to reset the following 2 values because they affect the behavior of `decompressedJson` in Dilog.tsx
-              setUrlString(undefined);
-              setIsEnableCheck(false);
-              setErrors([]);
-            }}
-          />
+          <div className="w-full sm:w-4/5 md:w-full lg:w-[90%] m-auto">
+            <Toggle
+              inputType={inputType}
+              clickTypeJson={() => {
+                setInputType(InputType.JSON);
+                setIsNoErrors(false);
+                setIsEnableCheck(false);
+                setErrors([]);
+              }}
+              clickTypeUrl={() => {
+                setInputType(InputType.URL);
+                setIsNoErrors(false);
+                // reset the following 2 values because they affect the behavior of `decompressedJson` in Dialog.tsx
+                setUrlString(undefined);
+                setIsEnableCheck(false);
+                setErrors([]);
+              }}
+            />
 
-          {inputType === InputType.JSON ? (
-            <JsonForm
-              handleSubmit={handleSubmit}
-              handleChangeTextArea={handleChangeTextAreaJson}
-              isEnableCheck={isEnableCheck}
-              isLoading={isLoadingCheck}
-              setIsEnableCheck={setIsEnableCheck}
-              setSelectedChainId={setSelectedChainId}
-            />
-          ) : (
-            <UrlForm
-              handleSubmit={handleSubmit}
-              handleChangeTextArea={handleChangeTextAreaUrl}
-              isEnableCheck={isEnableCheck}
-              isLoading={isLoadingCheck}
-              parsedJson={parsedJson}
-              decompressedJson={decompressedJson}
-              setDecompressedJson={setDecompressedJson}
-            />
-          )}
+            {inputType === InputType.JSON ? (
+              <JsonForm
+                handleSubmit={handleSubmit}
+                handleChangeTextArea={handleChangeTextAreaJson}
+                isEnableCheck={isEnableCheck}
+                isLoading={isLoadingCheck}
+                setIsEnableCheck={setIsEnableCheck}
+                setSelectedChainId={setSelectedChainId}
+              />
+            ) : (
+              <UrlForm
+                handleSubmit={handleSubmit}
+                handleChangeTextArea={handleChangeTextAreaUrl}
+                isEnableCheck={isEnableCheck}
+                isLoading={isLoadingCheck}
+                parsedJson={parsedJson}
+                decompressedJson={decompressedJson}
+                setDecompressedJson={setDecompressedJson}
+              />
+            )}
+          </div>
         </div>
         <div
           className={twMerge(
-            'md:w-full md:pt-4 md:ml-2 md:mt-0',
-            'lg:w-1/2 mt-4 pt-4 pb-8 px-1 bg-blueDark text-lightGray',
+            'md:w-full lg:w-1/2 md:pt-4 md:ml-2 md:mt-0 mt-4 pt-4 pb-8 px-1',
+            'bg-blueDark text-lightGray',
             'border border-blueGray rounded-md shadow-sm shadow-grayDark'
           )}
         >

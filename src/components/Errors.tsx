@@ -23,7 +23,7 @@ export const Errors = ({
           <div
             id="errors-container"
             className={twMerge(
-              'xs:w-[90%] sm:w-4/5 w-full',
+              'w-full sm:w-4/5 md:w-full lg:w-[90%]',
               'mt-2 mx-auto p-4 lg:p-6 border bg-blueGray rounded-md',
               errors.length < 1 && !isNoErrors && 'border-none',
               errors.length > 0 && 'border-redAlert border-dashed',
@@ -31,7 +31,7 @@ export const Errors = ({
             )}
           >
             {!isNoErrors ? (
-              <ul className="list-none">{renderedErrors}</ul>
+              <ul className="list-none break-words">{renderedErrors}</ul>
             ) : (
               <h3 className="mb-1 text-lg font-semibold uppercase">
                 🎊 No errors found! 🎊
