@@ -246,7 +246,7 @@ function App() {
       <div
         id="container"
         className={twMerge(
-          'flex flex-col md:flex-row box-border px-1 mx-auto',
+          'flex flex-col md:flex-row box-border px-1 mx-auto mb-2 xs:mb-6',
           'w-full xs:w-[90%] sm:w-4/5 md:w-[95%] lg:w-[90%] xl:w-4/5',
           'text-center bg-transparent text-lightGray rounded-md'
         )}
