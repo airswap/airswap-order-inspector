@@ -25,11 +25,7 @@ export const Header = ({
         <img src={airswapLogo} alt="AirSwap logo" className="mr-3" />
         <h1>Server Debugger</h1>
       </div>
-      <div
-        className={twMerge(
-          'flex md:absolute md:right-0 mx-auto md:h-full md:py-2 text-sm font-light text-white uppercase'
-        )}
-      >
+      <div className="flex md:absolute md:right-0 mx-auto md:h-full md:py-2 text-sm font-light text-white uppercase">
         Protocol fee:{' '}
         {!isLoadingProtocolFee ? Number(protocolFee) || '7' : 'loading...'}
       </div>

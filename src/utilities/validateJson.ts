@@ -105,9 +105,7 @@ export const validateJson = ({
         errorsList.push('swapContract: must be a valid ERC20 address');
         // then check if address is correct
         if (json['swapContract'] !== swapContractAddress) {
-          errorsList.push(
-            `swapContract: address is not valid. Check for deployed contracts on https://about.airswap.io/technology/deployments.`
-          );
+          errorsList.push(`swapContract: SwapERC20 address is not valid.`);
         }
       }
     }
