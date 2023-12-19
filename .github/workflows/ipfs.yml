@@ -16,7 +16,7 @@ jobs:
 
       - name: Install and Build 🔧
         env:
-          VITE_INFURA_API_KEY: ${{ secrets.VITE_INFURA_API_KEY }}
+          VITE_INFURA_API_KEY: ${{ secrets.INFURA_PROJECT_ID }}
         run: |
           yarn
           yarn build
