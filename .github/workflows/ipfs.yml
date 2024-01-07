@@ -34,4 +34,5 @@ jobs:
         with:
           path: ./dist
           service: pinata
-          pinataKey: ${{ secrets.PINATA_API_KEY }}
+          pinataKey: ${{ secrets.PINATA_KEY }}
+          pinataSecret: ${{ secrets.PINATA_SECRET }}
