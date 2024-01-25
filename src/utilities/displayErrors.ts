@@ -16,18 +16,14 @@ export const displayErrors = ({
   // remove null values
   const filteredErrors = errorsList
     .filter((error) => {
-      // reget checks for null values (x00...), which indicates no error
+      // regex checks for null values (x00...), which indicates no error
       const nullRegex = /^[\x00]+$/;
       return !nullRegex.test(error);
     })
     .map((error) => error.replace(/\x00/g, '').toLowerCase());
 
   const requiredValuesText = `
-  domain chainId = ${requiredValues.domainChainId}
-  domain verifyingContract: ${requiredValues.domainVerifyingContract}
-  domain name = ${requiredValues.domainName}
-  domain version = ${requiredValues.domainVersion}
-  protocolFee: ${requiredValues.protocolFee}`;
+  Signature invalid. Double check the following values: domain chainId = ${requiredValues.domainChainId}, domain verifyingContract: ${requiredValues.domainVerifyingContract}, domain name = ${requiredValues.domainName}, domain version = ${requiredValues.domainVersion}, protocolFee: ${requiredValues.protocolFee}`;
 
   const errorMessages = filteredErrors.map((error) => {
     if (
@@ -35,7 +31,7 @@ export const displayErrors = ({
         'unauthorized' || 'SignatoryUnauthorized' || 'Unauthorized'
       )
     ) {
-      return `Signature invalid. Check that you're using the required values: ${requiredValuesText}`;
+      return requiredValuesText;
     } else if (error.includes('NonceAlreadyUsed')) {
       return `Nonce: the nonce entered is invalid.`;
     } else if (error.includes('expired')) {

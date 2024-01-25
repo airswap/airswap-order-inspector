@@ -5,11 +5,9 @@ import { ChainIds } from '../../tools/constants';
 export const validateJson = ({
   json,
   swapContractAddress,
-  chainId,
 }: {
   json: Partial<ParsedJsonParams> | undefined;
   swapContractAddress: string | undefined;
-  chainId: number | undefined;
 }): string[] | false => {
   const errorsList: string[] = [];
   try {
@@ -32,13 +30,15 @@ export const validateJson = ({
       !/^(0x)?[0-9a-fA-F]{64}$/.test(jsonKey);
     const isUint8 = (v: string) =>
       !/^(0|[1-9]\d?|1\d\d|2[0-4]\d|25[0-5])$/.test(v);
+    const chainIdList = Object.keys(ChainIds);
 
     // Check for valid values
     if (json) {
-      if (!json['chainId'] && !chainId) {
-        errorsList.push(
-          'chainId: double check your chain id. Either select one in the dropdown, or enter "chainId" and its value into your JSON'
-        );
+      if (
+        json['chainId'] &&
+        !chainIdList.includes(json['chainId'].toString())
+      ) {
+        errorsList.push('chainId: double check your chain id');
       }
       if (json['senderWallet'] && !isAddress(json['senderWallet'])) {
         errorsList.push('senderWallet must be a valid ERC20 address');

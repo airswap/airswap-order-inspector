@@ -1,5 +1,5 @@
 import { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
-import { useContractRead, useSwitchNetwork } from 'wagmi';
+import { useContractRead, useNetwork, useSwitchNetwork } from 'wagmi';
 import { abi } from './contracts/swapERC20ABI';
 import { zeroAddress } from 'viem';
 import { CheckFunctionArgs, ParsedJsonParams, InputType } from '../types';
@@ -33,6 +33,7 @@ function App() {
   >(undefined);
   const [selectedChainId, setSelectedChainId] = useState<number | undefined>();
   const [errors, setErrors] = useState<string[]>([]);
+  // whenever use input changes, isEnableCheck changes to false. Gets set to true only when user submits json
   const [isEnableCheck, setIsEnableCheck] = useState(false);
   const [isNoErrors, setIsNoErrors] = useState(false);
 
@@ -46,12 +47,9 @@ function App() {
       }
     },
   });
+  const { chain } = useNetwork();
 
   const decompressedOrderFromUrl = useDecompressedOrderFromUrl(urlString);
-
-  const chainId = parsedJson?.chainId
-    ? Number(parsedJson?.chainId)
-    : selectedChainId;
 
   const {
     senderWallet,
@@ -86,7 +84,7 @@ function App() {
     isLoading: isLoadingCheck,
     error: errorCheck,
   } = useContractRead({
-    chainId,
+    chainId: chain?.id,
     abi,
     address: swapContractAddress as `0x${string}`,
     functionName: 'check',
@@ -96,28 +94,28 @@ function App() {
 
   const { data: protocolFee, isLoading: isLoadingProtocolFee } =
     useContractRead({
-      chainId,
+      chainId: chain?.id,
       abi,
       address: swapContractAddress as `0x${string}`,
       functionName: 'protocolFee',
     });
 
   const { data: domainName } = useContractRead({
-    chainId,
+    chainId: chain?.id,
     abi,
     address: swapContractAddress as `0x${string}`,
     functionName: 'DOMAIN_NAME',
   });
 
   const { data: domainChainId } = useContractRead({
-    chainId,
+    chainId: chain?.id,
     abi,
     address: swapContractAddress as `0x${string}`,
     functionName: 'DOMAIN_CHAIN_ID',
   });
 
   const { data: domainVersion } = useContractRead({
-    chainId,
+    chainId: chain?.id,
     abi,
     address: swapContractAddress as `0x${string}`,
     functionName: 'DOMAIN_VERSION',
@@ -199,7 +197,6 @@ function App() {
     const isJsonValid = validateJson({
       json: parsedJson,
       swapContractAddress: swapContractAddress,
-      chainId: selectedChainId,
     });
 
     if (isJsonValid) {
@@ -230,7 +227,7 @@ function App() {
       setIsNoErrors(true);
     }
   }, [
-    chainId,
+    chain,
     parsedJson,
     checkFunctionData,
     swapContractAddress,
@@ -243,12 +240,10 @@ function App() {
 
   // programating handling of chainId
   useEffect(() => {
-    if (chainId) {
-      switchNetwork && switchNetwork();
-      const address = SwapERC20.getAddress(chainId);
-      address && setSwapContractAddress(address);
-    }
-  }, [chainId, swapContractAddress, switchNetwork]);
+    switchNetwork && switchNetwork();
+    const address = SwapERC20.getAddress(chain?.id || 1);
+    address && setSwapContractAddress(address);
+  }, [chain, swapContractAddress, switchNetwork]);
 
   return (
     <div className="flex flex-col font-sans">
@@ -296,7 +291,7 @@ function App() {
                 handleChangeTextArea={handleChangeTextAreaJson}
                 isEnableCheck={isEnableCheck}
                 isLoading={isLoadingCheck}
-                setIsEnableCheck={setIsEnableCheck}
+                // setIsEnableCheck={setIsEnableCheck}
                 setSelectedChainId={setSelectedChainId}
               />
             ) : (

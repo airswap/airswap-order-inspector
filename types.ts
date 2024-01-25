@@ -11,7 +11,7 @@ export interface ParsedJsonParams {
   r: string;
   s: string;
   senderWallet?: `0x${string}`;
-  chainId?: string;
+  chainId?: string | number;
   swapContract?: `0x${string}`;
   protocolFee?: '7';
 }

@@ -8,14 +8,14 @@ export const JsonForm = ({
   handleChangeTextArea,
   isEnableCheck,
   isLoading,
-  setIsEnableCheck,
+  // setIsEnableCheck,
   setSelectedChainId,
 }: {
   handleSubmit: (e: MouseEvent<HTMLFormElement>) => void;
   handleChangeTextArea: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   isEnableCheck: boolean;
   isLoading: boolean;
-  setIsEnableCheck: (value: boolean) => void;
+  // setIsEnableCheck: (value: boolean) => void;
   setSelectedChainId: (value: number) => void;
 }) => {
   return (
@@ -29,7 +29,7 @@ export const JsonForm = ({
         </label>
         <div>
           <Select
-            setIsEnableCheck={setIsEnableCheck}
+            // setIsEnableCheck={setIsEnableCheck}
             setSelectedChainId={setSelectedChainId}
             selectOptions={chainIdOptions}
           />
