@@ -1,5 +1,6 @@
 import { isAddress } from 'viem';
-import { ChainIds, ParsedJsonParams } from '../../types';
+import { ParsedJsonParams } from '../../types';
+import { ChainIds } from '../../tools/constants';
 
 export const validateJson = ({
   json,

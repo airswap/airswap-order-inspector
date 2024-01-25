@@ -1,5 +1,5 @@
 import { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
-import { useContractRead } from 'wagmi';
+import { useContractRead, useSwitchNetwork } from 'wagmi';
 import { abi } from './contracts/swapERC20ABI';
 import { zeroAddress } from 'viem';
 import { CheckFunctionArgs, ParsedJsonParams, InputType } from '../types';
@@ -35,6 +35,17 @@ function App() {
   const [errors, setErrors] = useState<string[]>([]);
   const [isEnableCheck, setIsEnableCheck] = useState(false);
   const [isNoErrors, setIsNoErrors] = useState(false);
+
+  const { switchNetwork } = useSwitchNetwork({
+    chainId: selectedChainId || 1,
+    onSettled(data, error) {
+      if (error) {
+        console.log('Error:', error);
+      } else {
+        console.log('data:', data);
+      }
+    },
+  });
 
   const decompressedOrderFromUrl = useDecompressedOrderFromUrl(urlString);
 
@@ -230,12 +241,16 @@ function App() {
     selectedChainId,
   ]);
 
+  // handle changing of chainId.
   useEffect(() => {
     if (chainId) {
+      switchNetwork && switchNetwork();
       const address = SwapERC20.getAddress(chainId);
       address && setSwapContractAddress(address);
     }
-  }, [chainId, swapContractAddress]);
+  }, [chainId, swapContractAddress, switchNetwork]);
+
+  // selectedChainId
 
   return (
     <div className="flex flex-col font-sans">

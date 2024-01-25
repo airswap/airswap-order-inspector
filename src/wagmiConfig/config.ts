@@ -1,5 +1,6 @@
 import { configureChains, createConfig } from 'wagmi';
 import {
+  Chain,
   arbitrum,
   arbitrumGoerli,
   avalanche,
@@ -21,6 +22,8 @@ import {
 import { rsk, rskTestnet } from './customChains';
 import { publicProvider } from 'wagmi/providers/public';
 import { infuraProvider } from 'wagmi/providers/infura';
+import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
+import { apiUrls } from '../../tools/constants';
 
 const { publicClient, webSocketPublicClient } = configureChains(
   [
@@ -45,6 +48,11 @@ const { publicClient, webSocketPublicClient } = configureChains(
     sepolia,
   ],
   [
+    jsonRpcProvider({
+      rpc: (chain: Chain) => ({
+        http: apiUrls[chain.id],
+      }),
+    }),
     infuraProvider({ apiKey: import.meta.env.VITE_INFURA_API_KEY || '' }),
     publicProvider(),
   ],
