@@ -241,7 +241,7 @@ function App() {
     selectedChainId,
   ]);
 
-  // handle changing of chainId.
+  // programating handling of chainId
   useEffect(() => {
     if (chainId) {
       switchNetwork && switchNetwork();
@@ -249,8 +249,6 @@ function App() {
       address && setSwapContractAddress(address);
     }
   }, [chainId, swapContractAddress, switchNetwork]);
-
-  // selectedChainId
 
   return (
     <div className="flex flex-col font-sans">
