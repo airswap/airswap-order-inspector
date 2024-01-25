@@ -1,33 +1,40 @@
 import { twMerge } from 'tailwind-merge';
 import airswapLogo from '../../src/assets/airswap-logo.svg';
+import { Select } from './Select';
+import { chainIdOptions } from '../utilities/chainIdOptions';
 
 export const Header = ({
   protocolFee,
   isLoadingProtocolFee,
+  setSelectedChainId,
 }: {
   protocolFee: bigint | undefined;
   isLoadingProtocolFee: boolean;
+  setSelectedChainId: (value: number) => void;
 }) => {
   return (
     <div
       className={twMerge(
-        'flex flex-col mx-auto my-4 md:relative md:flex-row',
+        'flex flex-col mx-auto my-4 md:relative md:flex-row justify-between',
         'text-2xl xs:text-3xl uppercase text-white font-medium',
         'w-full xs:w-[90%] sm:w-4/5 md:w-[95%] lg:w-[90%] xl:w-4/5'
       )}
     >
-      <div
-        className={twMerge(
-          'flex mx-auto p-2 w-full justify-center',
-          'md:col-start-2 col-span-2 justify-center overflow-auto'
-        )}
-      >
+      <div className="flex p-2 items-center justify-center md:justify-start">
         <img src={airswapLogo} alt="AirSwap logo" className="mr-3" />
-        <h1>Server Debugger</h1>
+        <h1>AirSwap Debugger</h1>
       </div>
-      <div className="flex md:absolute md:right-0 mx-auto md:h-full md:py-2 text-sm font-light text-white uppercase">
-        Protocol fee:{' '}
-        {!isLoadingProtocolFee ? Number(protocolFee) || '7' : 'loading...'}
+      <div className="flex flex-row md:w-1/2 text-sm items-center justify-end">
+        <span className="flex w-fit mr-4">
+          Protocol fee:{' '}
+          {!isLoadingProtocolFee ? Number(protocolFee) || '7' : 'loading...'}
+        </span>
+        <div>
+          <Select
+            setSelectedChainId={setSelectedChainId}
+            selectOptions={chainIdOptions}
+          />
+        </div>
       </div>
     </div>
   );

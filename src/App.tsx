@@ -250,6 +250,7 @@ function App() {
       <Header
         protocolFee={protocolFee}
         isLoadingProtocolFee={isLoadingProtocolFee}
+        setSelectedChainId={setSelectedChainId}
       />
       <div
         id="container"
@@ -291,8 +292,6 @@ function App() {
                 handleChangeTextArea={handleChangeTextAreaJson}
                 isEnableCheck={isEnableCheck}
                 isLoading={isLoadingCheck}
-                // setIsEnableCheck={setIsEnableCheck}
-                setSelectedChainId={setSelectedChainId}
               />
             ) : (
               <UrlForm

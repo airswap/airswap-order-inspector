@@ -4,11 +4,9 @@ import { useState } from 'react';
 import { FaChevronDown } from 'react-icons/fa';
 
 export const Select = ({
-  // setIsEnableCheck,
   setSelectedChainId,
   selectOptions,
 }: {
-  // setIsEnableCheck: (value: boolean) => void;
   setSelectedChainId: (value: number) => void;
   selectOptions: SelectOptions;
 }) => {
@@ -35,7 +33,6 @@ export const Select = ({
   const options = renderOptions();
 
   const handleSelectChange = (chain: string) => {
-    // setIsEnableCheck(false);
     setSelectedChainId(Number(chain));
   };
 
