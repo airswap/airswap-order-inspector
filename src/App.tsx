@@ -1,5 +1,5 @@
 import { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
-import { useContractRead, useNetwork, useSwitchNetwork } from 'wagmi';
+import { usePublicClient, useReadContract, useAccount } from 'wagmi';
 import { abi } from './contracts/swapERC20ABI';
 import { zeroAddress } from 'viem';
 import { CheckFunctionArgs, ParsedJsonParams, InputType } from '../types';
@@ -37,17 +37,10 @@ function App() {
   const [isEnableCheck, setIsEnableCheck] = useState(false);
   const [isNoErrors, setIsNoErrors] = useState(false);
 
-  const { switchNetwork } = useSwitchNetwork({
-    chainId: selectedChainId || 1,
-    onSettled(data, error) {
-      if (error) {
-        console.log('Error:', error);
-      } else {
-        console.log('data:', data);
-      }
-    },
-  });
-  const { chain } = useNetwork();
+  const publicClient = usePublicClient({ chainId: selectedChainId });
+  console.log('publicClient', publicClient);
+
+  const { chain } = useAccount();
 
   const decompressedOrderFromUrl = useDecompressedOrderFromUrl(urlString);
 
@@ -83,42 +76,53 @@ function App() {
     data: checkFunctionData,
     isLoading: isLoadingCheck,
     error: errorCheck,
-  } = useContractRead({
+  } = useReadContract({
     chainId: chain?.id,
     abi,
     address: swapContractAddress as `0x${string}`,
     functionName: 'check',
     args: checkFunctionArgs,
-    enabled: isEnableCheck,
+    query: {
+      enabled: isEnableCheck,
+    },
   });
 
   const { data: protocolFee, isLoading: isLoadingProtocolFee } =
-    useContractRead({
+    useReadContract({
       chainId: chain?.id,
       abi,
       address: swapContractAddress as `0x${string}`,
       functionName: 'protocolFee',
     });
 
-  const { data: domainName } = useContractRead({
+  const { data: domainName } = useReadContract({
     chainId: chain?.id,
     abi,
     address: swapContractAddress as `0x${string}`,
     functionName: 'DOMAIN_NAME',
+    query: {
+      staleTime: 86400000,
+    },
   });
 
-  const { data: domainChainId } = useContractRead({
+  const { data: domainChainId } = useReadContract({
     chainId: chain?.id,
     abi,
     address: swapContractAddress as `0x${string}`,
     functionName: 'DOMAIN_CHAIN_ID',
+    query: {
+      staleTime: 86400000,
+    },
   });
 
-  const { data: domainVersion } = useContractRead({
+  const { data: domainVersion } = useReadContract({
     chainId: chain?.id,
     abi,
     address: swapContractAddress as `0x${string}`,
     functionName: 'DOMAIN_VERSION',
+    query: {
+      staleTime: 86400000,
+    },
   });
 
   const handleChangeTextAreaJson = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -240,10 +244,14 @@ function App() {
 
   // programating handling of chainId
   useEffect(() => {
-    switchNetwork && switchNetwork();
+    // switchNetwork && switchNetwork();
     const address = SwapERC20.getAddress(chain?.id || 1);
     address && setSwapContractAddress(address);
-  }, [chain, swapContractAddress, switchNetwork]);
+  }, [
+    // switchNetwork,
+    chain,
+    swapContractAddress,
+  ]);
 
   return (
     <div className="flex flex-col font-sans">
