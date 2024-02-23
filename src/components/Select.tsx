@@ -10,20 +10,41 @@ export const Select = ({
 }: {
   setSelectedChainId: (value: number) => void;
   selectOptions: SelectOptions;
-  chainIdFromJson: string | number | undefined;
+  chainIdFromJson: string | undefined;
 }) => {
-  const [isSelectOpen, setIsSelectOpen] = useState(false);
+  const [selectedValue, setSelectedValue] = useState(
+    chainIdFromJson || selectOptions[0].value
+  );
+  const [isSelectOpen, setIsSelectOpen] = useState<boolean>(false);
 
   const handleIsSelectOpen = () => {
     setIsSelectOpen((isSelectOpen) => !isSelectOpen);
   };
 
-  console.log(chainIdFromJson);
+  // if chainIdFromJson is valid, disable the selector and override it with chainIdFromJson
+  const checkForChainIdMatch = (
+    chainIdFromJson: string | number | undefined
+  ): boolean =>
+    selectOptions.some(
+      (option) => option.value === chainIdFromJson?.toString()
+    );
+
+  const isChainIdFromJsonValid = checkForChainIdMatch(chainIdFromJson);
+
+  console.log(
+    'chainIdFromJson:',
+    chainIdFromJson,
+    !!chainIdFromJson && isChainIdFromJsonValid
+  );
+
+  const selectValue = checkForChainIdMatch(chainIdFromJson)
+    ? chainIdFromJson
+    : selectedValue;
 
   const renderOptions = () => {
     return selectOptions.map((chain) => (
       <RadixSelect.Item
-        defaultValue={chainIdFromJson || selectOptions[0].value}
+        defaultValue={selectOptions[2].value}
         value={chain.value}
         key={chain.value}
         className="py-1 px-2 bg-blueGray text-lightGray border border-blueExtraDark first:rounded-t-sm last:rounded-b-sm hover:bg-blueExtraDark hover:border-blueExtraDark active:border-white"
@@ -37,10 +58,6 @@ export const Select = ({
   };
   const options = renderOptions();
 
-  const handleSelectChange = (chain: string) => {
-    setSelectedChainId(Number(chain));
-  };
-
   // if chain is found in JSON, programatically change the selector
   useEffect(() => {
     if (chainIdFromJson) {
@@ -48,17 +65,34 @@ export const Select = ({
     }
   }, [chainIdFromJson, setSelectedChainId]);
 
+  useEffect(() => {
+    if (chainIdFromJson && chainIdFromJson !== selectedValue) {
+      setSelectedValue(chainIdFromJson);
+      setSelectedChainId(+chainIdFromJson);
+    }
+  }, [chainIdFromJson, selectedValue, setSelectedChainId]);
+
   return (
     <>
       <RadixSelect.Root
-        onValueChange={(val) => handleSelectChange(val)}
+        onValueChange={() => {
+          console.log(selectedValue);
+          return selectedValue;
+        }}
         onOpenChange={handleIsSelectOpen}
+        disabled={!!chainIdFromJson && isChainIdFromJsonValid}
       >
         <RadixSelect.Trigger
           className="flex items-center px-3 py-1 bg-blueGray border border-blueGray rounded-md font-semibold uppercase"
           aria-label="chain id"
         >
-          <RadixSelect.Value placeholder="Ethereum: 1" />
+          <RadixSelect.Value
+            placeholder={
+              isChainIdFromJsonValid
+                ? `Chain ID: ${chainIdFromJson}`
+                : 'Ethereum: 1'
+            }
+          />
           <RadixSelect.Icon className="ml-2">
             <div
               className={`${

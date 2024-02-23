@@ -44,6 +44,8 @@ function App() {
 
   const decompressedOrderFromUrl = useDecompressedOrderFromUrl(urlString);
 
+  console.log(parsedJson);
+
   const {
     senderWallet,
     nonce,
@@ -137,19 +139,13 @@ function App() {
 
   // Start of smaller functions used in handleSubmit
   const handleJsonSubmission = () => {
-    // const parsedJsonObject = jsonString && JSON.parse(jsonString);
-    // setParsedJson(parsedJsonObject);
-
-    if (parsedJson?.chainId) {
-      setChainIdFromJson(parsedJson.chainId);
-    }
     checkSmartContractError({ errorCheck, setErrors });
   };
 
   const handleUrlSubmission = () => {
-    const jsonString = JSON.stringify(decompressedOrderFromUrl);
-    const parsedJsonString = JSON.parse(jsonString);
-    setParsedJson(parsedJsonString);
+    // const jsonString = JSON.stringify(decompressedOrderFromUrl);
+    // const parsedJsonString = JSON.parse(jsonString);
+    // setParsedJson(parsedJsonString);
   };
 
   const validateInputs = () => {
@@ -179,9 +175,10 @@ function App() {
     }
 
     try {
-      inputType === InputType.JSON
-        ? handleJsonSubmission()
-        : handleUrlSubmission();
+      // inputType === InputType.JSON
+      //   ? handleJsonSubmission()
+      //   : handleUrlSubmission();
+      checkSmartContractError({ errorCheck, setErrors });
     } catch (e) {
       console.error(e);
       setErrors([`Error processing URL: ${e}`]);
@@ -272,6 +269,7 @@ function App() {
         const jsonString = JSON.stringify(decompressedOrderFromUrl);
         const parsedJsonString = JSON.parse(jsonString);
         setParsedJson(parsedJsonString);
+        setChainIdFromJson(parsedJsonString?.chainId);
       } catch (error) {
         console.error('Error parsing JSON:', error);
       }
