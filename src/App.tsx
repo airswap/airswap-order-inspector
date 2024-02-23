@@ -1,5 +1,5 @@
 import { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
-import { usePublicClient, useReadContract, useAccount } from 'wagmi';
+import { useReadContract } from 'wagmi';
 import { abi } from './contracts/swapERC20ABI';
 import { zeroAddress } from 'viem';
 import { CheckFunctionArgs, ParsedJsonParams, InputType } from '../types';
@@ -31,16 +31,16 @@ function App() {
   const [swapContractAddress, setSwapContractAddress] = useState<
     string | undefined
   >(undefined);
-  const [selectedChainId, setSelectedChainId] = useState<number | undefined>();
+  // selectedChainId is used in the selector component
+  const [selectedChainId, setSelectedChainId] = useState<number>(1);
+  // if chainId is found in JSON, chainIdFromJson will be used and will override selectedChainId
+  const [chainIdFromJson, setChainIdFromJson] = useState<
+    number | string | undefined
+  >();
   const [errors, setErrors] = useState<string[]>([]);
   // whenever use input changes, isEnableCheck changes to false. Gets set to true only when user submits json
   const [isEnableCheck, setIsEnableCheck] = useState(false);
   const [isNoErrors, setIsNoErrors] = useState(false);
-
-  const publicClient = usePublicClient({ chainId: selectedChainId });
-  console.log('publicClient', publicClient);
-
-  const { chain } = useAccount();
 
   const decompressedOrderFromUrl = useDecompressedOrderFromUrl(urlString);
 
@@ -77,7 +77,7 @@ function App() {
     isLoading: isLoadingCheck,
     error: errorCheck,
   } = useReadContract({
-    chainId: chain?.id,
+    chainId: selectedChainId,
     abi,
     address: swapContractAddress as `0x${string}`,
     functionName: 'check',
@@ -89,14 +89,14 @@ function App() {
 
   const { data: protocolFee, isLoading: isLoadingProtocolFee } =
     useReadContract({
-      chainId: chain?.id,
+      chainId: selectedChainId,
       abi,
       address: swapContractAddress as `0x${string}`,
       functionName: 'protocolFee',
     });
 
   const { data: domainName } = useReadContract({
-    chainId: chain?.id,
+    chainId: selectedChainId,
     abi,
     address: swapContractAddress as `0x${string}`,
     functionName: 'DOMAIN_NAME',
@@ -106,7 +106,7 @@ function App() {
   });
 
   const { data: domainChainId } = useReadContract({
-    chainId: chain?.id,
+    chainId: selectedChainId,
     abi,
     address: swapContractAddress as `0x${string}`,
     functionName: 'DOMAIN_CHAIN_ID',
@@ -116,7 +116,7 @@ function App() {
   });
 
   const { data: domainVersion } = useReadContract({
-    chainId: chain?.id,
+    chainId: selectedChainId,
     abi,
     address: swapContractAddress as `0x${string}`,
     functionName: 'DOMAIN_VERSION',
@@ -132,14 +132,17 @@ function App() {
 
   const handleChangeTextAreaUrl = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setIsEnableCheck(false);
-    setParsedJson(undefined);
     setUrlString(e.target.value);
   };
 
   // Start of smaller functions used in handleSubmit
   const handleJsonSubmission = () => {
-    const parsedJsonObject = jsonString && JSON.parse(jsonString);
-    setParsedJson(parsedJsonObject);
+    // const parsedJsonObject = jsonString && JSON.parse(jsonString);
+    // setParsedJson(parsedJsonObject);
+
+    if (parsedJson?.chainId) {
+      setChainIdFromJson(parsedJson.chainId);
+    }
     checkSmartContractError({ errorCheck, setErrors });
   };
 
@@ -174,6 +177,7 @@ function App() {
     if (!validateInputs()) {
       return;
     }
+
     try {
       inputType === InputType.JSON
         ? handleJsonSubmission()
@@ -231,7 +235,7 @@ function App() {
       setIsNoErrors(true);
     }
   }, [
-    chain,
+    selectedChainId,
     parsedJson,
     checkFunctionData,
     swapContractAddress,
@@ -244,14 +248,35 @@ function App() {
 
   // programating handling of chainId
   useEffect(() => {
-    // switchNetwork && switchNetwork();
-    const address = SwapERC20.getAddress(chain?.id || 1);
+    const address = SwapERC20.getAddress(selectedChainId);
     address && setSwapContractAddress(address);
-  }, [
-    // switchNetwork,
-    chain,
-    swapContractAddress,
-  ]);
+  }, [selectedChainId, swapContractAddress]);
+
+  // after JSON input changes, `handleChangeTextAreaJson` updates `jsonString`, which will trigger the following useEffect hook
+  useEffect(() => {
+    if (jsonString) {
+      try {
+        const parsedJsonObject = JSON.parse(jsonString);
+        setParsedJson(parsedJsonObject);
+        setChainIdFromJson(parsedJsonObject?.chainId);
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
+      }
+    }
+  }, [jsonString]);
+
+  // after OTC URL input changes, `handleChangeTextAreaUrl` updates `urlString`, which will trigger the following useEffect hook
+  useEffect(() => {
+    if (urlString) {
+      try {
+        const jsonString = JSON.stringify(decompressedOrderFromUrl);
+        const parsedJsonString = JSON.parse(jsonString);
+        setParsedJson(parsedJsonString);
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
+      }
+    }
+  }, [decompressedOrderFromUrl, jsonString, urlString]);
 
   return (
     <div className="flex flex-col font-sans">
@@ -259,6 +284,7 @@ function App() {
         protocolFee={protocolFee}
         isLoadingProtocolFee={isLoadingProtocolFee}
         setSelectedChainId={setSelectedChainId}
+        chainIdFromJson={chainIdFromJson}
       />
       <div
         id="container"

@@ -1,14 +1,16 @@
 import { SelectOptions } from '../../types';
 import * as RadixSelect from '@radix-ui/react-select';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaChevronDown } from 'react-icons/fa';
 
 export const Select = ({
   setSelectedChainId,
   selectOptions,
+  chainIdFromJson,
 }: {
   setSelectedChainId: (value: number) => void;
   selectOptions: SelectOptions;
+  chainIdFromJson: string | number | undefined;
 }) => {
   const [isSelectOpen, setIsSelectOpen] = useState(false);
 
@@ -16,9 +18,12 @@ export const Select = ({
     setIsSelectOpen((isSelectOpen) => !isSelectOpen);
   };
 
+  console.log(chainIdFromJson);
+
   const renderOptions = () => {
     return selectOptions.map((chain) => (
       <RadixSelect.Item
+        defaultValue={chainIdFromJson || selectOptions[0].value}
         value={chain.value}
         key={chain.value}
         className="py-1 px-2 bg-blueGray text-lightGray border border-blueExtraDark first:rounded-t-sm last:rounded-b-sm hover:bg-blueExtraDark hover:border-blueExtraDark active:border-white"
@@ -36,6 +41,13 @@ export const Select = ({
     setSelectedChainId(Number(chain));
   };
 
+  // if chain is found in JSON, programatically change the selector
+  useEffect(() => {
+    if (chainIdFromJson) {
+      setSelectedChainId(+chainIdFromJson);
+    }
+  }, [chainIdFromJson, setSelectedChainId]);
+
   return (
     <>
       <RadixSelect.Root
@@ -46,7 +58,7 @@ export const Select = ({
           className="flex items-center px-3 py-1 bg-blueGray border border-blueGray rounded-md font-semibold uppercase"
           aria-label="chain id"
         >
-          <RadixSelect.Value placeholder="chain id" />
+          <RadixSelect.Value placeholder="Ethereum: 1" />
           <RadixSelect.Icon className="ml-2">
             <div
               className={`${

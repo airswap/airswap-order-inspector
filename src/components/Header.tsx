@@ -7,10 +7,12 @@ export const Header = ({
   protocolFee,
   isLoadingProtocolFee,
   setSelectedChainId,
+  chainIdFromJson,
 }: {
   protocolFee: bigint | undefined;
   isLoadingProtocolFee: boolean;
   setSelectedChainId: (value: number) => void;
+  chainIdFromJson: number | string | undefined;
 }) => {
   return (
     <div
@@ -33,6 +35,7 @@ export const Header = ({
           <Select
             setSelectedChainId={setSelectedChainId}
             selectOptions={chainIdOptions}
+            chainIdFromJson={chainIdFromJson}
           />
         </div>
       </div>
