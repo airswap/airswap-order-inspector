@@ -1,7 +1,6 @@
 import { twMerge } from 'tailwind-merge';
 import airswapLogo from '../../src/assets/airswap-logo.svg';
 import { Select } from './Select';
-import { chainIdOptions } from '../utilities/chainIdOptions';
 
 export const Header = ({
   protocolFee,
@@ -34,7 +33,6 @@ export const Header = ({
         <div>
           <Select
             setSelectedChainId={setSelectedChainId}
-            selectOptions={chainIdOptions}
             chainIdFromJson={chainIdFromJson}
           />
         </div>

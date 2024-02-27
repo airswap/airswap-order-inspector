@@ -168,6 +168,8 @@ function App() {
     setErrors([]);
     setIsNoErrors(false);
 
+    console.log('isEnabledChek in handleSubmit', isEnableCheck);
+
     if (!validateInputs()) {
       return;
     }
@@ -328,6 +330,7 @@ function App() {
                 handleSubmit={handleSubmit}
                 handleChangeTextArea={handleChangeTextAreaUrl}
                 isEnableCheck={isEnableCheck}
+                setIsEnableCheck={setIsEnableCheck}
                 isLoading={isLoadingCheck}
                 parsedJson={parsedJson}
                 decompressedJson={decompressedJson}

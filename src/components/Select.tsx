@@ -1,7 +1,8 @@
-import { SelectOptions } from '../../types';
+import { chainIdOptions } from '../utilities/chainIdOptions';
 import * as RadixSelect from '@radix-ui/react-select';
 import { useEffect, useState } from 'react';
 import { FaChevronDown } from 'react-icons/fa';
+import { checkForChainIdMatch } from '../utilities/checkForChainIdMatch';
 
 /**
  * @remarks `selectedValue` in this component handles changes within the scope of Select.tsx. `setSelectedChainId` handles changes for smart contract inputs
@@ -11,17 +12,16 @@ import { FaChevronDown } from 'react-icons/fa';
  */
 export const Select = ({
   setSelectedChainId,
-  selectOptions,
+
   chainIdFromJson,
 }: {
   setSelectedChainId: (value: number) => void;
-  selectOptions: SelectOptions;
   chainIdFromJson: number | string | undefined;
 }) => {
   const [isSelectorDisabled, setIsSelectorDisabled] = useState(false);
   // selectedValue handles chainId within Select component
   const [selectedValue, setSelectedValue] = useState(
-    chainIdFromJson || selectOptions[0].value
+    chainIdFromJson || chainIdOptions[0].value
   );
   const [isSelectOpen, setIsSelectOpen] = useState<boolean>(false);
 
@@ -30,23 +30,12 @@ export const Select = ({
   };
 
   // if chainIdFromJson is valid, disable the selector and override it with chainIdFromJson
-  const checkForChainIdMatch = (
-    chainIdFromJson: string | number | undefined
-  ): boolean =>
-    selectOptions.some(
-      (option) => option.value === chainIdFromJson?.toString()
-    );
-
   const isChainIdFromJsonValid = checkForChainIdMatch(chainIdFromJson);
 
-  // const selectValue = checkForChainIdMatch(chainIdFromJson)
-  //   ? chainIdFromJson
-  //   : selectedValue;
-
   const renderOptions = () => {
-    return selectOptions.map((chain) => (
+    return chainIdOptions.map((chain) => (
       <RadixSelect.Item
-        defaultValue={selectOptions[2].value}
+        defaultValue={chainIdOptions[2].value}
         value={chain.value}
         key={chain.value}
         className="py-1 px-2 bg-blueGray text-lightGray border border-blueExtraDark first:rounded-t-sm last:rounded-b-sm hover:bg-blueExtraDark hover:border-blueExtraDark active:border-white"
@@ -59,13 +48,6 @@ export const Select = ({
     ));
   };
   const options = renderOptions();
-
-  // if chain is found in JSON, programatically change the selector
-  // useEffect(() => {
-  //   if (chainIdFromJson) {
-  //     setSelectedChainId(+chainIdFromJson);
-  //   }
-  // }, [chainIdFromJson, setSelectedChainId]);
 
   useEffect(() => {
     if (chainIdFromJson && isChainIdFromJsonValid) {
@@ -81,6 +63,8 @@ export const Select = ({
     } else if (!isChainIdFromJsonValid) {
       setIsSelectorDisabled(false);
     }
+
+    console.log('isChainIdFromJsonValid', isChainIdFromJsonValid);
   }, [chainIdFromJson, isChainIdFromJsonValid]);
 
   return (
