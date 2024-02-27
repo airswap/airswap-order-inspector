@@ -44,8 +44,6 @@ function App() {
 
   const decompressedOrderFromUrl = useDecompressedOrderFromUrl(urlString);
 
-  console.log(parsedJson);
-
   const {
     senderWallet,
     nonce,
@@ -138,15 +136,15 @@ function App() {
   };
 
   // Start of smaller functions used in handleSubmit
-  const handleJsonSubmission = () => {
-    checkSmartContractError({ errorCheck, setErrors });
-  };
+  // const handleJsonSubmission = () => {
+  //   checkSmartContractError({ errorCheck, setErrors });
+  // };
 
-  const handleUrlSubmission = () => {
-    // const jsonString = JSON.stringify(decompressedOrderFromUrl);
-    // const parsedJsonString = JSON.parse(jsonString);
-    // setParsedJson(parsedJsonString);
-  };
+  // const handleUrlSubmission = () => {
+  // const jsonString = JSON.stringify(decompressedOrderFromUrl);
+  // const parsedJsonString = JSON.parse(jsonString);
+  // setParsedJson(parsedJsonString);
+  // };
 
   const validateInputs = () => {
     if (inputType === InputType.JSON && !jsonString) {

@@ -12,6 +12,7 @@ export const Select = ({
   selectOptions: SelectOptions;
   chainIdFromJson: string | undefined;
 }) => {
+  const [isSelectorDisabled, setIsSelectorDisabled] = useState(false);
   const [selectedValue, setSelectedValue] = useState(
     chainIdFromJson || selectOptions[0].value
   );
@@ -31,15 +32,9 @@ export const Select = ({
 
   const isChainIdFromJsonValid = checkForChainIdMatch(chainIdFromJson);
 
-  console.log(
-    'chainIdFromJson:',
-    chainIdFromJson,
-    !!chainIdFromJson && isChainIdFromJsonValid
-  );
-
-  const selectValue = checkForChainIdMatch(chainIdFromJson)
-    ? chainIdFromJson
-    : selectedValue;
+  // const selectValue = checkForChainIdMatch(chainIdFromJson)
+  //   ? chainIdFromJson
+  //   : selectedValue;
 
   const renderOptions = () => {
     return selectOptions.map((chain) => (
@@ -59,11 +54,11 @@ export const Select = ({
   const options = renderOptions();
 
   // if chain is found in JSON, programatically change the selector
-  useEffect(() => {
-    if (chainIdFromJson) {
-      setSelectedChainId(+chainIdFromJson);
-    }
-  }, [chainIdFromJson, setSelectedChainId]);
+  // useEffect(() => {
+  //   if (chainIdFromJson) {
+  //     setSelectedChainId(+chainIdFromJson);
+  //   }
+  // }, [chainIdFromJson, setSelectedChainId]);
 
   useEffect(() => {
     if (chainIdFromJson && chainIdFromJson !== selectedValue) {
@@ -71,6 +66,15 @@ export const Select = ({
       setSelectedChainId(+chainIdFromJson);
     }
   }, [chainIdFromJson, selectedValue, setSelectedChainId]);
+
+  // handle disabling of selector
+  useEffect(() => {
+    if (!!chainIdFromJson && isChainIdFromJsonValid) {
+      setIsSelectorDisabled(true);
+    } else if (!isChainIdFromJsonValid) {
+      setIsSelectorDisabled(false);
+    }
+  }, [chainIdFromJson, isChainIdFromJsonValid]);
 
   return (
     <>
@@ -80,7 +84,7 @@ export const Select = ({
           return selectedValue;
         }}
         onOpenChange={handleIsSelectOpen}
-        disabled={!!chainIdFromJson && isChainIdFromJsonValid}
+        disabled={isSelectorDisabled}
       >
         <RadixSelect.Trigger
           className="flex items-center px-3 py-1 bg-blueGray border border-blueGray rounded-md font-semibold uppercase"
