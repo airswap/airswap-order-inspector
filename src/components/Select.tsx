@@ -3,6 +3,12 @@ import * as RadixSelect from '@radix-ui/react-select';
 import { useEffect, useState } from 'react';
 import { FaChevronDown } from 'react-icons/fa';
 
+/**
+ * @remarks `selectedValue` in this component handles changes within the scope of Select.tsx. `setSelectedChainId` handles changes for smart contract inputs
+ * @param setSelectedChainId handles chain Id that gets passed into WAGMI smart contract functions
+ * @param chainIdFromJson is parsed from user-input JSON
+ * @returns
+ */
 export const Select = ({
   setSelectedChainId,
   selectOptions,
@@ -10,9 +16,10 @@ export const Select = ({
 }: {
   setSelectedChainId: (value: number) => void;
   selectOptions: SelectOptions;
-  chainIdFromJson: string | undefined;
+  chainIdFromJson: number | string | undefined;
 }) => {
   const [isSelectorDisabled, setIsSelectorDisabled] = useState(false);
+  // selectedValue handles chainId within Select component
   const [selectedValue, setSelectedValue] = useState(
     chainIdFromJson || selectOptions[0].value
   );
@@ -61,11 +68,11 @@ export const Select = ({
   // }, [chainIdFromJson, setSelectedChainId]);
 
   useEffect(() => {
-    if (chainIdFromJson && chainIdFromJson !== selectedValue) {
+    if (chainIdFromJson && isChainIdFromJsonValid) {
       setSelectedValue(chainIdFromJson);
       setSelectedChainId(+chainIdFromJson);
     }
-  }, [chainIdFromJson, selectedValue, setSelectedChainId]);
+  }, [chainIdFromJson, setSelectedChainId, isChainIdFromJsonValid]);
 
   // handle disabling of selector
   useEffect(() => {
@@ -79,10 +86,7 @@ export const Select = ({
   return (
     <>
       <RadixSelect.Root
-        onValueChange={() => {
-          console.log(selectedValue);
-          return selectedValue;
-        }}
+        onValueChange={() => selectedValue}
         onOpenChange={handleIsSelectOpen}
         disabled={isSelectorDisabled}
       >
