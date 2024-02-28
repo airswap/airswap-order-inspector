@@ -18,7 +18,7 @@ export const useDecompressedOrderFromUrl = (
         return decompressedOrder;
       }
     } catch (e) {
-      console.error(e);
+      console.error('Error', e);
     }
   }
 };

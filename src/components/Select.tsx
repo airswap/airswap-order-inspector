@@ -25,7 +25,7 @@ export const Select = ({
   );
   const [isSelectOpen, setIsSelectOpen] = useState<boolean>(false);
 
-  const handleIsSelectOpen = () => {
+  const handleOpenSelect = () => {
     setIsSelectOpen((isSelectOpen) => !isSelectOpen);
   };
 
@@ -63,15 +63,13 @@ export const Select = ({
     } else if (!isChainIdFromJsonValid) {
       setIsSelectorDisabled(false);
     }
-
-    console.log('isChainIdFromJsonValid', isChainIdFromJsonValid);
   }, [chainIdFromJson, isChainIdFromJsonValid]);
 
   return (
     <>
       <RadixSelect.Root
         onValueChange={() => selectedValue}
-        onOpenChange={handleIsSelectOpen}
+        onOpenChange={handleOpenSelect}
         disabled={isSelectorDisabled}
       >
         <RadixSelect.Trigger

@@ -135,31 +135,23 @@ function App() {
     setUrlString(e.target.value);
   };
 
-  // Start of smaller functions used in handleSubmit
-  // const handleJsonSubmission = () => {
-  //   checkSmartContractError({ errorCheck, setErrors });
-  // };
-
-  // const handleUrlSubmission = () => {
-  // const jsonString = JSON.stringify(decompressedOrderFromUrl);
-  // const parsedJsonString = JSON.parse(jsonString);
-  // setParsedJson(parsedJsonString);
-  // };
-
   const validateInputs = () => {
-    if (inputType === InputType.JSON && !jsonString) {
+    if (inputType === InputType.JSON) {
+      if (!jsonString) {
+        setErrors(['Input cannot be blank']);
+        return false;
+      } else {
+        try {
+          JSON.parse(jsonString);
+        } catch (e) {
+          setErrors(['Invalid JSON syntax. Please double check your input']);
+        }
+      }
+    } else if (inputType === InputType.URL && !decompressedOrderFromUrl) {
       setErrors(['Input cannot be blank']);
-      return false;
     }
-    if (inputType === InputType.URL && !decompressedOrderFromUrl) {
-      setErrors([
-        'Something is wrong with your URL. Try copy-pasting it again',
-      ]);
-      return false;
-    }
-    return true;
+    return;
   };
-  // End of functions used in handleSubmit
 
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -168,21 +160,11 @@ function App() {
     setErrors([]);
     setIsNoErrors(false);
 
-    console.log('isEnabledChek in handleSubmit', isEnableCheck);
-
     if (!validateInputs()) {
       return;
     }
 
-    try {
-      // inputType === InputType.JSON
-      //   ? handleJsonSubmission()
-      //   : handleUrlSubmission();
-      checkSmartContractError({ errorCheck, setErrors });
-    } catch (e) {
-      console.error(e);
-      setErrors([`Error processing URL: ${e}`]);
-    }
+    checkSmartContractError({ errorCheck, setErrors });
   };
 
   const handleFormattedListErrors = (errorsList: string[] | undefined) => {
@@ -249,7 +231,7 @@ function App() {
     address && setSwapContractAddress(address);
   }, [selectedChainId, swapContractAddress]);
 
-  // after JSON input changes, `handleChangeTextAreaJson` updates `jsonString`, which will trigger the following useEffect hook
+  // after JSON input changes, `handleChangeTextAreaJson` updates `jsonString`, which will trigger the following useEffect hook. This is called in a useEffect hook instead of `validateInputs` function, because it passes in chainId to Select.tsx before the user runs the main check function
   useEffect(() => {
     if (jsonString) {
       try {

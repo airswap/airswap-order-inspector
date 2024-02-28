@@ -23,7 +23,7 @@ export const displayErrors = ({
     .map((error) => error.replace(/\x00/g, '').toLowerCase());
 
   const requiredValuesText = `
-  Signature invalid. Double check the following values: domain chainId = ${requiredValues.domainChainId}, domain verifyingContract: ${requiredValues.domainVerifyingContract}, domain name = ${requiredValues.domainName}, domain version = ${requiredValues.domainVersion}, protocolFee: ${requiredValues.protocolFee}`;
+  Signature invalid. Double check the following values: domain chainId = ${requiredValues.domainChainId}, domain verifying contract: ${requiredValues.domainVerifyingContract}, domain name = ${requiredValues.domainName}, domain version = ${requiredValues.domainVersion}, protocolFee: ${requiredValues.protocolFee}`;
 
   const errorMessages = filteredErrors.map((error) => {
     if (
