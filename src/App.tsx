@@ -86,7 +86,6 @@ function App() {
       enabled: isEnableCheck,
     },
   });
-  console.log(abi);
 
   const { data: protocolFee, isLoading: isLoadingProtocolFee } =
     useReadContract({
@@ -96,31 +95,11 @@ function App() {
       functionName: 'protocolFee',
     });
 
-  const { data: domainName } = useReadContract({
+  const { data: eip712Domain } = useReadContract({
     chainId: selectedChainId,
     abi,
     address: swapContractAddress as `0x${string}`,
-    functionName: 'DOMAIN_NAME',
-    query: {
-      staleTime: 86400000,
-    },
-  });
-
-  const { data: domainChainId } = useReadContract({
-    chainId: selectedChainId,
-    abi,
-    address: swapContractAddress as `0x${string}`,
-    functionName: 'DOMAIN_CHAIN_ID',
-    query: {
-      staleTime: 86400000,
-    },
-  });
-
-  const { data: domainVersion } = useReadContract({
-    chainId: selectedChainId,
-    abi,
-    address: swapContractAddress as `0x${string}`,
-    functionName: 'DOMAIN_VERSION',
+    functionName: 'eip712Domain',
     query: {
       staleTime: 86400000,
     },
@@ -197,38 +176,25 @@ function App() {
 
     const outputErrorsList = getOutputErrorsList(checkFunctionData);
 
-    console.log(checkFunctionData);
-
     // create array of human-readable errors
     const errorsList = displayErrors({
       errorsList: outputErrorsList,
-      requiredValues: {
-        domainChainId,
-        domainVerifyingContract: swapContractAddress,
-        domainName,
-        domainVersion,
-        protocolFee,
-      },
+      eip712Domain,
+      protocolFee,
     });
 
     handleFormattedListErrors(errorsList);
-
-    console.log(isJsonValid, errorsList, errorsList?.length);
 
     if (!isJsonValid && errorsList && errorsList.length === 0) {
       setIsNoErrors(true);
       console.log('no errors!');
     }
   }, [
-    selectedChainId,
     parsedJson,
     checkFunctionData,
     swapContractAddress,
-    domainChainId,
-    domainName,
-    domainVersion,
     protocolFee,
-    selectedChainId,
+    eip712Domain,
   ]);
 
   // programating handling of chainId

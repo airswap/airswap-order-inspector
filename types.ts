@@ -36,15 +36,19 @@ export enum InputType {
   URL,
 }
 
-export type RequiredValues = {
-  domainChainId: bigint | undefined;
-  domainVerifyingContract: string | undefined;
-  domainName: string | undefined;
-  domainVersion: string | undefined;
-  protocolFee: bigint | undefined;
-};
-
 export type SelectOptions = {
   value: string;
   label: string;
 }[];
+
+export type Erc712Domain =
+  | readonly [
+      `0x${string}`,
+      string,
+      string,
+      bigint,
+      `0x${string}`,
+      `0x${string}`,
+      readonly bigint[]
+    ]
+  | undefined;

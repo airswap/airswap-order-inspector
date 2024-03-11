@@ -1,37 +1,46 @@
-import { RequiredValues } from '../../types';
+import { Erc712Domain } from '../../types';
 
 /* eslint-disable no-control-regex */
 export const displayErrors = ({
   errorsList,
-  requiredValues,
+  eip712Domain,
+  protocolFee,
 }: {
   errorsList: string[] | undefined;
-  requiredValues: RequiredValues;
+  eip712Domain: Erc712Domain;
+  protocolFee: bigint | undefined;
 }): string[] | undefined => {
   // if contract returns no errors returned, return
   if (!errorsList) {
     return undefined;
   }
 
+  const name = eip712Domain?.[1];
+  const version = eip712Domain?.[2];
+  const chainId = eip712Domain?.[3];
+  const verifyingContract = eip712Domain?.[4];
+
   // remove null values
   const filteredErrors = errorsList
     .filter((error) => {
-      // regex checks for null values (x00...), which indicates no error
+      // reget checks for null values (x00...), which indicates no error
       const nullRegex = /^[\x00]+$/;
       return !nullRegex.test(error);
     })
     .map((error) => error.replace(/\x00/g, '').toLowerCase());
 
-  const requiredValuesText = `
-  Signature invalid. Double check the following values: domain chainId = ${requiredValues.domainChainId}, domain verifying contract: ${requiredValues.domainVerifyingContract}, domain name = ${requiredValues.domainName}, domain version = ${requiredValues.domainVersion}, protocolFee: ${requiredValues.protocolFee}`;
+  const erc721DomainValues = `${name}, ${chainId}, ${verifyingContract}, ${version}, ${Number(
+    protocolFee
+  )}`;
 
+  console.log(erc721DomainValues);
   const errorMessages = filteredErrors.map((error) => {
     if (
       error.includes(
         'unauthorized' || 'SignatoryUnauthorized' || 'Unauthorized'
       )
     ) {
-      return requiredValuesText;
+      return `Signature invalid. Check that you're using the correct erc721Domain values: ${erc721DomainValues}, ${protocolFee}`;
     } else if (error.includes('NonceAlreadyUsed')) {
       return `Nonce: the nonce entered is invalid.`;
     } else if (error.includes('expired')) {
