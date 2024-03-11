@@ -86,6 +86,7 @@ function App() {
       enabled: isEnableCheck,
     },
   });
+  console.log(abi);
 
   const { data: protocolFee, isLoading: isLoadingProtocolFee } =
     useReadContract({
@@ -150,7 +151,7 @@ function App() {
     } else if (inputType === InputType.URL && !decompressedOrderFromUrl) {
       setErrors(['Input cannot be blank']);
     }
-    return;
+    return true;
   };
 
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
@@ -196,6 +197,8 @@ function App() {
 
     const outputErrorsList = getOutputErrorsList(checkFunctionData);
 
+    console.log(checkFunctionData);
+
     // create array of human-readable errors
     const errorsList = displayErrors({
       errorsList: outputErrorsList,
@@ -210,8 +213,11 @@ function App() {
 
     handleFormattedListErrors(errorsList);
 
+    console.log(isJsonValid, errorsList, errorsList?.length);
+
     if (!isJsonValid && errorsList && errorsList.length === 0) {
       setIsNoErrors(true);
+      console.log('no errors!');
     }
   }, [
     selectedChainId,

@@ -13,7 +13,7 @@ export interface ParsedJsonParams {
   senderWallet?: `0x${string}`;
   chainId?: string | number;
   swapContract?: `0x${string}`;
-  protocolFee?: '7';
+  protocolFee?: '5';
 }
 
 // checkArgs is used for the smart contract read function
