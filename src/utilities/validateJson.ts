@@ -30,16 +30,16 @@ export const validateJson = ({
       !/^(0x)?[0-9a-fA-F]{64}$/.test(jsonKey);
     const isUint8 = (v: string) =>
       !/^(0|[1-9]\d?|1\d\d|2[0-4]\d|25[0-5])$/.test(v);
-    const chainIdList = Object.keys(ChainIds);
+    // const chainIdList = Object.keys(ChainIds);
 
     // Check for valid values
     if (json) {
-      if (
-        json['chainId'] &&
-        !chainIdList.includes(json['chainId'].toString())
-      ) {
-        errorsList.push('chainId: double check your chain id');
-      }
+      // if (
+      //   json['chainId'] &&
+      //   !chainIdList.includes(json['chainId'].toString())
+      // ) {
+      //   errorsList.push('chainId: double check your chain id');
+      // }
       if (json['senderWallet'] && !isAddress(json['senderWallet'])) {
         errorsList.push('senderWallet must be a valid ERC20 address');
       }
@@ -64,7 +64,7 @@ export const validateJson = ({
         isNotValidNumberString(json['signerAmount'])
       ) {
         errorsList.push(
-          'signerAmount: must be a number. Make sure it\'s wrapped in quotation marks, e.g. "100000000"'
+          'signerAmount: must be a number string. (a number wrapped in quotes, e.g. "100000000")'
         );
       }
       if (json['senderToken'] && !isAddress(json['senderToken'])) {

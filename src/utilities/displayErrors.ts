@@ -1,5 +1,9 @@
 import { Erc712Domain } from '../../types';
 
+/**
+ *
+ * @returns human readable array of errors     and filters out null values
+ */
 /* eslint-disable no-control-regex */
 export const displayErrors = ({
   errorsList,
@@ -10,7 +14,7 @@ export const displayErrors = ({
   eip712Domain: Erc712Domain;
   protocolFee: bigint | undefined;
 }): string[] | undefined => {
-  // if contract returns no errors returned, return
+  // if contract returns no errors returned, exit function
   if (!errorsList) {
     return undefined;
   }
@@ -33,7 +37,6 @@ export const displayErrors = ({
     protocolFee
   )}`;
 
-  console.log(erc721DomainValues);
   const errorMessages = filteredErrors.map((error) => {
     if (
       error.includes(

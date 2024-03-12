@@ -1,4 +1,4 @@
-import { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
+import { ChangeEvent, MouseEvent, useEffect, useMemo, useState } from 'react';
 import { useReadContract } from 'wagmi';
 import { abi } from './contracts/swapERC20ABI';
 import { zeroAddress } from 'viem';
@@ -13,10 +13,11 @@ import { UrlForm } from './components/forms/UrlForm';
 import { Toggle } from './components/Toggle';
 import { SwapERC20 } from '@airswap/libraries';
 import { useDecompressedOrderFromUrl } from './hooks/useDecompressedOrderFromUrl';
-import { formatErrorsList } from './utilities/formatErrorsList';
 import { useJsonValues } from './hooks/useJsonValues';
 import { checkSmartContractError } from './utilities/checkSmartContractError';
 import { getOutputErrorsList } from './utilities/getOutputErrorsList';
+import { validateInputs } from './utilities/validateInputs';
+import { handleFormattedListErrors } from './utilities/handleFormattedErrorsList';
 
 function App() {
   const [inputType, setInputType] = useState<InputType>(InputType.JSON);
@@ -43,6 +44,18 @@ function App() {
   const [isNoErrors, setIsNoErrors] = useState(false);
 
   const decompressedOrderFromUrl = useDecompressedOrderFromUrl(urlString);
+
+  const isInputValid = useMemo(
+    () =>
+      validateInputs({
+        isEnableCheck,
+        inputType,
+        jsonString,
+        setErrors,
+        decompressedOrderFromUrl,
+      }),
+    [isEnableCheck, inputType, jsonString, decompressedOrderFromUrl]
+  );
 
   const {
     senderWallet,
@@ -87,13 +100,12 @@ function App() {
     },
   });
 
-  const { data: protocolFee, isLoading: isLoadingProtocolFee } =
-    useReadContract({
-      chainId: selectedChainId,
-      abi,
-      address: swapContractAddress as `0x${string}`,
-      functionName: 'protocolFee',
-    });
+  const { data: protocolFee } = useReadContract({
+    chainId: selectedChainId,
+    abi,
+    address: swapContractAddress as `0x${string}`,
+    functionName: 'protocolFee',
+  });
 
   const { data: eip712Domain } = useReadContract({
     chainId: selectedChainId,
@@ -106,31 +118,11 @@ function App() {
   });
 
   const handleChangeTextAreaJson = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setIsEnableCheck(false);
     setJsonString(e.target.value);
   };
 
   const handleChangeTextAreaUrl = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setIsEnableCheck(false);
     setUrlString(e.target.value);
-  };
-
-  const validateInputs = () => {
-    if (inputType === InputType.JSON) {
-      if (!jsonString) {
-        setErrors(['Input cannot be blank']);
-        return false;
-      } else {
-        try {
-          JSON.parse(jsonString);
-        } catch (e) {
-          setErrors(['Invalid JSON syntax. Please double check your input']);
-        }
-      }
-    } else if (inputType === InputType.URL && !decompressedOrderFromUrl) {
-      setErrors(['Input cannot be blank']);
-    }
-    return true;
   };
 
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
@@ -140,27 +132,19 @@ function App() {
     setErrors([]);
     setIsNoErrors(false);
 
-    if (!validateInputs()) {
+    if (!isInputValid || !isEnableCheck) {
       return;
     }
 
     checkSmartContractError({ errorCheck, setErrors });
   };
 
-  const handleFormattedListErrors = (errorsList: string[] | undefined) => {
-    const formattedErrorsList = formatErrorsList(errorsList);
-
-    if (formattedErrorsList && formattedErrorsList.length > 0) {
-      setErrors((prevErrors) => {
-        const updatedErrors = [...prevErrors, ...formattedErrorsList];
-        const uniqueErrors = [...new Set(updatedErrors)];
-        return uniqueErrors;
-      });
-    }
-  };
-
-  // performs actions after parsedJSON has been updated
+  // performs actions after `handleSubmit` sets `enabledCheck` to True
   useEffect(() => {
+    if (!isEnableCheck) {
+      return;
+    }
+
     const isJsonValid = validateJson({
       json: parsedJson,
       swapContractAddress: swapContractAddress,
@@ -183,13 +167,13 @@ function App() {
       protocolFee,
     });
 
-    handleFormattedListErrors(errorsList);
+    handleFormattedListErrors({ errorsList, setErrors });
 
     if (!isJsonValid && errorsList && errorsList.length === 0) {
       setIsNoErrors(true);
-      console.log('no errors!');
     }
   }, [
+    isEnableCheck,
     parsedJson,
     checkFunctionData,
     swapContractAddress,
@@ -200,10 +184,14 @@ function App() {
   // programating handling of chainId
   useEffect(() => {
     const address = SwapERC20.getAddress(selectedChainId);
-    address && setSwapContractAddress(address);
+    if (address) {
+      setSwapContractAddress(address);
+    } else {
+      return;
+    }
   }, [selectedChainId, swapContractAddress]);
 
-  // after JSON input changes, `handleChangeTextAreaJson` updates `jsonString`, which will trigger the following useEffect hook. This is called in a useEffect hook instead of `validateInputs` function, because it passes in chainId to Select.tsx before the user runs the main check function
+  // after input changes, `handleChangeTextAreaJson` updates `jsonString`, which will trigger the following useEffect hook. This is called in a useEffect hook instead of `validateInputs` function, because it passes in chainId to Select.tsx before the user runs the main check function
   useEffect(() => {
     if (jsonString) {
       try {
@@ -213,12 +201,7 @@ function App() {
       } catch (error) {
         console.error('Error parsing JSON:', error);
       }
-    }
-  }, [jsonString]);
-
-  // after OTC URL input changes, `handleChangeTextAreaUrl` updates `urlString`, which will trigger the following useEffect hook
-  useEffect(() => {
-    if (urlString) {
+    } else if (urlString) {
       try {
         const jsonString = JSON.stringify(decompressedOrderFromUrl);
         const parsedJsonString = JSON.parse(jsonString);
@@ -230,11 +213,15 @@ function App() {
     }
   }, [decompressedOrderFromUrl, jsonString, urlString]);
 
+  // when input type of input text changes, disable the check function
+  useEffect(() => {
+    setIsEnableCheck(false);
+  }, [inputType, jsonString, urlString]);
+
   return (
     <div className="flex flex-col font-sans">
       <Header
         protocolFee={protocolFee}
-        isLoadingProtocolFee={isLoadingProtocolFee}
         setSelectedChainId={setSelectedChainId}
         chainIdFromJson={chainIdFromJson}
       />

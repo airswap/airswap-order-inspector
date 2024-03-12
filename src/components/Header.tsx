@@ -4,12 +4,10 @@ import { Select } from './Select';
 
 export const Header = ({
   protocolFee,
-  isLoadingProtocolFee,
   setSelectedChainId,
   chainIdFromJson,
 }: {
   protocolFee: bigint | undefined;
-  isLoadingProtocolFee: boolean;
   setSelectedChainId: (value: number) => void;
   chainIdFromJson: number | string | undefined;
 }) => {
@@ -27,8 +25,7 @@ export const Header = ({
       </div>
       <div className="flex flex-row md:w-1/2 text-sm items-center justify-end">
         <span className="flex w-fit mr-4">
-          Protocol fee:{' '}
-          {!isLoadingProtocolFee ? Number(protocolFee) || '7' : 'loading...'}
+          Protocol fee: {Number(protocolFee) || '5'}
         </span>
         <div>
           <Select
