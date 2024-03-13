@@ -45,18 +45,6 @@ function App() {
 
   const decompressedOrderFromUrl = useDecompressedOrderFromUrl(urlString);
 
-  const isInputValid = useMemo(
-    () =>
-      validateInputs({
-        isEnableCheck,
-        inputType,
-        jsonString,
-        setErrors,
-        decompressedOrderFromUrl,
-      }),
-    [isEnableCheck, inputType, jsonString, decompressedOrderFromUrl]
-  );
-
   const {
     senderWallet,
     nonce,
@@ -118,26 +106,82 @@ function App() {
   });
 
   const handleChangeTextAreaJson = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    // state change triggers first useEffect hook
     setJsonString(e.target.value);
   };
 
   const handleChangeTextAreaUrl = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    // state change triggers first useEffect hook
     setUrlString(e.target.value);
   };
 
-  const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setParsedJson(undefined);
-    setIsEnableCheck(true);
-    setErrors([]);
+  const handleToggle = (inputType: InputType) => {
+    if (inputType === InputType.URL) {
+      setInputType(InputType.JSON);
+    } else {
+      setInputType(InputType.URL);
+      setUrlString(undefined);
+    }
     setIsNoErrors(false);
+    setIsEnableCheck(false);
+    setErrors([]);
+  };
 
-    if (!isInputValid || !isEnableCheck) {
+  const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
+    console.log('handleSubmit');
+    e.preventDefault();
+    setIsEnableCheck(true);
+    setIsNoErrors(false);
+    setErrors([]);
+  };
+
+  const isInputValid = useMemo(
+    () =>
+      validateInputs({
+        isEnableCheck,
+        inputType,
+        jsonString,
+        setErrors,
+        decompressedOrderFromUrl,
+      }),
+    [isEnableCheck, inputType, jsonString, decompressedOrderFromUrl]
+  );
+
+  // after input changes, `handleChangeTextAreaJson` updates `jsonString`, which will trigger the following useEffect hook. This passes in chainId to Select.tsx before the user runs the main check function
+  // This useEffect hook also sets `parsedJson`, which future useEffect hooks depend on
+  useEffect(() => {
+    if (jsonString) {
+      console.log('first useEffect. jsonString detected');
+      try {
+        const parsedJsonObject = JSON.parse(jsonString);
+        setParsedJson(parsedJsonObject);
+        setChainIdFromJson(parsedJsonObject?.chainId);
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
+      }
+    } else if (urlString) {
+      console.log('first useEffect. urlString detected');
+      try {
+        const jsonString = JSON.stringify(decompressedOrderFromUrl);
+        const parsedJsonString = JSON.parse(jsonString);
+        setParsedJson(parsedJsonString);
+        setChainIdFromJson(parsedJsonString?.chainId);
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
+      }
+    }
+  }, [decompressedOrderFromUrl, jsonString, urlString]);
+
+  useEffect(() => {
+    if (!isInputValid) {
       return;
     }
 
-    checkSmartContractError({ errorCheck, setErrors });
-  };
+    if (isEnableCheck) {
+      console.log('useEffect #2. isEnableCheck true, checking errors:');
+      checkSmartContractError({ errorCheck, setErrors });
+    }
+  }, [isInputValid, isEnableCheck, errorCheck]);
 
   // performs actions after `handleSubmit` sets `enabledCheck` to True
   useEffect(() => {
@@ -191,29 +235,7 @@ function App() {
     }
   }, [selectedChainId, swapContractAddress]);
 
-  // after input changes, `handleChangeTextAreaJson` updates `jsonString`, which will trigger the following useEffect hook. This is called in a useEffect hook instead of `validateInputs` function, because it passes in chainId to Select.tsx before the user runs the main check function
-  useEffect(() => {
-    if (jsonString) {
-      try {
-        const parsedJsonObject = JSON.parse(jsonString);
-        setParsedJson(parsedJsonObject);
-        setChainIdFromJson(parsedJsonObject?.chainId);
-      } catch (error) {
-        console.error('Error parsing JSON:', error);
-      }
-    } else if (urlString) {
-      try {
-        const jsonString = JSON.stringify(decompressedOrderFromUrl);
-        const parsedJsonString = JSON.parse(jsonString);
-        setParsedJson(parsedJsonString);
-        setChainIdFromJson(parsedJsonString?.chainId);
-      } catch (error) {
-        console.error('Error parsing JSON:', error);
-      }
-    }
-  }, [decompressedOrderFromUrl, jsonString, urlString]);
-
-  // when input type of input text changes, disable the check function
+  // when JSON or URL input text changes, disable the check function
   useEffect(() => {
     setIsEnableCheck(false);
   }, [inputType, jsonString, urlString]);
@@ -243,20 +265,7 @@ function App() {
           <div className="w-full sm:w-4/5 md:w-full lg:w-[90%] m-auto">
             <Toggle
               inputType={inputType}
-              clickTypeJson={() => {
-                setInputType(InputType.JSON);
-                setIsNoErrors(false);
-                setIsEnableCheck(false);
-                setErrors([]);
-              }}
-              clickTypeUrl={() => {
-                setInputType(InputType.URL);
-                setIsNoErrors(false);
-                // reset the following 2 values because they affect the behavior of `decompressedJson` in Dialog.tsx
-                setUrlString(undefined);
-                setIsEnableCheck(false);
-                setErrors([]);
-              }}
+              toggle={() => handleToggle(inputType)}
             />
 
             {inputType === InputType.JSON ? (
