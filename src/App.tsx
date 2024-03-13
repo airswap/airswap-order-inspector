@@ -120,15 +120,10 @@ function App() {
       setInputType(InputType.JSON);
     } else {
       setInputType(InputType.URL);
-      setUrlString(undefined);
     }
-    setIsNoErrors(false);
-    setIsEnableCheck(false);
-    setErrors([]);
   };
 
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
-    console.log('handleSubmit');
     e.preventDefault();
     setIsEnableCheck(true);
     setIsNoErrors(false);
@@ -150,33 +145,45 @@ function App() {
   // after input changes, `handleChangeTextAreaJson` updates `jsonString`, which will trigger the following useEffect hook. This passes in chainId to Select.tsx before the user runs the main check function
   // This useEffect hook also sets `parsedJson`, which future useEffect hooks depend on
   useEffect(() => {
-    if (jsonString) {
-      console.log('first useEffect. jsonString detected');
+    if (inputType === InputType.JSON && jsonString) {
       try {
         const parsedJsonObject = JSON.parse(jsonString);
         setParsedJson(parsedJsonObject);
         setChainIdFromJson(parsedJsonObject?.chainId);
       } catch (error) {
-        console.error('Error parsing JSON:', error);
+        console.error(error);
       }
-    } else if (urlString) {
-      console.log('first useEffect. urlString detected');
+    } else if (inputType === InputType.URL && urlString) {
       try {
         const jsonString = JSON.stringify(decompressedOrderFromUrl);
         const parsedJsonString = JSON.parse(jsonString);
         setParsedJson(parsedJsonString);
         setChainIdFromJson(parsedJsonString?.chainId);
       } catch (error) {
-        console.error('Error parsing JSON:', error);
+        console.error(error);
       }
     }
-  }, [decompressedOrderFromUrl, jsonString, urlString]);
+  }, [inputType, decompressedOrderFromUrl, jsonString, urlString]);
+
+  // Update state when `handleToggle` is run
+  useEffect(() => {
+    if (inputType === InputType.JSON) {
+      setUrlString(undefined);
+    } else {
+      setJsonString(undefined);
+    }
+    setIsNoErrors(false);
+    setIsEnableCheck(false);
+    setErrors([]);
+  }, [inputType]);
 
   useEffect(() => {
+    // isInputValid function only runs after `handleSubmit` runs
     if (!isInputValid) {
+      console.log('invalid input');
       return;
     }
-
+    // isEnableCheck should only be True after `handleSubmit` runs
     if (isEnableCheck) {
       console.log('useEffect #2. isEnableCheck true, checking errors:');
       checkSmartContractError({ errorCheck, setErrors });
