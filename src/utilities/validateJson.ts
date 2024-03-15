@@ -30,16 +30,16 @@ export const validateJson = ({
       !/^(0x)?[0-9a-fA-F]{64}$/.test(jsonKey);
     const isUint8 = (v: string) =>
       !/^(0|[1-9]\d?|1\d\d|2[0-4]\d|25[0-5])$/.test(v);
-    // const chainIdList = Object.keys(ChainIds);
+    const chainIdList = Object.keys(ChainIds);
 
     // Check for valid values
     if (json) {
-      // if (
-      //   json['chainId'] &&
-      //   !chainIdList.includes(json['chainId'].toString())
-      // ) {
-      //   errorsList.push('chainId: double check your chain id');
-      // }
+      if (
+        json['chainId'] &&
+        !chainIdList.includes(json['chainId'].toString())
+      ) {
+        errorsList.push('chainId: double check your chain id');
+      }
       if (json['senderWallet'] && !isAddress(json['senderWallet'])) {
         errorsList.push('senderWallet must be a valid ERC20 address');
       }
@@ -125,10 +125,8 @@ export const validateJson = ({
       return errorsList;
     }
   } catch (e) {
-    console.error(e);
-    errorsList.push(
-      'An unexpected error occurred in the validateJson function.'
-    );
+    console.error('error in validateJson function', e);
+    errorsList.push('An unexpected error occurred');
 
     return errorsList;
   }

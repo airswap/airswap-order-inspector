@@ -108,11 +108,13 @@ function App() {
   const handleChangeTextAreaJson = (e: ChangeEvent<HTMLTextAreaElement>) => {
     // state change triggers first useEffect hook
     setJsonString(e.target.value);
+    setErrors([]);
   };
 
   const handleChangeTextAreaUrl = (e: ChangeEvent<HTMLTextAreaElement>) => {
     // state change triggers first useEffect hook
     setUrlString(e.target.value);
+    setErrors([]);
   };
 
   const handleToggle = (inputType: InputType) => {
@@ -126,8 +128,8 @@ function App() {
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsEnableCheck(true);
-    setIsNoErrors(false);
-    setErrors([]);
+    // setIsNoErrors(false);
+    // setErrors([]);
   };
 
   const isInputValid = useMemo(
@@ -145,6 +147,7 @@ function App() {
   // after input changes, `handleChangeTextAreaJson` updates `jsonString`, which will trigger the following useEffect hook. This passes in chainId to Select.tsx before the user runs the main check function
   // This useEffect hook also sets `parsedJson`, which future useEffect hooks depend on
   useEffect(() => {
+    console.log('useEffect #1');
     if (inputType === InputType.JSON && jsonString) {
       try {
         const parsedJsonObject = JSON.parse(jsonString);
@@ -165,8 +168,22 @@ function App() {
     }
   }, [inputType, decompressedOrderFromUrl, jsonString, urlString]);
 
+  // programating handling of chainId
+  useEffect(() => {
+    console.log('useEffect #2 handling of chainId change');
+    const address = SwapERC20.getAddress(selectedChainId);
+    if (address) {
+      setSwapContractAddress(address);
+    } else {
+      return;
+    }
+  }, [selectedChainId, swapContractAddress]);
+
   // Update state when `handleToggle` is run
   useEffect(() => {
+    console.log(
+      'useEffect #3, resetting isNoErrors, isEnableCheck to false, errors. This only runs on load and after toggle change'
+    );
     if (inputType === InputType.JSON) {
       setUrlString(undefined);
     } else {
@@ -178,9 +195,8 @@ function App() {
   }, [inputType]);
 
   useEffect(() => {
-    // isInputValid function only runs after `handleSubmit` runs
     if (!isInputValid) {
-      console.log('invalid input');
+      console.log('useEffect #3: invalid input');
       return;
     }
     // isEnableCheck should only be True after `handleSubmit` runs
@@ -196,6 +212,7 @@ function App() {
       return;
     }
 
+    // returns errorsList of False
     const isJsonValid = validateJson({
       json: parsedJson,
       swapContractAddress: swapContractAddress,
@@ -212,15 +229,19 @@ function App() {
     const outputErrorsList = getOutputErrorsList(checkFunctionData);
 
     // create array of human-readable errors
-    const errorsList = displayErrors({
+    const humanReadableErrors = displayErrors({
       errorsList: outputErrorsList,
       eip712Domain,
       protocolFee,
     });
 
-    handleFormattedListErrors({ errorsList, setErrors });
+    handleFormattedListErrors({ errorsList: humanReadableErrors, setErrors });
 
-    if (!isJsonValid && errorsList && errorsList.length === 0) {
+    if (
+      // !isJsonValid &&
+      humanReadableErrors &&
+      humanReadableErrors.length === 0
+    ) {
       setIsNoErrors(true);
     }
   }, [
@@ -231,21 +252,6 @@ function App() {
     protocolFee,
     eip712Domain,
   ]);
-
-  // programating handling of chainId
-  useEffect(() => {
-    const address = SwapERC20.getAddress(selectedChainId);
-    if (address) {
-      setSwapContractAddress(address);
-    } else {
-      return;
-    }
-  }, [selectedChainId, swapContractAddress]);
-
-  // when JSON or URL input text changes, disable the check function
-  useEffect(() => {
-    setIsEnableCheck(false);
-  }, [inputType, jsonString, urlString]);
 
   return (
     <div className="flex flex-col font-sans">

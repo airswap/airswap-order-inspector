@@ -3,7 +3,6 @@ import { hexToString } from 'viem';
 /**
  * @returns human readable errors from SwapERC20 `check` function
  */
-
 export const getOutputErrorsList = (
   checkFunctionData: readonly `0x${string}`[] | undefined
 ) => {

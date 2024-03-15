@@ -7,6 +7,10 @@ export const handleFormattedListErrors = ({
   errorsList: string[] | undefined;
   setErrors: (value: React.SetStateAction<string[]>) => void;
 }) => {
+  if (!errorsList) {
+    return;
+  }
+
   const formattedErrorsList = formatErrorsList(errorsList);
 
   if (formattedErrorsList && formattedErrorsList.length > 0) {
