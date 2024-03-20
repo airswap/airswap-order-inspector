@@ -18,7 +18,8 @@ export const useDecompressedOrderFromUrl = (
         return decompressedOrder;
       }
     } catch (e) {
-      console.error('Error', e);
+      console.error('Error: issue with decompressedOrderFromUrl');
+      return;
     }
   }
 };

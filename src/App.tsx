@@ -1,4 +1,4 @@
-import { ChangeEvent, MouseEvent, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
 import { useReadContract } from 'wagmi';
 import { abi } from './contracts/swapERC20ABI';
 import { zeroAddress } from 'viem';
@@ -16,8 +16,8 @@ import { useDecompressedOrderFromUrl } from './hooks/useDecompressedOrderFromUrl
 import { useJsonValues } from './hooks/useJsonValues';
 import { checkSmartContractError } from './utilities/checkSmartContractError';
 import { getOutputErrorsList } from './utilities/getOutputErrorsList';
-import { validateInputs } from './utilities/validateInputs';
 import { handleFormattedListErrors } from './utilities/handleFormattedErrorsList';
+import { parseJsonInput } from './utilities/parseJsonInput';
 
 function App() {
   const [inputType, setInputType] = useState<InputType>(InputType.JSON);
@@ -32,14 +32,12 @@ function App() {
   const [swapContractAddress, setSwapContractAddress] = useState<
     string | undefined
   >(undefined);
-  // selectedChainId is used in the selector component
   const [selectedChainId, setSelectedChainId] = useState<number>(1);
   // if chainId is found in JSON, chainIdFromJson will be used and will override selectedChainId
   const [chainIdFromJson, setChainIdFromJson] = useState<
     number | string | undefined
   >();
   const [errors, setErrors] = useState<string[]>([]);
-  // whenever use input changes, isEnableCheck changes to false. Gets set to true only when user submits json
   const [isEnableCheck, setIsEnableCheck] = useState(false);
   const [isNoErrors, setIsNoErrors] = useState(false);
 
@@ -106,16 +104,17 @@ function App() {
   });
 
   const handleChangeTextAreaJson = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    // state change triggers first useEffect hook
     setJsonString(e.target.value);
-    setErrors([]);
   };
 
   const handleChangeTextAreaUrl = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    // state change triggers first useEffect hook
     setUrlString(e.target.value);
-    setErrors([]);
   };
+
+  // if user input changes, prevent checker from running
+  useEffect(() => {
+    setIsEnableCheck(false);
+  }, [jsonString, urlString]);
 
   const handleToggle = (inputType: InputType) => {
     if (inputType === InputType.URL) {
@@ -123,88 +122,71 @@ function App() {
     } else {
       setInputType(InputType.URL);
     }
+    console.log(inputType);
   };
 
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsEnableCheck(true);
-    // setIsNoErrors(false);
-    // setErrors([]);
+    console.log('handleSubmit run');
+
+    // check if valid json format
+    const parsedJsonInput = parseJsonInput({
+      inputType,
+      jsonString,
+      decompressedOrderFromUrl,
+    });
+    console.log('parsedJsonInput', parsedJsonInput);
+
+    if (parsedJsonInput instanceof Error) {
+      setErrors(['There is an error with your JSON syntax']);
+      console.log('parsedJsonInput has error, terminating handleSubmit');
+      return;
+    }
+
+    const smartContractError = checkSmartContractError({
+      errorCheck,
+      setErrors,
+    });
+    console.log(
+      'checkSmartContractError function finished. Updated errors:',
+      smartContractError,
+      errors
+    );
   };
 
-  const isInputValid = useMemo(
-    () =>
-      validateInputs({
-        isEnableCheck,
-        inputType,
-        jsonString,
-        setErrors,
-        decompressedOrderFromUrl,
-      }),
-    [isEnableCheck, inputType, jsonString, decompressedOrderFromUrl]
-  );
-
-  // after input changes, `handleChangeTextAreaJson` updates `jsonString`, which will trigger the following useEffect hook. This passes in chainId to Select.tsx before the user runs the main check function
-  // This useEffect hook also sets `parsedJson`, which future useEffect hooks depend on
+  // handle programmatic changing of chainId
   useEffect(() => {
-    console.log('useEffect #1');
-    if (inputType === InputType.JSON && jsonString) {
-      try {
-        const parsedJsonObject = JSON.parse(jsonString);
-        setParsedJson(parsedJsonObject);
-        setChainIdFromJson(parsedJsonObject?.chainId);
-      } catch (error) {
-        console.error(error);
-      }
-    } else if (inputType === InputType.URL && urlString) {
-      try {
-        const jsonString = JSON.stringify(decompressedOrderFromUrl);
-        const parsedJsonString = JSON.parse(jsonString);
-        setParsedJson(parsedJsonString);
-        setChainIdFromJson(parsedJsonString?.chainId);
-      } catch (error) {
-        console.error(error);
-      }
+    const parsedJsonInput = parseJsonInput({
+      inputType,
+      jsonString,
+      decompressedOrderFromUrl,
+    });
+    if (parsedJsonInput) {
+      setParsedJson(parsedJsonInput);
+      setChainIdFromJson(parsedJsonInput?.chainId);
+    } else {
+      setParsedJson(undefined);
+      setChainIdFromJson(undefined);
     }
-  }, [inputType, decompressedOrderFromUrl, jsonString, urlString]);
+  }, [inputType, jsonString, decompressedOrderFromUrl]);
 
-  // programating handling of chainId
+  // handle programmatic changing of contract address
   useEffect(() => {
-    console.log('useEffect #2 handling of chainId change');
     const address = SwapERC20.getAddress(selectedChainId);
     if (address) {
       setSwapContractAddress(address);
-    } else {
-      return;
     }
-  }, [selectedChainId, swapContractAddress]);
+  }, [selectedChainId]);
 
   // Update state when `handleToggle` is run
   useEffect(() => {
-    console.log(
-      'useEffect #3, resetting isNoErrors, isEnableCheck to false, errors. This only runs on load and after toggle change'
-    );
     if (inputType === InputType.JSON) {
       setUrlString(undefined);
     } else {
       setJsonString(undefined);
     }
-    setIsNoErrors(false);
-    setIsEnableCheck(false);
-    setErrors([]);
   }, [inputType]);
-
-  useEffect(() => {
-    if (!isInputValid) {
-      console.log('useEffect #3: invalid input');
-      return;
-    }
-    // isEnableCheck should only be True after `handleSubmit` runs
-    if (isEnableCheck) {
-      console.log('useEffect #2. isEnableCheck true, checking errors:');
-      checkSmartContractError({ errorCheck, setErrors });
-    }
-  }, [isInputValid, isEnableCheck, errorCheck]);
 
   // performs actions after `handleSubmit` sets `enabledCheck` to True
   useEffect(() => {
@@ -214,8 +196,8 @@ function App() {
 
     // returns errorsList of False
     const isJsonValid = validateJson({
-      json: parsedJson,
-      swapContractAddress: swapContractAddress,
+      parsedJson,
+      swapContractAddress,
     });
 
     if (isJsonValid) {
@@ -224,6 +206,8 @@ function App() {
         const uniqueErrors = [...new Set(updatedErrors)];
         return uniqueErrors;
       });
+    } else {
+      setErrors(['Invalid JSON. Please check your input']);
     }
 
     const outputErrorsList = getOutputErrorsList(checkFunctionData);

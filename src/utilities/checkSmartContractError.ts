@@ -7,6 +7,7 @@ export const checkSmartContractError = ({
   errorCheck: Error | null;
   setErrors: Dispatch<SetStateAction<string[]>>;
 }) => {
+  console.log('checkSmartContractError function start', errorCheck);
   if (
     errorCheck?.message.includes('unknown') ||
     errorCheck?.message.includes('reverted')
@@ -19,5 +20,7 @@ export const checkSmartContractError = ({
       const updatedErrors = [unknownError, ...prevErrors];
       return [...new Set(updatedErrors)];
     });
+    console.log('checkSmartContractError ended. New errors set');
+    return;
   }
 };
