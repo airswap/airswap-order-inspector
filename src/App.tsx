@@ -14,7 +14,7 @@ import { Toggle } from './components/Toggle';
 import { SwapERC20 } from '@airswap/libraries';
 import { useDecompressedOrderFromUrl } from './hooks/useDecompressedOrderFromUrl';
 import { useJsonValues } from './hooks/useJsonValues';
-import { checkSmartContractError } from './utilities/checkSmartContractError';
+import { checkSmartContractGenericError } from './utilities/checkSmartContractGenericError';
 import { getOutputErrorsList } from './utilities/getOutputErrorsList';
 import { handleFormattedListErrors } from './utilities/handleFormattedErrorsList';
 import { parseJsonInput } from './utilities/parseJsonInput';
@@ -57,6 +57,7 @@ function App() {
     s,
   } = useJsonValues({ inputType, parsedJson, decompressedOrderFromUrl });
 
+  // gets passed into useContractRead for `check`
   const checkFunctionArgs: CheckFunctionArgs = [
     (senderWallet as `0x${string}`) || zeroAddress,
     nonce || BigInt(0),
@@ -116,13 +117,13 @@ function App() {
     setIsEnableCheck(false);
   }, [jsonString, urlString]);
 
+  // TODO: if JSON is toggled, clickin gon JSON will toggle URL. We want to prevent this behavior. Add an id to the button component and check that against inputType
   const handleToggle = (inputType: InputType) => {
     if (inputType === InputType.URL) {
       setInputType(InputType.JSON);
     } else {
       setInputType(InputType.URL);
     }
-    console.log(inputType);
   };
 
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
@@ -136,23 +137,21 @@ function App() {
       jsonString,
       decompressedOrderFromUrl,
     });
-    console.log('parsedJsonInput', parsedJsonInput);
 
     if (parsedJsonInput instanceof Error) {
       setErrors(['There is an error with your JSON syntax']);
-      console.log('parsedJsonInput has error, terminating handleSubmit');
       return;
     }
 
-    const smartContractError = checkSmartContractError({
+    // checks errors returned from smart contract to see if they're unhelpful, then returns a generic error
+    const isGenericSmartContractError = checkSmartContractGenericError({
       errorCheck,
       setErrors,
     });
-    console.log(
-      'checkSmartContractError function finished. Updated errors:',
-      smartContractError,
-      errors
-    );
+
+    if (isGenericSmartContractError) {
+      return;
+    }
   };
 
   // handle programmatic changing of chainId
@@ -188,13 +187,12 @@ function App() {
     }
   }, [inputType]);
 
-  // performs actions after `handleSubmit` sets `enabledCheck` to True
+  // performs actions after `handleSubmit` sets `enabledCheck` to True. Adding the following actions to `handleSubmit` might cause useState updates to lag, causing unexpected behavior
   useEffect(() => {
     if (!isEnableCheck) {
       return;
     }
 
-    // returns errorsList of False
     const isJsonValid = validateJson({
       parsedJson,
       swapContractAddress,
@@ -210,22 +208,21 @@ function App() {
       setErrors(['Invalid JSON. Please check your input']);
     }
 
+    // returns human readable errors from smart contract
     const outputErrorsList = getOutputErrorsList(checkFunctionData);
 
-    // create array of human-readable errors
+    // handles errors so they're easily readable for users
     const humanReadableErrors = displayErrors({
       errorsList: outputErrorsList,
       eip712Domain,
       protocolFee,
     });
 
+    // updates errors array with `setErrors`
     handleFormattedListErrors({ errorsList: humanReadableErrors, setErrors });
 
-    if (
-      // !isJsonValid &&
-      humanReadableErrors &&
-      humanReadableErrors.length === 0
-    ) {
+    // sees if `check` function actually ran and returned errors. If empty array is returned, there should be no errors
+    if (humanReadableErrors && humanReadableErrors.length === 0) {
       setIsNoErrors(true);
     }
   }, [
