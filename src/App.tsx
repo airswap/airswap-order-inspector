@@ -41,7 +41,10 @@ function App() {
   const [isEnableCheck, setIsEnableCheck] = useState(false);
   const [isNoErrors, setIsNoErrors] = useState(false);
 
-  const decompressedOrderFromUrl = useDecompressedOrderFromUrl(urlString);
+  const decompressedOrderFromUrl = useDecompressedOrderFromUrl({
+    inputType: inputType,
+    compressedOrder: urlString,
+  });
 
   const {
     senderWallet,
@@ -112,12 +115,7 @@ function App() {
     setUrlString(e.target.value);
   };
 
-  // if user input changes, prevent checker from running
-  useEffect(() => {
-    setIsEnableCheck(false);
-  }, [jsonString, urlString]);
-
-  // TODO: if JSON is toggled, clickin gon JSON will toggle URL. We want to prevent this behavior. Add an id to the button component and check that against inputType
+  // TODO: if JSON is toggled, clicking on JSON will toggle URL. We want to prevent this behavior. Add an id to the button component and check that against inputType
   const handleToggle = (inputType: InputType) => {
     if (inputType === InputType.URL) {
       setInputType(InputType.JSON);
@@ -129,7 +127,6 @@ function App() {
   const handleSubmit = (e: MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsEnableCheck(true);
-    console.log('handleSubmit run');
 
     // check if valid json format
     const parsedJsonInput = parseJsonInput({
@@ -186,6 +183,15 @@ function App() {
       setJsonString(undefined);
     }
   }, [inputType]);
+
+  // if user input changes, prevent checker from running or rendering errors
+  useEffect(() => {
+    // if (!isEnableCheck) {
+    //   setErrors([]);
+    // }
+    setIsEnableCheck(false);
+    setIsNoErrors(false);
+  }, [isEnableCheck, jsonString, urlString]);
 
   // performs actions after `handleSubmit` sets `enabledCheck` to True. Adding the following actions to `handleSubmit` might cause useState updates to lag, causing unexpected behavior
   useEffect(() => {
