@@ -87,7 +87,7 @@ function App() {
     functionName: 'check',
     args: checkFunctionArgs,
     query: {
-      enabled: isEnableCheck,
+      enabled: !!isEnableCheck,
     },
   });
 

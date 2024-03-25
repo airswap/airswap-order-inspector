@@ -18,16 +18,15 @@ export const handleSetErrors = ({
 }) => {
   if (!isEnableCheck) {
     return;
-  } else if (!errors) {
+  } else if (isEnableCheck && !errors) {
     return;
   } else {
-    if (errors.length == 0) {
-      // setErrors(['No errors found 🎊']);
+    if (errors && errors.length == 0) {
       if (setIsNoErrors) {
-        isErrors ? setIsNoErrors(true) : setIsNoErrors(false);
+        setErrors(['🎊 No errors found! 🎊']);
+        // isErrors ? setIsNoErrors(true) : setIsNoErrors(false);
       }
-    } else {
-      // setErrors(errors);
+    } else if (Array.isArray(errors)) {
       setErrors((prevErrors) => {
         const updatedErrors = [...prevErrors, ...errors];
         const uniqueErrors = [...new Set(updatedErrors)];
