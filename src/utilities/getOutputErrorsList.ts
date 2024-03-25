@@ -7,7 +7,7 @@ export const getOutputErrorsList = (
   checkFunctionData: readonly `0x${string}`[] | undefined
 ) => {
   if (!checkFunctionData) {
-    return;
+    return undefined;
   } else {
     return checkFunctionData.map((error: `0x${string}`) => hexToString(error));
   }

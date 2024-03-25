@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from 'react';
+// import { Dispatch, SetStateAction } from 'react';
 import { ReadContractErrorType } from 'viem';
 
 /**
@@ -8,26 +8,16 @@ import { ReadContractErrorType } from 'viem';
  */
 export const checkSmartContractGenericError = ({
   errorCheck,
-  setErrors,
 }: {
   errorCheck: ReadContractErrorType | null;
-  setErrors: Dispatch<SetStateAction<string[]>>;
 }) => {
   if (
     errorCheck?.message.includes('unknown') ||
     errorCheck?.message.includes('reverted')
   ) {
-    const unknownError =
+    const genericError =
       'Unknown error from SwapERC20 contract. Please double check all your inputs';
 
-    let uniqueErrors: string[] | [] = [];
-
-    setErrors((prevErrors) => {
-      const updatedErrors = [unknownError, ...prevErrors];
-      uniqueErrors = [...new Set(updatedErrors)];
-      return uniqueErrors;
-    });
-
-    return uniqueErrors;
+    return genericError;
   }
 };

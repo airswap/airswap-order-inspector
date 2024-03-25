@@ -14,7 +14,6 @@ export const displayErrors = ({
   eip712Domain: Erc712Domain;
   protocolFee: bigint | undefined;
 }): string[] | undefined => {
-  // if contract returns no errors returned, exit function
   if (!errorsList) {
     return undefined;
   }

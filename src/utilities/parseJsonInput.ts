@@ -23,16 +23,14 @@ export const parseJsonInput = ({
     try {
       return JSON.parse(jsonString);
     } catch (e) {
-      console.error(e);
-      return undefined;
+      return e;
     }
   } else {
     try {
       const jsonString = JSON.stringify(decompressedOrderFromUrl);
       return JSON.parse(jsonString);
     } catch (e) {
-      console.error(e);
-      return undefined;
+      return e;
     }
   }
 };

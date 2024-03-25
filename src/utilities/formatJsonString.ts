@@ -1,7 +1,9 @@
 import { ParsedJsonParams } from '../../types';
 
 export const formatJsonString = (json: Partial<ParsedJsonParams>): string => {
+  console.log('json', json);
   const stringifiedJson = JSON.stringify(json);
+  console.log(stringifiedJson);
   let formattedJsonString = '';
 
   for (const current of stringifiedJson) {

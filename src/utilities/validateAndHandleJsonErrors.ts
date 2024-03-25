@@ -2,13 +2,22 @@ import { isAddress } from 'viem';
 import { ParsedJsonParams } from '../../types';
 import { ChainIds } from '../../tools/constants';
 
-export const validateJson = ({
+/**
+ *
+ * @param parsedJson is the JSON that is being checked for errors
+ * @returns a list of errors, or undefined. Undefined indicates that no errors are found
+ */
+export const validateAndHandleJsonErrors = ({
   parsedJson,
   swapContractAddress,
 }: {
   parsedJson: Partial<ParsedJsonParams> | undefined;
   swapContractAddress: string | undefined;
-}): string[] | false => {
+}): string[] | undefined => {
+  if (!parsedJson) {
+    return;
+  }
+
   const errorsList: string[] = [];
   try {
     const requiredKeys: (keyof ParsedJsonParams)[] = [
@@ -135,16 +144,15 @@ export const validateJson = ({
       errorsList.push(`JSON is missing an "${missingKey}" key and its value.`);
     });
 
+    console.log(errorsList);
+
     if (errorsList.length === 0) {
-      // false means there are no errors here
-      return false;
+      return undefined;
     } else {
       return errorsList;
     }
-  } catch (e) {
-    console.error('error in validateJson function', e);
-    errorsList.push('An unexpected error occurred');
-
-    return errorsList;
+  } catch (error) {
+    console.error('error in validateJson function', error);
+    return [String(error)];
   }
 };

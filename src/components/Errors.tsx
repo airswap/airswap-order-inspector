@@ -11,7 +11,7 @@ export const Errors = ({
   errors: string[];
   isNoErrors: boolean;
 }) => {
-  const renderedErrors = renderErrors({ errors });
+  const errorsList = renderErrors({ errors });
 
   return (
     <React.Fragment>
@@ -31,7 +31,7 @@ export const Errors = ({
             )}
           >
             {!isNoErrors ? (
-              <ul className="list-none break-words">{renderedErrors}</ul>
+              <ul className="list-none break-words">{errorsList}</ul>
             ) : (
               <h3 className="mb-1 text-lg font-semibold uppercase">
                 🎊 No errors found! 🎊

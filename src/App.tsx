@@ -3,7 +3,7 @@ import { useReadContract } from 'wagmi';
 import { abi } from './contracts/swapERC20ABI';
 import { zeroAddress } from 'viem';
 import { CheckFunctionArgs, ParsedJsonParams, InputType } from '../types';
-import { validateJson } from './utilities/validateJson';
+import { validateAndHandleJsonErrors } from './utilities/validateAndHandleJsonErrors';
 import { displayErrors } from './utilities/displayErrors';
 import { twMerge } from 'tailwind-merge';
 import { Errors } from './components/Errors';
@@ -18,6 +18,7 @@ import { checkSmartContractGenericError } from './utilities/checkSmartContractGe
 import { getOutputErrorsList } from './utilities/getOutputErrorsList';
 import { handleFormattedListErrors } from './utilities/handleFormattedErrorsList';
 import { parseJsonInput } from './utilities/parseJsonInput';
+import { handleSetErrors } from './utilities/handleSetErrors';
 
 function App() {
   const [inputType, setInputType] = useState<InputType>(InputType.JSON);
@@ -136,18 +137,27 @@ function App() {
     });
 
     if (parsedJsonInput instanceof Error) {
-      setErrors(['There is an error with your JSON syntax']);
+      handleSetErrors({
+        isEnableCheck,
+        errors: [parsedJsonInput.toString()],
+        setErrors,
+      });
+
       return;
     }
 
     // checks errors returned from smart contract to see if they're unhelpful, then returns a generic error
-    const isGenericSmartContractError = checkSmartContractGenericError({
+    const genericSmartContractError = checkSmartContractGenericError({
       errorCheck,
-      setErrors,
+      // setErrors,
     });
 
-    if (isGenericSmartContractError) {
-      return;
+    if (genericSmartContractError) {
+      handleSetErrors({
+        isEnableCheck,
+        errors: [genericSmartContractError],
+        setErrors,
+      });
     }
   };
 
@@ -182,63 +192,66 @@ function App() {
     } else {
       setJsonString(undefined);
     }
+    console.log('reset errors');
+    setErrors([]);
   }, [inputType]);
 
-  // if user input changes, prevent checker from running or rendering errors
-  useEffect(() => {
-    // if (!isEnableCheck) {
-    //   setErrors([]);
-    // }
-    setIsEnableCheck(false);
-    setIsNoErrors(false);
-  }, [isEnableCheck, jsonString, urlString]);
-
-  // performs actions after `handleSubmit` sets `enabledCheck` to True. Adding the following actions to `handleSubmit` might cause useState updates to lag, causing unexpected behavior
+  // Initial validation and error handling after handleSubmit function changes `isEnabledCheck` to true
   useEffect(() => {
     if (!isEnableCheck) {
       return;
     }
 
-    const isJsonValid = validateJson({
+    const validationErrors = validateAndHandleJsonErrors({
       parsedJson,
       swapContractAddress,
     });
 
-    if (isJsonValid) {
-      setErrors((prevErrors) => {
-        const updatedErrors = [...prevErrors, ...isJsonValid];
-        const uniqueErrors = [...new Set(updatedErrors)];
-        return uniqueErrors;
+    if (validationErrors) {
+      handleSetErrors({
+        isEnableCheck,
+        errors: validationErrors,
+        setErrors,
       });
-    } else {
-      setErrors(['Invalid JSON. Please check your input']);
+    }
+  }, [isEnableCheck, parsedJson, swapContractAddress, setErrors]);
+
+  // handling errors from smart contract data
+  useEffect(() => {
+    if (!isEnableCheck) {
+      return;
     }
 
-    // returns human readable errors from smart contract
+    // if outputErrorsList has a length of 0, there are no errors
     const outputErrorsList = getOutputErrorsList(checkFunctionData);
 
-    // handles errors so they're easily readable for users
     const humanReadableErrors = displayErrors({
       errorsList: outputErrorsList,
       eip712Domain,
       protocolFee,
     });
 
-    // updates errors array with `setErrors`
-    handleFormattedListErrors({ errorsList: humanReadableErrors, setErrors });
+    const formattedErrors = handleFormattedListErrors({
+      errorsList: humanReadableErrors,
+    });
 
-    // sees if `check` function actually ran and returned errors. If empty array is returned, there should be no errors
-    if (humanReadableErrors && humanReadableErrors.length === 0) {
-      setIsNoErrors(true);
-    }
-  }, [
-    isEnableCheck,
-    parsedJson,
-    checkFunctionData,
-    swapContractAddress,
-    protocolFee,
-    eip712Domain,
-  ]);
+    const isErrors = outputErrorsList?.length === 0 ? false : true;
+
+    handleSetErrors({
+      isEnableCheck,
+      errors: formattedErrors,
+      setErrors,
+      isErrors,
+      setIsNoErrors,
+    });
+  }, [checkFunctionData, eip712Domain, protocolFee, isEnableCheck, setErrors]);
+
+  // useEffect(() => {
+  //   console.log(isEnableCheck);
+  //   if (!isEnableCheck) {
+  //     setErrors([]);
+  //   }
+  // }, [isEnableCheck]);
 
   return (
     <div className="flex flex-col font-sans">
