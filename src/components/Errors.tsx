@@ -11,6 +11,7 @@ export const Errors = ({
   errors: string[];
   isNoErrors: boolean;
 }) => {
+  console.log('isNoErrors', isNoErrors);
   const errorsList = renderErrors({ errors });
 
   return (
@@ -30,13 +31,13 @@ export const Errors = ({
               errors.length > 0 && isNoErrors && 'border-white border-solid'
             )}
           >
-            {/* {!isNoErrors ? ( */}
-            <ul className="list-none break-words">{errorsList}</ul>
-            {/* ) : (
+            {!isNoErrors ? (
+              <ul className="list-none break-words">{errorsList}</ul>
+            ) : (
               <h3 className="mb-1 text-lg font-semibold uppercase">
                 🎊 No errors found! 🎊
               </h3>
-            )} */}
+            )}
           </div>
         </>
       )}

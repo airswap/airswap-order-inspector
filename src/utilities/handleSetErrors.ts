@@ -7,13 +7,13 @@ export const handleSetErrors = ({
   isEnableCheck,
   errors,
   setErrors,
-  isErrors,
+  // isErrors,
   setIsNoErrors,
 }: {
   isEnableCheck: boolean;
   errors: string[] | [] | undefined | false;
   setErrors: React.Dispatch<React.SetStateAction<string[]>>;
-  isErrors?: boolean;
+  // isErrors?: boolean;
   setIsNoErrors?: (value: React.SetStateAction<boolean>) => void;
 }) => {
   if (!isEnableCheck) {

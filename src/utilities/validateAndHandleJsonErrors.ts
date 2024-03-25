@@ -10,9 +10,11 @@ import { ChainIds } from '../../tools/constants';
 export const validateAndHandleJsonErrors = ({
   parsedJson,
   swapContractAddress,
+  protocolFee,
 }: {
   parsedJson: Partial<ParsedJsonParams> | undefined;
   swapContractAddress: string | undefined;
+  protocolFee: bigint | undefined;
 }): string[] | undefined => {
   if (!parsedJson) {
     return;
@@ -132,6 +134,14 @@ export const validateAndHandleJsonErrors = ({
         if (parsedJson['swapContract'] !== swapContractAddress) {
           errorsList.push(`swapContract: SwapERC20 address is not valid.`);
         }
+      }
+      if (
+        parsedJson['protocolFee'] &&
+        parsedJson['protocolFee'] !== Number(protocolFee).toString()
+      ) {
+        errorsList.push(
+          `protocolFee: protocol fee should be ${Number(protocolFee)}`
+        );
       }
     }
 

@@ -193,6 +193,8 @@ function App() {
       setJsonString(undefined);
     }
     console.log('reset errors');
+    setIsEnableCheck(false);
+    setIsNoErrors(false);
     setErrors([]);
   }, [inputType]);
 
@@ -205,6 +207,7 @@ function App() {
     const validationErrors = validateAndHandleJsonErrors({
       parsedJson,
       swapContractAddress,
+      protocolFee,
     });
 
     if (validationErrors) {
@@ -214,7 +217,7 @@ function App() {
         setErrors,
       });
     }
-  }, [isEnableCheck, parsedJson, swapContractAddress, setErrors]);
+  }, [isEnableCheck, parsedJson, swapContractAddress, protocolFee, setErrors]);
 
   // handling errors from smart contract data
   useEffect(() => {
@@ -224,6 +227,11 @@ function App() {
 
     // if outputErrorsList has a length of 0, there are no errors
     const outputErrorsList = getOutputErrorsList(checkFunctionData);
+    if (outputErrorsList?.length === 0) {
+      setIsNoErrors(true);
+      return;
+    }
+    // const isErrors = outputErrorsList?.length === 0 ? false : true;
 
     const humanReadableErrors = displayErrors({
       errorsList: outputErrorsList,
@@ -235,13 +243,11 @@ function App() {
       errorsList: humanReadableErrors,
     });
 
-    const isErrors = outputErrorsList?.length === 0 ? false : true;
-
     handleSetErrors({
       isEnableCheck,
       errors: formattedErrors,
       setErrors,
-      isErrors,
+      // isErrors,
       setIsNoErrors,
     });
   }, [checkFunctionData, eip712Domain, protocolFee, isEnableCheck, setErrors]);
