@@ -8,19 +8,17 @@ export const handleSetErrors = ({
   isEnableCheck,
   errors,
   setErrors,
-  setIsNoErrors,
 }: {
   isEnableCheck: boolean;
   errors: string[] | [] | undefined | false;
   setErrors: React.Dispatch<React.SetStateAction<string[]>>;
-  setIsNoErrors?: (value: React.SetStateAction<boolean>) => void | undefined;
 }) => {
   if (!isEnableCheck) {
     return;
   } else if (!errors) {
     return;
   } else if (Array.isArray(errors)) {
-    setErrors((prevErrors) => {
+    setErrors(() => {
       // const updatedErrors = [...prevErrors, ...errors];
       const updatedErrors = [...errors];
       const uniqueErrors = [...new Set(updatedErrors)];

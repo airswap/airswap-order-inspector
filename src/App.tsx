@@ -141,7 +141,6 @@ function App() {
         isEnableCheck,
         errors: [parsedJsonInput.toString()],
         setErrors,
-        setIsNoErrors: undefined,
       });
 
       return;
@@ -158,7 +157,6 @@ function App() {
         isEnableCheck,
         errors: [genericSmartContractError],
         setErrors,
-        setIsNoErrors: undefined,
       });
     }
   };
@@ -222,7 +220,6 @@ function App() {
         isEnableCheck,
         errors: validationErrors,
         setErrors,
-        setIsNoErrors: undefined,
       });
       // if !!validationErrors, end function. We don't want to check for smart contract errors until validationErrors is undefined, e.g. no errors
       return;
@@ -250,7 +247,6 @@ function App() {
       isEnableCheck,
       errors: formattedErrors,
       setErrors,
-      setIsNoErrors,
     });
   }, [
     isEnableCheck,
