@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
-import { renderErrors } from './ErrorsList';
 
 export const Errors = ({
   isLoading,
@@ -11,8 +10,30 @@ export const Errors = ({
   errors: string[];
   isNoErrors: boolean;
 }) => {
-  console.log('isNoErrors', isNoErrors);
-  const errorsList = renderErrors({ errors });
+  const [displayNoErrors, setDisplayNoErrors] = useState<string | undefined>();
+
+  const errorsList = errors?.map((error, i) => {
+    return (
+      <li
+        key={error + i}
+        className="flex max-w-full ml-2 mb-2 text-left last:mb-0"
+      >
+        <input type="checkbox" className="flex self-start w-4 mr-2 mt-1.5" />
+        <span className="flex">{error}</span>
+      </li>
+    );
+  });
+
+  useEffect(() => {
+    if (isNoErrors) {
+      setDisplayNoErrors('🎊 No errors found! 🎊');
+    }
+  }, [isNoErrors]);
+
+  useEffect(() => {
+    console.log('isNoErrors', isNoErrors);
+    console.log('displayNoErrors', displayNoErrors);
+  }, [isNoErrors, displayNoErrors]);
 
   return (
     <React.Fragment>
@@ -35,7 +56,7 @@ export const Errors = ({
               <ul className="list-none break-words">{errorsList}</ul>
             ) : (
               <h3 className="mb-1 text-lg font-semibold uppercase">
-                🎊 No errors found! 🎊
+                {displayNoErrors}
               </h3>
             )}
           </div>

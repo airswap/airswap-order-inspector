@@ -141,6 +141,7 @@ function App() {
         isEnableCheck,
         errors: [parsedJsonInput.toString()],
         setErrors,
+        setIsNoErrors: undefined,
       });
 
       return;
@@ -157,6 +158,7 @@ function App() {
         isEnableCheck,
         errors: [genericSmartContractError],
         setErrors,
+        setIsNoErrors: undefined,
       });
     }
   };
@@ -192,18 +194,23 @@ function App() {
     } else {
       setJsonString(undefined);
     }
-    console.log('reset errors');
+
     setIsEnableCheck(false);
     setIsNoErrors(false);
     setErrors([]);
   }, [inputType]);
+
+  // This prevents the checker from running when a user changes input but doesn't press submit input
+  useEffect(() => {
+    setIsEnableCheck(false);
+  }, [jsonString, urlString]);
 
   // Initial validation and error handling after handleSubmit function changes `isEnabledCheck` to true
   useEffect(() => {
     if (!isEnableCheck) {
       return;
     }
-
+    // checks JSON errors, not smart contract errors
     const validationErrors = validateAndHandleJsonErrors({
       parsedJson,
       swapContractAddress,
@@ -215,23 +222,18 @@ function App() {
         isEnableCheck,
         errors: validationErrors,
         setErrors,
+        setIsNoErrors: undefined,
       });
-    }
-  }, [isEnableCheck, parsedJson, swapContractAddress, protocolFee, setErrors]);
-
-  // handling errors from smart contract data
-  useEffect(() => {
-    if (!isEnableCheck) {
+      // if !!validationErrors, end function. We don't want to check for smart contract errors until validationErrors is undefined, e.g. no errors
       return;
     }
 
-    // if outputErrorsList has a length of 0, there are no errors
+    // Check smart contract errors. If outputErrorsList has a length of 0, there are no errors
     const outputErrorsList = getOutputErrorsList(checkFunctionData);
     if (outputErrorsList?.length === 0) {
       setIsNoErrors(true);
       return;
     }
-    // const isErrors = outputErrorsList?.length === 0 ? false : true;
 
     const humanReadableErrors = displayErrors({
       errorsList: outputErrorsList,
@@ -242,22 +244,23 @@ function App() {
     const formattedErrors = handleFormattedListErrors({
       errorsList: humanReadableErrors,
     });
+    console.log('formatted sc errors:', formattedErrors);
 
     handleSetErrors({
       isEnableCheck,
       errors: formattedErrors,
       setErrors,
-      // isErrors,
       setIsNoErrors,
     });
-  }, [checkFunctionData, eip712Domain, protocolFee, isEnableCheck, setErrors]);
-
-  // useEffect(() => {
-  //   console.log(isEnableCheck);
-  //   if (!isEnableCheck) {
-  //     setErrors([]);
-  //   }
-  // }, [isEnableCheck]);
+  }, [
+    isEnableCheck,
+    parsedJson,
+    swapContractAddress,
+    protocolFee,
+    setErrors,
+    checkFunctionData,
+    eip712Domain,
+  ]);
 
   return (
     <div className="flex flex-col font-sans">

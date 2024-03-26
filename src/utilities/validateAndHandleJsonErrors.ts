@@ -4,6 +4,7 @@ import { ChainIds } from '../../tools/constants';
 
 /**
  *
+ * @remarks this function does not check for errors returned from the smart contract, it only checks for valid JSON inputs
  * @param parsedJson is the JSON that is being checked for errors
  * @returns a list of errors, or undefined. Undefined indicates that no errors are found
  */
@@ -154,7 +155,7 @@ export const validateAndHandleJsonErrors = ({
       errorsList.push(`JSON is missing an "${missingKey}" key and its value.`);
     });
 
-    console.log(errorsList);
+    console.log('json errors (not SC errors)', errorsList);
 
     if (errorsList.length === 0) {
       return undefined;
