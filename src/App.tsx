@@ -231,6 +231,7 @@ function App() {
     // Check smart contract errors. If outputErrorsList has a length of 0, there are no errors
     const outputErrorsList = getOutputErrorsList(checkFunctionData);
     if (outputErrorsList?.length === 0) {
+      // setting `isNoErrors` to true will cause Errors.tsx to render a "no errors" message
       setIsNoErrors(true);
       return;
     }
@@ -244,7 +245,6 @@ function App() {
     const formattedErrors = handleFormattedListErrors({
       errorsList: humanReadableErrors,
     });
-    console.log('formatted sc errors:', formattedErrors);
 
     handleSetErrors({
       isEnableCheck,

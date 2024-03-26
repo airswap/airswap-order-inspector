@@ -17,21 +17,16 @@ export const handleSetErrors = ({
 }) => {
   if (!isEnableCheck) {
     return;
-  } else if (isEnableCheck && !errors) {
+  } else if (!errors) {
     return;
+  } else if (Array.isArray(errors)) {
+    setErrors((prevErrors) => {
+      // const updatedErrors = [...prevErrors, ...errors];
+      const updatedErrors = [...errors];
+      const uniqueErrors = [...new Set(updatedErrors)];
+      return uniqueErrors;
+    });
   } else {
-    if (errors && errors.length == 0) {
-      if (setIsNoErrors) {
-        setErrors(['🎊 No errors found! 🎊']);
-        // isErrors ? setIsNoErrors(true) : setIsNoErrors(false);
-      }
-    } else if (Array.isArray(errors)) {
-      setErrors((prevErrors) => {
-        const updatedErrors = [...prevErrors, ...errors];
-        const uniqueErrors = [...new Set(updatedErrors)];
-        return uniqueErrors;
-      });
-    }
     return;
   }
 };
