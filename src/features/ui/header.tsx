@@ -1,9 +1,7 @@
-import airswaplogo from '../../assets/airswap-logo-with-text.svg';
-
 export const Header = () => {
   return (
     <div className="p-6">
-      <img src={airswaplogo} alt="airswap logo" />
+      <img src="../../assets/airswap-logo-with-text.svg" alt="airswap logo" />
     </div>
   );
 };

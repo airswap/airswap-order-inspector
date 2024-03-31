@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { FaChevronDown } from 'react-icons/fa';
 import { chainIdOptions } from '@/lib/chainIdOptions';
 
-export const Select = ({}: {}) => {
+export const Select = () => {
   const [isSelectOpen, setIsSelectOpen] = useState(false);
 
   const handleIsSelectOpen = () => {
@@ -26,14 +26,14 @@ export const Select = ({}: {}) => {
   };
   const options = renderOptions();
 
-  const handleSelectChange = (chain: string) => {
-    null;
-  };
+  // const handleSelectChange = (chain: string) => {
+  //   null;
+  // };
 
   return (
     <>
       <RadixSelect.Root
-        onValueChange={(val) => handleSelectChange(val)}
+        // onValueChange={(val) => {handleSelectChange(val)}}
         onOpenChange={handleIsSelectOpen}
       >
         <RadixSelect.Trigger
