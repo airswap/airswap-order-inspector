@@ -19,6 +19,7 @@ export default {
     },
     extend: {
       colors: {
+        'airswap-blue': '#2B71FF',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
