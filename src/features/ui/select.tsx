@@ -2,9 +2,12 @@ import * as RadixSelect from '@radix-ui/react-select';
 import { useState } from 'react';
 import { FaChevronDown } from 'react-icons/fa';
 import { chainIdOptions } from '@/lib/chainIdOptions';
+import { useChainStore, useSelectStore } from '@/store/store';
 
 export const Select = () => {
   const [isSelectOpen, setIsSelectOpen] = useState(false);
+  const { isDisabled } = useSelectStore();
+  const { setSelectedChainId } = useChainStore();
 
   const handleIsSelectOpen = () => {
     setIsSelectOpen((isSelectOpen) => !isSelectOpen);
@@ -15,7 +18,7 @@ export const Select = () => {
       <RadixSelect.Item
         value={chain.value}
         key={chain.value}
-        className="py-1 px-2 bg-blueGray text-lightGray border border-blueExtraDark first:rounded-t-sm last:rounded-b-sm hover:bg-blueExtraDark hover:border-blueExtraDark active:border-white"
+        className="py-1 px-2 bg-background text-lightGray border border-blueExtraDark first:rounded-t-sm last:rounded-b-sm hover:bg-blueExtraDark hover:border-blueExtraDark active:border-white"
       >
         <RadixSelect.ItemText>
           {chain.label}: {chain.value}
@@ -26,14 +29,21 @@ export const Select = () => {
   };
   const options = renderOptions();
 
-  // const handleSelectChange = (chain: string) => {
-  //   null;
-  // };
+  const handleSelectChange = (chain: string) => {
+    if (isDisabled) {
+      return;
+    } else {
+      setSelectedChainId(Number(chain));
+    }
+  };
 
   return (
     <>
       <RadixSelect.Root
-        // onValueChange={(val) => {handleSelectChange(val)}}
+        disabled={isDisabled}
+        onValueChange={(val) => {
+          handleSelectChange(val);
+        }}
         onOpenChange={handleIsSelectOpen}
       >
         <RadixSelect.Trigger

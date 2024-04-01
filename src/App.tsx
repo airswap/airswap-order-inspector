@@ -4,14 +4,17 @@ import { cn } from './lib/utils';
 import { useValidateOrder } from './hooks/useValidateOrder';
 import { Header } from './features/ui/header';
 import { Select } from './features/ui/select';
+import { useChainStore } from './store/store';
 
 function App() {
   const [urlMode, setUrlMode] = useState<boolean>(false);
 
   // NOTE: would probably be nicer to default this to
-  const [selectedChainId, setselectedChainId] = useState<number>(1);
+  // const [selectedChainId, setselectedChainId] = useState<number>(1);
 
   const [orderText, setOrderText] = useState<string>('');
+
+  const { selectedChainId, setSelectedChainId } = useChainStore();
 
   const {
     orderErrors,
@@ -22,7 +25,7 @@ function App() {
     order: orderText,
     isUrl: urlMode,
     onSetChain: (newId) => {
-      if (selectedChainId !== newId) setselectedChainId(newId);
+      if (selectedChainId !== newId) setSelectedChainId(newId);
     },
   });
 

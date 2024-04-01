@@ -2,6 +2,8 @@ import { hexToString } from 'viem';
 import { useCheckOrder } from './useCheckOrder';
 import { signedOrderSchema } from '../utils/orderSchema';
 import { parseOrderFromUrl } from '../utils/parseOrderFromUrl';
+import { useSelectStore } from '@/store/store';
+import { SelectStore } from '@/store/store';
 
 export const useValidateOrder = ({
   order,
@@ -12,6 +14,10 @@ export const useValidateOrder = ({
   isUrl: boolean;
   onSetChain?: (chainId: number) => void;
 }) => {
+  const setIsDisabled = useSelectStore(
+    (state: SelectStore) => state.setIsDisabled
+  );
+
   let _order;
   let orderParsingError;
   if (order) {
@@ -23,11 +29,14 @@ export const useValidateOrder = ({
   }
 
   const schemaValidationResult = signedOrderSchema.safeParse(_order);
+  console.log(schemaValidationResult);
 
   const schemaValid = schemaValidationResult.success;
 
   if (schemaValid && schemaValidationResult.data.chainId) {
-    onSetChain?.(schemaValidationResult.data.chainId);
+    const chainId = schemaValidationResult.data.chainId;
+    setIsDisabled(true);
+    onSetChain?.(chainId);
   }
 
   const { data: orderErrors, error: contractCallError } = useCheckOrder({
