@@ -7,7 +7,7 @@ import { useChainStore, useSelectStore } from '@/store/store';
 export const Select = () => {
   const [isSelectOpen, setIsSelectOpen] = useState(false);
   const { isDisabled } = useSelectStore();
-  const { setSelectedChainId } = useChainStore();
+  const { setSelectedChainId, selectedChainId } = useChainStore();
 
   const handleIsSelectOpen = () => {
     setIsSelectOpen((isSelectOpen) => !isSelectOpen);
@@ -37,6 +37,8 @@ export const Select = () => {
     }
   };
 
+  console.log(isDisabled, selectedChainId);
+
   return (
     <>
       <RadixSelect.Root
@@ -50,7 +52,11 @@ export const Select = () => {
           className="flex items-center px-3 py-1 bg-blueGray border border-blueGray rounded-md font-semibold uppercase"
           aria-label="chain id"
         >
-          <RadixSelect.Value placeholder="chain id" />
+          <RadixSelect.Value
+            placeholder={isDisabled ? selectedChainId.toString() : 'chain Id'}
+            // defaultValue={isDisabled ? selectedChainId.toString() : undefined}
+          />
+
           <RadixSelect.Icon className="ml-2">
             <div
               className={`${

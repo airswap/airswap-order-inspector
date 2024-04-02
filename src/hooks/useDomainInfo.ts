@@ -2,13 +2,7 @@ import { useReadContracts } from 'wagmi';
 import { swapErc20Abi } from '@/abi/swapErc20Abi';
 import { useContractAddress } from './useContractAddress';
 
-export const useDomainInfo = ({
-  isEnabled = false,
-  chainId,
-}: {
-  isEnabled: boolean;
-  chainId: number | undefined;
-}) => {
+export const useDomainInfo = (chainId: number | undefined) => {
   const address = useContractAddress({ chainId });
 
   const wagmiContractConfig = {
@@ -16,15 +10,11 @@ export const useDomainInfo = ({
     abi: swapErc20Abi,
   };
 
-  const { data, error, isPending } = useReadContracts({
+  const { data } = useReadContracts({
     contracts: [
       {
         ...wagmiContractConfig,
         functionName: 'eip712Domain',
-      },
-      {
-        ...wagmiContractConfig,
-        functionName: 'DOMAIN_CHAIN_ID',
       },
       {
         ...wagmiContractConfig,
@@ -36,10 +26,10 @@ export const useDomainInfo = ({
       // Once wrong, always wrong.
       staleTime: Infinity,
       gcTime: 600_000,
-      enabled: isEnabled,
+      enabled: !!chainId,
     },
   });
-  const [eip712Domain, domainChainId, protocolFee] = data || [];
+  const [eip712Domain, protocolFee] = data || [];
 
-  return { eip712Domain, domainChainId, protocolFee };
+  return { eip712Domain, protocolFee };
 };

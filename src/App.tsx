@@ -5,16 +5,16 @@ import { useValidateOrder } from './hooks/useValidateOrder';
 import { Header } from './features/ui/header';
 import { Select } from './features/ui/select';
 import { useChainStore } from './store/store';
+import { useDomainInfo } from './hooks/useDomainInfo';
+import { truncateAddress } from './utils/truncateAddress';
 
 function App() {
   const [urlMode, setUrlMode] = useState<boolean>(false);
-
-  // NOTE: would probably be nicer to default this to
-  // const [selectedChainId, setselectedChainId] = useState<number>(1);
-
   const [orderText, setOrderText] = useState<string>('');
 
   const { selectedChainId, setSelectedChainId } = useChainStore();
+
+  const { eip712Domain, protocolFee } = useDomainInfo(selectedChainId);
 
   const {
     orderErrors,
@@ -28,6 +28,20 @@ function App() {
       if (selectedChainId !== newId) setSelectedChainId(newId);
     },
   });
+
+  let swapContract: string | undefined;
+  let domainName: string | undefined;
+  let domainVersion: string | undefined;
+  let protocolFeeFormatted: number | undefined;
+
+  if (eip712Domain?.status === 'success') {
+    swapContract = truncateAddress(eip712Domain.result[4]);
+    domainName = eip712Domain.result[1];
+    domainVersion = eip712Domain.result[2];
+  }
+  if (protocolFee?.status === 'success') {
+    protocolFeeFormatted = Number(protocolFee.result);
+  }
 
   return (
     <React.Fragment>
@@ -79,13 +93,13 @@ function App() {
                 <Select />
               </div>
               <div>Swap contract</div>
-              <div></div>
+              <div>{swapContract}</div>
               <div>Domain Name</div>
-              <div>swap_erc20</div>
+              <div>{domainName}</div>
               <div>Domain Version</div>
-              <div>4.1</div>
+              <div>{domainVersion}</div>
               <div>Protocol Fee</div>
-              <div>5</div>
+              <div>{protocolFeeFormatted}</div>
             </div>
             <h2 className="text-xl font-bold">Order</h2>
             <div className="grid grid-cols-2 gap-2 my-2 border">

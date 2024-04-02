@@ -29,7 +29,6 @@ export const useValidateOrder = ({
   }
 
   const schemaValidationResult = signedOrderSchema.safeParse(_order);
-  console.log(schemaValidationResult);
 
   const schemaValid = schemaValidationResult.success;
 
@@ -37,6 +36,8 @@ export const useValidateOrder = ({
     const chainId = schemaValidationResult.data.chainId;
     setIsDisabled(true);
     onSetChain?.(chainId);
+  } else {
+    setIsDisabled(false);
   }
 
   const { data: orderErrors, error: contractCallError } = useCheckOrder({
