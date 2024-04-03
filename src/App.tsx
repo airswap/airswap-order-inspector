@@ -7,16 +7,16 @@ import { Select } from './features/ui/select';
 import { useChainStore } from './store/store';
 import { useDomainInfo } from './hooks/useDomainInfo';
 import { truncateAddress } from './utils/truncateAddress';
+import { MdOutlineLibraryBooks } from 'react-icons/md';
 
 function App() {
   const [urlMode, setUrlMode] = useState<boolean>(false);
   const [orderText, setOrderText] = useState<string>('');
 
   const { selectedChainId, setSelectedChainId } = useChainStore();
-
   const { eip712Domain, protocolFee } = useDomainInfo(selectedChainId);
-
   const {
+    schemaValidationResult,
     orderErrors,
     contractCallError,
     orderParsingError,
@@ -35,6 +35,7 @@ function App() {
   let protocolFeeFormatted: number | undefined;
 
   if (eip712Domain?.status === 'success') {
+    console.log('success');
     swapContract = truncateAddress(eip712Domain.result[4]);
     domainName = eip712Domain.result[1];
     domainVersion = eip712Domain.result[2];
@@ -43,11 +44,41 @@ function App() {
     protocolFeeFormatted = Number(protocolFee.result);
   }
 
+  console.log(
+    eip712Domain,
+    swapContract,
+    domainName,
+    domainVersion,
+    protocolFeeFormatted
+  );
+
+  let nonce;
+  let expiry;
+  let signerWallet;
+  let signerToken;
+  let signerAmount;
+  let senderWallet;
+  let senderToken;
+  let senderAmount;
+
+  const validSchema = schemaValidationResult.success;
+
+  if (validSchema) {
+    nonce = schemaValidationResult.data.nonce;
+    expiry = schemaValidationResult.data.expiry;
+    signerWallet = truncateAddress(schemaValidationResult.data.signerWallet);
+    signerToken = truncateAddress(schemaValidationResult.data.signerToken);
+    signerAmount = schemaValidationResult.data.signerAmount;
+    senderWallet = truncateAddress(schemaValidationResult.data.senderWallet);
+    senderToken = truncateAddress(schemaValidationResult.data.senderToken);
+    senderAmount = schemaValidationResult.data.senderAmount;
+  }
+
   return (
     <React.Fragment>
       <Header />
-      <main className="container flex w-[849px] h-fit flex-col gap-4 border">
-        <h1 className="text-xl">Inspect an order</h1>
+      <main className="container flex flex-col w-[849px] h-fit py-8 gap-4 border">
+        <h1 className="font-bold text-[24px]">Inspect an order</h1>
         <div className="flex gap-2">
           <button
             onClick={() => setUrlMode(false)}
@@ -84,59 +115,76 @@ function App() {
             <Button>Check</Button>
           </div>
         )}
-        <div className="flex flex-row py-4">
-          <div className="w-1/2 h-full pr-6 border-r">
-            <h2 className="text-xl font-bold">Domain</h2>
-            <div className="grid grid-cols-2 gap-2 my-2 border">
-              <div>Chain</div>
-              <div>
-                <Select />
+        {orderText.length > 0 && (
+          <div className="flex flex-row py-4">
+            <div className="w-1/2 h-full pr-6 border-r font-bold text-[13px]">
+              <h2 className="text-[16px]">Domain</h2>
+              <div className="grid grid-cols-2 gap-2 mt-2 mb-6">
+                <div className="text-textDark font-medium">Chain</div>
+                <div className={`${orderText.length === 0 && 'hidden'}`}>
+                  <Select />
+                </div>
+                <div className="text-textDark font-medium">Swap contract</div>
+                <div>{swapContract}</div>
+                <div className="text-textDark font-medium">Domain Name</div>
+                <div>{domainName}</div>
+                <div className="text-textDark font-medium">Domain Version</div>
+                <div>{domainVersion}</div>
+                <div className="text-textDark font-medium">Protocol Fee</div>
+                <div>{protocolFeeFormatted}</div>
               </div>
-              <div>Swap contract</div>
-              <div>{swapContract}</div>
-              <div>Domain Name</div>
-              <div>{domainName}</div>
-              <div>Domain Version</div>
-              <div>{domainVersion}</div>
-              <div>Protocol Fee</div>
-              <div>{protocolFeeFormatted}</div>
+
+              <h2 className="text-[16px]">Order</h2>
+              <div className="grid grid-cols-2 gap-2 my-2">
+                <div className="text-textDark font-medium">Nonce</div>
+                <div>{nonce}</div>
+                <div className="text-textDark font-medium">Expiry</div>
+                <div>{expiry}</div>
+                <div className="text-textDark font-medium">signerWallet</div>
+                <div>{signerWallet}</div>
+                <div className="text-textDark font-medium">signerToken</div>
+                <div>{signerToken}</div>
+                <div className="text-textDark font-medium">signerAmount</div>
+                <div>{signerAmount}</div>
+                <div className="text-textDark font-medium">senderWallet</div>
+                <div>{senderWallet}</div>
+                <div className="text-textDark font-medium">senderToken</div>
+                <div>{senderToken}</div>
+                <div className="text-textDark font-medium">senderAmount</div>
+                <div>{senderAmount}</div>
+              </div>
             </div>
-            <h2 className="text-xl font-bold">Order</h2>
-            <div className="grid grid-cols-2 gap-2 my-2 border">
-              <div>Nonce</div>
-              <div>1234</div>
-              <div>Expiry</div>
-              <div>123456</div>
-              <div>signerWallet</div>
-              <div>0x123..123</div>
-              <div>signerToken</div>
-              <div>USDT</div>
-              <div>signerAmount</div>
-              <div>1234.123</div>
-              <div>senderWallet</div>
-              <div>0x123..123</div>
-              <div>senderToken</div>
-              <div>USDC</div>
-              <div>senderAmount</div>
-              <div>4332.123</div>
+            <div className="w-1/2 pl-6">
+              <h2>Issues</h2>
+              <pre className="whitespace-pre">
+                {JSON.stringify(
+                  {
+                    orderErrors,
+                    contractCallError,
+                    orderParsingError,
+                    schemaValidationError,
+                  },
+                  null,
+                  2
+                )}
+              </pre>
             </div>
           </div>
-          <div className="w-1/2 pl-6">
-            <h2>Issues</h2>
-            <pre className="whitespace-pre">
-              {JSON.stringify(
-                {
-                  orderErrors,
-                  contractCallError,
-                  orderParsingError,
-                  schemaValidationError,
-                },
-                null,
-                2
-              )}
-            </pre>
-          </div>
-        </div>
+        )}
+        {orderText.length === 0 && (
+          <>
+            <div className="flex flex-col items-center justify-center my-20">
+              <div
+                id="circle"
+                className="flex justify-center items-center h-[100px] w-[100px] bg-[#171A23] rounded-full"
+              >
+                <MdOutlineLibraryBooks size={22} />
+              </div>
+              <p className="mt-8 mb-4 font-bold text-white">Load an order</p>
+              <p className="text-textDark">Load JSON or by URL</p>
+            </div>
+          </>
+        )}
       </main>
     </React.Fragment>
   );

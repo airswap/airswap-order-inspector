@@ -20,6 +20,7 @@ export default {
     extend: {
       colors: {
         'airswap-blue': '#2B71FF',
+        textDark: '#9CA3AF',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',

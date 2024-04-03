@@ -2,7 +2,25 @@ import { createWeb3Modal } from '@web3modal/wagmi/react';
 import { defaultWagmiConfig } from '@web3modal/wagmi/react/config';
 
 import { WagmiProvider } from 'wagmi';
-import { mainnet, sepolia } from 'wagmi/chains';
+import {
+  arbitrum,
+  arbitrumGoerli,
+  avalanche,
+  avalancheFuji,
+  base,
+  baseGoerli,
+  bsc,
+  bscTestnet,
+  linea,
+  lineaTestnet,
+  mainnet,
+  polygon,
+  polygonMumbai,
+  rootstock,
+  sepolia,
+  telos,
+  telosTestnet,
+} from 'wagmi/chains';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactNode } from 'react';
 
@@ -21,7 +39,26 @@ const metadata = {
   icons: ['https://avatars.githubusercontent.com/u/37784886'],
 };
 
-const chains = [mainnet, sepolia] as const;
+const chains = [
+  mainnet,
+  sepolia,
+  sepolia,
+  telos,
+  telosTestnet,
+  bsc,
+  bscTestnet,
+  polygon,
+  polygonMumbai,
+  linea,
+  lineaTestnet,
+  base,
+  arbitrum,
+  avalanche,
+  avalancheFuji,
+  baseGoerli,
+  arbitrumGoerli,
+  rootstock,
+] as const;
 const config = defaultWagmiConfig({
   chains,
   projectId,

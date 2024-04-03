@@ -29,6 +29,7 @@ export const useValidateOrder = ({
   }
 
   const schemaValidationResult = signedOrderSchema.safeParse(_order);
+  console.log(schemaValidationResult);
 
   const schemaValid = schemaValidationResult.success;
 
@@ -51,6 +52,7 @@ export const useValidateOrder = ({
   });
 
   return {
+    schemaValidationResult,
     orderErrors: orderErrors?.map((e) => hexToString(e)),
     contractCallError,
     orderParsingError,
