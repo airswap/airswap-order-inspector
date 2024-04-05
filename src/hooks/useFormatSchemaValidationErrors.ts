@@ -4,7 +4,7 @@ import { SchemaValidationError } from '../../types';
  *
  * @returns array with errors extracted from schemaValidationError input
  */
-export const formatSchemaValidationErrors = (
+export const useFormatSchemaValidationErrors = (
   schemaValidationError: SchemaValidationError
 ) => {
   if (!schemaValidationError) {
@@ -14,7 +14,10 @@ export const formatSchemaValidationErrors = (
     const separateIssues = issues.map((issue) => {
       const message = issue[1].path;
       const error = issue[1].message;
-      return `${message}: ${error}`;
+      return {
+        message: message,
+        error: error,
+      };
     });
 
     return separateIssues;

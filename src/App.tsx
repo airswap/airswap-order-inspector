@@ -8,7 +8,8 @@ import { useAppStore, useChainStore } from './store/store';
 import { useDomainInfo } from './hooks/useDomainInfo';
 import { truncateAddress } from './utils/truncateAddress';
 import { MdOutlineLibraryBooks } from 'react-icons/md';
-import { formatSchemaValidationErrors } from './utils/formatSchemaValidationErrors';
+import { FaExclamation } from 'react-icons/fa6';
+import { useFormatSchemaValidationErrors } from './hooks/useFormatSchemaValidationErrors';
 
 function App() {
   const [urlMode, setUrlMode] = useState<boolean>(false);
@@ -31,11 +32,15 @@ function App() {
     },
   });
 
+  const formattedSchemaValidationErrors = useFormatSchemaValidationErrors(
+    schemaValidationError
+  );
+
+  console.log(formattedSchemaValidationErrors);
+
   // console.log('orderErrors', orderErrors);
   // console.log('contractCallError', contractCallError);
   // console.log('schemaValidationError', schemaValidationError);
-
-  console.log(formatSchemaValidationErrors(schemaValidationError));
 
   let swapContract: string | undefined;
   let domainName: string | undefined;
@@ -76,6 +81,22 @@ function App() {
   const handleTextChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setIsCheckEnabled(false);
     setOrderText(e.target.value);
+  };
+
+  const formattedErrors = () => {
+    return formattedSchemaValidationErrors?.map((error) => {
+      return (
+        <div className="flex flex-row my-4" key={error.message.toString()}>
+          <div className="p-3 h-1/2 rounded-full border">
+            <FaExclamation size={12} />
+          </div>
+          <div className="flex flex-col ml-4 text-[13px]">
+            <p className="mb-1.5 font-bold">{error.message}</p>
+            <p className="text-textDark font-normal">{error.error}</p>
+          </div>
+        </div>
+      );
+    });
   };
 
   return (
@@ -173,7 +194,8 @@ function App() {
             <div className="w-1/2 pl-6">
               <h2>Issues</h2>
               <pre className="whitespace-pre">
-                {JSON.stringify(
+                {formattedErrors()}
+                {/* {JSON.stringify(
                   {
                     orderErrors,
                     contractCallError,
@@ -182,7 +204,7 @@ function App() {
                   },
                   null,
                   2
-                )}
+                )} */}
               </pre>
             </div>
           </div>
