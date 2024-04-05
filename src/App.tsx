@@ -1,18 +1,20 @@
 import { Button } from './features/ui/button';
-import React, { useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import { cn } from './lib/utils';
 import { useValidateOrder } from './hooks/useValidateOrder';
 import { Header } from './features/ui/header';
 import { Select } from './features/ui/select';
-import { useChainStore } from './store/store';
+import { useAppStore, useChainStore } from './store/store';
 import { useDomainInfo } from './hooks/useDomainInfo';
 import { truncateAddress } from './utils/truncateAddress';
 import { MdOutlineLibraryBooks } from 'react-icons/md';
+import { formatSchemaValidationErrors } from './utils/formatSchemaValidationErrors';
 
 function App() {
   const [urlMode, setUrlMode] = useState<boolean>(false);
   const [orderText, setOrderText] = useState<string>('');
 
+  const { isCheckEnabled, setIsCheckEnabled } = useAppStore();
   const { selectedChainId, setSelectedChainId } = useChainStore();
   const { eip712Domain, protocolFee } = useDomainInfo(selectedChainId);
   const {
@@ -29,13 +31,18 @@ function App() {
     },
   });
 
+  // console.log('orderErrors', orderErrors);
+  // console.log('contractCallError', contractCallError);
+  // console.log('schemaValidationError', schemaValidationError);
+
+  console.log(formatSchemaValidationErrors(schemaValidationError));
+
   let swapContract: string | undefined;
   let domainName: string | undefined;
   let domainVersion: string | undefined;
   let protocolFeeFormatted: number | undefined;
 
   if (eip712Domain?.status === 'success') {
-    console.log('success');
     swapContract = truncateAddress(eip712Domain.result[4]);
     domainName = eip712Domain.result[1];
     domainVersion = eip712Domain.result[2];
@@ -43,14 +50,6 @@ function App() {
   if (protocolFee?.status === 'success') {
     protocolFeeFormatted = Number(protocolFee.result);
   }
-
-  console.log(
-    eip712Domain,
-    swapContract,
-    domainName,
-    domainVersion,
-    protocolFeeFormatted
-  );
 
   let nonce;
   let expiry;
@@ -73,6 +72,11 @@ function App() {
     senderToken = truncateAddress(schemaValidationResult.data.senderToken);
     senderAmount = schemaValidationResult.data.senderAmount;
   }
+
+  const handleTextChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setIsCheckEnabled(false);
+    setOrderText(e.target.value);
+  };
 
   return (
     <React.Fragment>
@@ -101,21 +105,33 @@ function App() {
         {urlMode ? (
           <div>
             <input type="text" placeholder="Enter URL" className="w-full" />
-            <Button>Check</Button>
+            <Button
+              onClick={() =>
+                orderText.length > 0 ? setIsCheckEnabled(true) : null
+              }
+            >
+              Check
+            </Button>
           </div>
         ) : (
           <div className="flex flex-row">
             <textarea
               value={orderText}
-              onChange={(e) => setOrderText(e.target.value)}
+              onChange={handleTextChange}
               placeholder="JSON or URL"
               className="w-full h-12 top-[287px] bg-transparent border p-2"
               rows={10}
             />
-            <Button>Check</Button>
+            <Button
+              onClick={() =>
+                orderText.length > 0 ? setIsCheckEnabled(true) : null
+              }
+            >
+              Check
+            </Button>
           </div>
         )}
-        {orderText.length > 0 && (
+        {isCheckEnabled && (
           <div className="flex flex-row py-4">
             <div className="w-1/2 h-full pr-6 border-r font-bold text-[13px]">
               <h2 className="text-[16px]">Domain</h2>
@@ -171,7 +187,7 @@ function App() {
             </div>
           </div>
         )}
-        {orderText.length === 0 && (
+        {!isCheckEnabled && (
           <>
             <div className="flex flex-col items-center justify-center my-20">
               <div

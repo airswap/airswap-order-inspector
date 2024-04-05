@@ -14,8 +14,8 @@ export const useValidateOrder = ({
   isUrl: boolean;
   onSetChain?: (chainId: number) => void;
 }) => {
-  const setIsDisabled = useSelectStore(
-    (state: SelectStore) => state.setIsDisabled
+  const setIsSelectDisabled = useSelectStore(
+    (state: SelectStore) => state.setIsSelectDisabled
   );
 
   let _order;
@@ -29,16 +29,15 @@ export const useValidateOrder = ({
   }
 
   const schemaValidationResult = signedOrderSchema.safeParse(_order);
-  console.log(schemaValidationResult);
 
   const schemaValid = schemaValidationResult.success;
 
   if (schemaValid && schemaValidationResult.data.chainId) {
     const chainId = schemaValidationResult.data.chainId;
-    setIsDisabled(true);
+    setIsSelectDisabled(true);
     onSetChain?.(chainId);
   } else {
-    setIsDisabled(false);
+    setIsSelectDisabled(false);
   }
 
   const { data: orderErrors, error: contractCallError } = useCheckOrder({

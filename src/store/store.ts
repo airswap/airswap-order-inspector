@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 
 export interface SelectStore {
-  isDisabled: boolean;
-  setIsDisabled: (disabled: boolean) => void;
+  isSelectDisabled: boolean;
+  setIsSelectDisabled: (disabled: boolean) => void;
 }
 
 export interface ChainStore {
@@ -11,11 +11,21 @@ export interface ChainStore {
 }
 
 export const useSelectStore = create<SelectStore>((set) => ({
-  isDisabled: false,
-  setIsDisabled: (disabled) => set({ isDisabled: disabled }),
+  isSelectDisabled: false,
+  setIsSelectDisabled: (disabled) => set({ isSelectDisabled: disabled }),
 }));
 
 export const useChainStore = create<ChainStore>((set) => ({
   selectedChainId: 1,
   setSelectedChainId: (chain) => set({ selectedChainId: chain }),
+}));
+
+export interface AppStore {
+  isCheckEnabled: boolean;
+  setIsCheckEnabled: (enabled: boolean) => void;
+}
+
+export const useAppStore = create<AppStore>((set) => ({
+  isCheckEnabled: false,
+  setIsCheckEnabled: (enabled) => set({ isCheckEnabled: enabled }),
 }));

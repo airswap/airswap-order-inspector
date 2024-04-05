@@ -6,7 +6,7 @@ import { useChainStore, useSelectStore } from '@/store/store';
 
 export const Select = () => {
   const [isSelectOpen, setIsSelectOpen] = useState(false);
-  const { isDisabled } = useSelectStore();
+  const { isSelectDisabled } = useSelectStore();
   const { setSelectedChainId, selectedChainId } = useChainStore();
 
   const handleIsSelectOpen = () => {
@@ -30,19 +30,19 @@ export const Select = () => {
   const options = renderOptions();
 
   const handleSelectChange = (chain: string) => {
-    if (isDisabled) {
+    if (isSelectDisabled) {
       return;
     } else {
       setSelectedChainId(Number(chain));
     }
   };
 
-  console.log(isDisabled, selectedChainId);
+  // console.log(isSelectDisabled, selectedChainId);
 
   return (
     <>
       <RadixSelect.Root
-        disabled={isDisabled}
+        disabled={isSelectDisabled}
         onValueChange={(val) => {
           handleSelectChange(val);
         }}
@@ -53,8 +53,10 @@ export const Select = () => {
           aria-label="chain id"
         >
           <RadixSelect.Value
-            placeholder={isDisabled ? selectedChainId.toString() : 'chain Id'}
-            // defaultValue={isDisabled ? selectedChainId.toString() : undefined}
+            placeholder={
+              isSelectDisabled ? selectedChainId.toString() : 'chain Id'
+            }
+            // defaultValue={isSelectDisabled ? selectedChainId.toString() : undefined}
           />
 
           <RadixSelect.Icon className="ml-2">
