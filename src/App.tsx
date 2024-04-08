@@ -7,9 +7,9 @@ import { Select } from './features/ui/select';
 import { useAppStore, useChainStore } from './store/store';
 import { useDomainInfo } from './hooks/useDomainInfo';
 import { truncateAddress } from './utils/truncateAddress';
-import { MdOutlineLibraryBooks } from 'react-icons/md';
 import { FaExclamation } from 'react-icons/fa6';
 import { useFormatSchemaValidationErrors } from './hooks/useFormatSchemaValidationErrors';
+import { LoadingOrFailed } from './features/ui/loadingOrFailed';
 
 function App() {
   const [urlMode, setUrlMode] = useState<boolean>(false);
@@ -32,15 +32,16 @@ function App() {
     },
   });
 
+  console.log('orderParsingError', !!orderParsingError, orderParsingError);
+
   const formattedSchemaValidationErrors = useFormatSchemaValidationErrors(
     schemaValidationError
   );
 
   console.log(formattedSchemaValidationErrors);
 
-  // console.log('orderErrors', orderErrors);
-  // console.log('contractCallError', contractCallError);
-  // console.log('schemaValidationError', schemaValidationError);
+  console.log('orderErrors', orderErrors);
+  console.log('contractCallError', contractCallError);
 
   let swapContract: string | undefined;
   let domainName: string | undefined;
@@ -99,6 +100,24 @@ function App() {
     });
   };
 
+  const handleTextModeCheck = () => {
+    console.log('handleTextModeCheck');
+    // 1. check that JSON is valid
+    // 2. Pass data into useValidateOrder hook
+    orderText.length > 0 ? setIsCheckEnabled(true) : null;
+  };
+
+  console.log(
+    'isCheckEnabled || !!orderParsingError,',
+    isCheckEnabled || !!orderParsingError,
+    `\n`,
+    'isCheckEnabled',
+    isCheckEnabled,
+    `\n`,
+    '!!orderParsingError',
+    !!orderParsingError
+  );
+
   return (
     <React.Fragment>
       <Header />
@@ -126,13 +145,7 @@ function App() {
         {urlMode ? (
           <div>
             <input type="text" placeholder="Enter URL" className="w-full" />
-            <Button
-              onClick={() =>
-                orderText.length > 0 ? setIsCheckEnabled(true) : null
-              }
-            >
-              Check
-            </Button>
+            <Button onClick={() => handleTextModeCheck}>Check</Button>
           </div>
         ) : (
           <div className="flex flex-row">
@@ -152,7 +165,7 @@ function App() {
             </Button>
           </div>
         )}
-        {isCheckEnabled && (
+        {isCheckEnabled && !orderParsingError && (
           <div className="flex flex-row py-4">
             <div className="w-1/2 h-full pr-6 border-r font-bold text-[13px]">
               <h2 className="text-[16px]">Domain</h2>
@@ -191,7 +204,7 @@ function App() {
                 <div>{senderAmount}</div>
               </div>
             </div>
-            <div className="w-1/2 pl-6">
+            <div className="w-1/2 px-6">
               <h2>Issues</h2>
               <pre className="whitespace-pre">
                 {formattedErrors()}
@@ -209,20 +222,12 @@ function App() {
             </div>
           </div>
         )}
-        {!isCheckEnabled && (
-          <>
-            <div className="flex flex-col items-center justify-center my-20">
-              <div
-                id="circle"
-                className="flex justify-center items-center h-[100px] w-[100px] bg-[#171A23] rounded-full"
-              >
-                <MdOutlineLibraryBooks size={22} />
-              </div>
-              <p className="mt-8 mb-4 font-bold text-white">Load an order</p>
-              <p className="text-textDark">Load JSON or by URL</p>
-            </div>
-          </>
-        )}
+        {!isCheckEnabled || !!orderParsingError ? (
+          <LoadingOrFailed
+            isCheckEnabled={isCheckEnabled}
+            orderParsingError={orderParsingError}
+          />
+        ) : null}
       </main>
     </React.Fragment>
   );
