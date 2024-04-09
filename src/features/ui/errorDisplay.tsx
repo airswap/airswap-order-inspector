@@ -15,7 +15,6 @@ export const ErrorDisplay = ({
   orderErrors: string[] | undefined;
   eip721DomainStatus: 'success' | 'failure' | undefined;
 }) => {
-  console.log('eip721DomainStatus', eip721DomainStatus);
   if (formattedSchemaValidationErrors) {
     return formattedSchemaValidationErrors?.map((error) => {
       return (

@@ -32,6 +32,8 @@ function App() {
   let domainVersion: string | undefined;
   let protocolFeeFormatted: number | undefined;
 
+  console.log(swapContract);
+
   const { eip712Domain, protocolFee } = useDomainInfo({
     chainId: selectedChainId,
     swapContract: swapContractAddress,

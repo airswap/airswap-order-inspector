@@ -59,10 +59,8 @@ export const useValidateOrder = ({
 
   // if swapContractAddress is present, we want to pass it into the store, then into `usecontractAddress` hook to set eip721domain info
   if (schemaValid && schemaValidationResult.data.swapContract) {
-    console.log('custom swapAddress');
     const contractAddress = schemaValidationResult.data.swapContract;
     setSwapContractAddress(contractAddress);
-    console.log(contractAddress);
   }
 
   const { data: orderErrors, error: contractCallError } = useCheckOrder({
