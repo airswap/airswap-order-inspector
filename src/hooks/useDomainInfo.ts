@@ -15,9 +15,6 @@ export const useDomainInfo = ({
   swapContract: string | undefined;
 }) => {
   const address = useContractAddress({ chainId });
-
-  console.log(swapContract, address, swapContract === address);
-
   const wagmiContractConfig = {
     address: (swapContract as `0x${string}`) || address,
     abi: swapErc20Abi,
