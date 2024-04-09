@@ -2,13 +2,12 @@ import { SchemaValidationError } from '../../types';
 
 /**
  *
- * @returns array with errors extracted from schemaValidationError input
+ * @returns array with errors extracted from schemaValidationError input. If returns undefined, there are no errors
  */
 export const useFormatSchemaValidationErrors = (
   schemaValidationError: SchemaValidationError
 ) => {
   if (!schemaValidationError) {
-    console.log('invalid schema');
     return;
   } else {
     const issues = Object.entries(schemaValidationError.issues);

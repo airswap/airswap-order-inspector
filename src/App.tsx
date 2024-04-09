@@ -9,7 +9,6 @@ import { useDomainInfo } from './hooks/useDomainInfo';
 import { truncateAddress } from './utils/truncateAddress';
 import { useFormatSchemaValidationErrors } from './hooks/useFormatSchemaValidationErrors';
 import { LoadingOrFailed } from './features/ui/loadingOrFailed';
-import { useFormatOrderErrors } from './hooks/useFormatOrderErrors';
 import { ErrorDisplay } from './features/ui/errorDisplay';
 import { NoErrorDisplay } from './features/ui/noErrorDisplay';
 
@@ -180,9 +179,11 @@ function App() {
               </div>
             </div>
             <div className="w-1/2 px-6">
-              <h2>Issues</h2>
-              <pre className="whitespace-pre">
-                {formattedErrors ? formattedErrors : noErrorDisplay}
+              <h2 className="font-bold">Issues</h2>
+              <pre className="whitespace-pre h-full">
+                {formattedErrors && formattedErrors.length > 0
+                  ? formattedErrors
+                  : noErrorDisplay}
                 {/* {JSON.stringify(
                   {
                     orderErrors,
