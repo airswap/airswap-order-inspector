@@ -18,7 +18,7 @@ export const Select = () => {
       <RadixSelect.Item
         value={chain.value}
         key={chain.value}
-        className="py-1 px-2 bg-background text-lightGray border border-blueExtraDark first:rounded-t-sm last:rounded-b-sm hover:bg-blueExtraDark hover:border-blueExtraDark active:border-white"
+        className="py-1 px-2 bg-background text-lightGray first:rounded-t-sm last:rounded-b-sm hover:bg-blueExtraDark"
       >
         <RadixSelect.ItemText>
           {chain.label}: {chain.value}
@@ -37,8 +37,6 @@ export const Select = () => {
     }
   };
 
-  // console.log(isSelectDisabled, selectedChainId);
-
   return (
     <>
       <RadixSelect.Root
@@ -49,14 +47,13 @@ export const Select = () => {
         onOpenChange={handleIsSelectOpen}
       >
         <RadixSelect.Trigger
-          className="flex items-center px-3 py-1 bg-blueGray border border-blueGray rounded-md font-semibold uppercase"
+          className="flex items-center px-3 py-1 bg-blueGray border border-blueExtraDark rounded-sm font-semibold uppercase"
           aria-label="chain id"
         >
           <RadixSelect.Value
             placeholder={
               isSelectDisabled ? selectedChainId.toString() : 'chain Id'
             }
-            // defaultValue={isSelectDisabled ? selectedChainId.toString() : undefined}
           />
 
           <RadixSelect.Icon className="ml-2">
@@ -74,7 +71,7 @@ export const Select = () => {
         <RadixSelect.Portal>
           <RadixSelect.Content
             position="popper"
-            className="h-[340px] border border-blueExtraDark rounded-md"
+            className="h-[340px] rounded-md border"
           >
             <RadixSelect.ScrollUpButton />
             <RadixSelect.Viewport>{options}</RadixSelect.Viewport>

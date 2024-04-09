@@ -17,7 +17,8 @@ export const NoErrorDisplay = ({
   orderErrors: string[] | undefined;
 }) => {
   const isNoErrors =
-    !formattedSchemaValidationErrors && orderErrors?.length === 0;
+    !formattedSchemaValidationErrors &&
+    (orderErrors?.length === 0 || !orderErrors);
 
   if (isNoErrors) {
     return (

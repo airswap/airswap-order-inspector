@@ -2,11 +2,22 @@ import { useReadContracts } from 'wagmi';
 import { swapErc20Abi } from '@/abi/swapErc20Abi';
 import { useContractAddress } from './useContractAddress';
 
-export const useDomainInfo = (chainId: number | undefined) => {
+/**
+ *
+ * @param swapContract this is inputted by a user and will override `address` obtained from `useContractAddress` hook if a user enters one
+ * @returns
+ */
+export const useDomainInfo = ({
+  chainId,
+  swapContract,
+}: {
+  chainId: number | undefined;
+  swapContract: string | undefined;
+}) => {
   const address = useContractAddress({ chainId });
 
   const wagmiContractConfig = {
-    address,
+    address: (swapContract as `0x${string}`) || address,
     abi: swapErc20Abi,
   };
 

@@ -23,10 +23,7 @@ export const LoadingOrFailed = ({
   return (
     <>
       <div className="flex flex-col items-center justify-center my-20">
-        <div
-          id="circle"
-          className="flex justify-center items-center h-[100px] w-[100px] bg-[#171A23] rounded-full"
-        >
+        <div className="flex justify-center items-center h-[100px] w-[100px] bg-[#171A23] rounded-full">
           {isShowLoadingState && <FiXSquare size={22} />}
           {isEmptyState && <MdOutlineLibraryBooks size={22} />}
         </div>

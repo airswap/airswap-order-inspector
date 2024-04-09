@@ -2,20 +2,34 @@ import { hexToString } from 'viem';
 import { useCheckOrder } from './useCheckOrder';
 import { signedOrderSchema } from '../utils/orderSchema';
 import { parseOrderFromUrl } from '../utils/parseOrderFromUrl';
-import { useSelectStore } from '@/store/store';
+import {
+  ChainStore,
+  SwapContractAddressStore,
+  useChainStore,
+  useSelectStore,
+  useSwapContractAddressStore,
+} from '@/store/store';
 import { SelectStore } from '@/store/store';
 
 export const useValidateOrder = ({
   order,
   isUrl,
+  swapContract,
   onSetChain,
 }: {
   order?: string;
   isUrl: boolean;
+  swapContract: string | undefined;
   onSetChain?: (chainId: number) => void;
 }) => {
   const setIsSelectDisabled = useSelectStore(
     (state: SelectStore) => state.setIsSelectDisabled
+  );
+  const selectedChainId = useChainStore(
+    (state: ChainStore) => state.selectedChainId
+  );
+  const setSwapContractAddress = useSwapContractAddressStore(
+    (state: SwapContractAddressStore) => state.setSwapContractAddress
   );
 
   let _order;
@@ -32,19 +46,30 @@ export const useValidateOrder = ({
 
   const schemaValid = schemaValidationResult.success;
 
+  // if schema contains a chainId, set set `setSelectedChainId` with that. `setSelectedChainId` lives in the chain Store
   if (schemaValid && schemaValidationResult.data.chainId) {
     const chainId = schemaValidationResult.data.chainId;
+    // if chainId is present, disable the selector
     setIsSelectDisabled(true);
     onSetChain?.(chainId);
   } else {
+    // if scheme does not contain chainId, enable the selector
     setIsSelectDisabled(false);
+  }
+
+  // if swapContractAddress is present, we want to pass it into the store, then into `usecontractAddress` hook to set eip721domain info
+  if (schemaValid && schemaValidationResult.data.swapContract) {
+    console.log('custom swapAddress');
+    const contractAddress = schemaValidationResult.data.swapContract;
+    setSwapContractAddress(contractAddress);
+    console.log(contractAddress);
   }
 
   const { data: orderErrors, error: contractCallError } = useCheckOrder({
     // FIXME: don't hardcode this - take from order if supplied, or get default for current chain.
     swapContract: {
-      chainId: 11155111,
-      address: '0xD82E10B9A4107939e55fCCa9B53A9ede6CF2fC46',
+      chainId: selectedChainId,
+      address: swapContract as `0x${string}`,
     },
     enabled: schemaValid,
     order: schemaValid ? schemaValidationResult.data : undefined,

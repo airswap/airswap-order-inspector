@@ -10,6 +10,11 @@ export interface ChainStore {
   setSelectedChainId: (chain: number) => void;
 }
 
+export interface SwapContractAddressStore {
+  swapContractAddress: string | undefined;
+  setSwapContractAddress: (address: string) => void;
+}
+
 export const useSelectStore = create<SelectStore>((set) => ({
   isSelectDisabled: false,
   setIsSelectDisabled: (disabled) => set({ isSelectDisabled: disabled }),
@@ -29,3 +34,10 @@ export const useAppStore = create<AppStore>((set) => ({
   isCheckEnabled: false,
   setIsCheckEnabled: (enabled) => set({ isCheckEnabled: enabled }),
 }));
+
+export const useSwapContractAddressStore = create<SwapContractAddressStore>(
+  (set) => ({
+    swapContractAddress: undefined,
+    setSwapContractAddress: (address) => set({ swapContractAddress: address }),
+  })
+);

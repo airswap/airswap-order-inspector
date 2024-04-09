@@ -4,7 +4,12 @@ import { cn } from './lib/utils';
 import { useValidateOrder } from './hooks/useValidateOrder';
 import { Header } from './features/ui/header';
 import { Select } from './features/ui/select';
-import { useAppStore, useChainStore } from './store/store';
+import {
+  SwapContractAddressStore,
+  useAppStore,
+  useChainStore,
+  useSwapContractAddressStore,
+} from './store/store';
 import { useDomainInfo } from './hooks/useDomainInfo';
 import { truncateAddress } from './utils/truncateAddress';
 import { useFormatSchemaValidationErrors } from './hooks/useFormatSchemaValidationErrors';
@@ -18,7 +23,20 @@ function App() {
 
   const { isCheckEnabled, setIsCheckEnabled } = useAppStore();
   const { selectedChainId, setSelectedChainId } = useChainStore();
-  const { eip712Domain, protocolFee } = useDomainInfo(selectedChainId);
+  const swapContractAddress = useSwapContractAddressStore(
+    (state: SwapContractAddressStore) => state.swapContractAddress
+  );
+
+  let swapContract: string | undefined;
+  let domainName: string | undefined;
+  let domainVersion: string | undefined;
+  let protocolFeeFormatted: number | undefined;
+
+  const { eip712Domain, protocolFee } = useDomainInfo({
+    chainId: selectedChainId,
+    swapContract: swapContractAddress,
+  });
+
   const {
     schemaValidationResult,
     orderErrors,
@@ -28,8 +46,11 @@ function App() {
   } = useValidateOrder({
     order: orderText,
     isUrl: urlMode,
+    swapContract: swapContract,
     onSetChain: (newId) => {
-      if (selectedChainId !== newId) setSelectedChainId(newId);
+      if (selectedChainId !== newId) {
+        setSelectedChainId(newId);
+      }
     },
   });
 
@@ -37,16 +58,16 @@ function App() {
     schemaValidationError
   );
 
-  let swapContract: string | undefined;
-  let domainName: string | undefined;
-  let domainVersion: string | undefined;
-  let protocolFeeFormatted: number | undefined;
-
   if (eip712Domain?.status === 'success') {
     swapContract = truncateAddress(eip712Domain.result[4]);
     domainName = eip712Domain.result[1];
     domainVersion = eip712Domain.result[2];
+  } else {
+    swapContract = 'Error reading contract';
+    domainName = 'Error reading contract';
+    domainVersion = 'Error reading contract';
   }
+
   if (protocolFee?.status === 'success') {
     protocolFeeFormatted = Number(protocolFee.result);
   }
@@ -94,6 +115,7 @@ function App() {
   const formattedErrors = ErrorDisplay({
     formattedSchemaValidationErrors,
     orderErrors,
+    eip721DomainStatus: eip712Domain?.status,
   });
 
   // this is used to render "No errors found" display
@@ -102,28 +124,40 @@ function App() {
     orderErrors,
   });
 
+  const isDisplayErrors = formattedErrors ? formattedErrors : noErrorDisplay;
+
   return (
     <React.Fragment>
       <Header />
       <main className="container flex flex-col w-[849px] h-fit py-8 gap-4 border">
         <h1 className="font-bold text-[24px]">Inspect an order</h1>
         <div className="flex gap-2">
-          <button
-            onClick={() => setUrlMode(false)}
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              setOrderText('');
+              setUrlMode(false);
+            }}
             className={cn({
               underline: !urlMode,
             })}
           >
-            text mode
-          </button>
-          <button
-            onClick={() => setUrlMode(true)}
+            Text mode
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              setOrderText('');
+              setUrlMode(true);
+            }}
             className={cn({
               underline: urlMode,
             })}
           >
             URL mode
-          </button>
+          </Button>
         </div>
 
         {urlMode ? (
@@ -190,21 +224,7 @@ function App() {
             </div>
             <div className="w-1/2 px-6">
               <h2 className="font-bold">Issues</h2>
-              <pre className="whitespace-pre h-full">
-                {formattedErrors && formattedErrors.length > 0
-                  ? formattedErrors
-                  : noErrorDisplay}
-                {/* {JSON.stringify(
-                  {
-                    orderErrors,
-                    contractCallError,
-                    orderParsingError,
-                    schemaValidationError,
-                  },
-                  null,
-                  2
-                )} */}
-              </pre>
+              <pre className="whitespace-pre h-full">{isDisplayErrors}</pre>
             </div>
           </div>
         )}
