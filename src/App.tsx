@@ -11,6 +11,7 @@ import { useFormatSchemaValidationErrors } from './hooks/useFormatSchemaValidati
 import { LoadingOrFailed } from './features/ui/loadingOrFailed';
 import { useFormatOrderErrors } from './hooks/useFormatOrderErrors';
 import { ErrorDisplay } from './features/ui/errorDisplay';
+import { NoErrorDisplay } from './features/ui/noErrorDisplay';
 
 function App() {
   const [urlMode, setUrlMode] = useState<boolean>(false);
@@ -33,14 +34,9 @@ function App() {
     },
   });
 
-  console.log('schemaValidationError', schemaValidationError);
-
   const formattedSchemaValidationErrors = useFormatSchemaValidationErrors(
     schemaValidationError
   );
-
-  const formattedOrderErrors = useFormatOrderErrors(orderErrors);
-  console.log('formattedOrderErrors', formattedOrderErrors);
 
   let swapContract: string | undefined;
   let domainName: string | undefined;
@@ -83,16 +79,19 @@ function App() {
     setOrderText(e.target.value);
   };
 
-  console.log(formattedSchemaValidationErrors);
+  const handleTextModeCheck = () => {
+    orderText.length > 0 ? setIsCheckEnabled(true) : null;
+  };
 
   const formattedErrors = ErrorDisplay({
     formattedSchemaValidationErrors,
     orderErrors,
   });
 
-  const handleTextModeCheck = () => {
-    orderText.length > 0 ? setIsCheckEnabled(true) : null;
-  };
+  const noErrorDisplay = NoErrorDisplay({
+    formattedSchemaValidationErrors,
+    orderErrors,
+  });
 
   return (
     <React.Fragment>
@@ -183,7 +182,7 @@ function App() {
             <div className="w-1/2 px-6">
               <h2>Issues</h2>
               <pre className="whitespace-pre">
-                {formattedErrors}
+                {formattedErrors ? formattedErrors : noErrorDisplay}
                 {/* {JSON.stringify(
                   {
                     orderErrors,
