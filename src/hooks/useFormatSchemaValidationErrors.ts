@@ -8,7 +8,8 @@ export const useFormatSchemaValidationErrors = (
   schemaValidationError: SchemaValidationError
 ) => {
   if (!schemaValidationError) {
-    return undefined;
+    console.log('invalid schema');
+    return;
   } else {
     const issues = Object.entries(schemaValidationError.issues);
     const separateIssues = issues.map((issue) => {

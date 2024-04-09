@@ -7,9 +7,10 @@ import { Select } from './features/ui/select';
 import { useAppStore, useChainStore } from './store/store';
 import { useDomainInfo } from './hooks/useDomainInfo';
 import { truncateAddress } from './utils/truncateAddress';
-import { FaExclamation } from 'react-icons/fa6';
 import { useFormatSchemaValidationErrors } from './hooks/useFormatSchemaValidationErrors';
 import { LoadingOrFailed } from './features/ui/loadingOrFailed';
+import { useFormatOrderErrors } from './hooks/useFormatOrderErrors';
+import { ErrorDisplay } from './features/ui/errorDisplay';
 
 function App() {
   const [urlMode, setUrlMode] = useState<boolean>(false);
@@ -32,16 +33,14 @@ function App() {
     },
   });
 
-  console.log('orderParsingError', !!orderParsingError, orderParsingError);
+  console.log('schemaValidationError', schemaValidationError);
 
   const formattedSchemaValidationErrors = useFormatSchemaValidationErrors(
     schemaValidationError
   );
 
-  console.log(formattedSchemaValidationErrors);
-
-  console.log('orderErrors', orderErrors);
-  console.log('contractCallError', contractCallError);
+  const formattedOrderErrors = useFormatOrderErrors(orderErrors);
+  console.log('formattedOrderErrors', formattedOrderErrors);
 
   let swapContract: string | undefined;
   let domainName: string | undefined;
@@ -84,39 +83,16 @@ function App() {
     setOrderText(e.target.value);
   };
 
-  const formattedErrors = () => {
-    return formattedSchemaValidationErrors?.map((error) => {
-      return (
-        <div className="flex flex-row my-4" key={error.message.toString()}>
-          <div className="p-3 h-1/2 rounded-full border">
-            <FaExclamation size={12} />
-          </div>
-          <div className="flex flex-col ml-4 text-[13px]">
-            <p className="mb-1.5 font-bold">{error.message}</p>
-            <p className="text-textDark font-normal">{error.error}</p>
-          </div>
-        </div>
-      );
-    });
-  };
+  console.log(formattedSchemaValidationErrors);
+
+  const formattedErrors = ErrorDisplay({
+    formattedSchemaValidationErrors,
+    orderErrors,
+  });
 
   const handleTextModeCheck = () => {
-    console.log('handleTextModeCheck');
-    // 1. check that JSON is valid
-    // 2. Pass data into useValidateOrder hook
     orderText.length > 0 ? setIsCheckEnabled(true) : null;
   };
-
-  console.log(
-    'isCheckEnabled || !!orderParsingError,',
-    isCheckEnabled || !!orderParsingError,
-    `\n`,
-    'isCheckEnabled',
-    isCheckEnabled,
-    `\n`,
-    '!!orderParsingError',
-    !!orderParsingError
-  );
 
   return (
     <React.Fragment>
@@ -207,7 +183,7 @@ function App() {
             <div className="w-1/2 px-6">
               <h2>Issues</h2>
               <pre className="whitespace-pre">
-                {formattedErrors()}
+                {formattedErrors}
                 {/* {JSON.stringify(
                   {
                     orderErrors,
