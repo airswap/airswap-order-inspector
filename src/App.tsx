@@ -33,6 +33,8 @@ function App() {
     },
   });
 
+  // console.log(contractCallError);
+
   const formattedSchemaValidationErrors = useFormatSchemaValidationErrors(
     schemaValidationError
   );
@@ -202,6 +204,7 @@ function App() {
           <LoadingOrFailed
             isCheckEnabled={isCheckEnabled}
             orderParsingError={orderParsingError}
+            contractCallError={contractCallError}
           />
         ) : null}
       </main>

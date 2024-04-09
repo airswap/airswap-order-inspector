@@ -1,5 +1,6 @@
 import { MdOutlineLibraryBooks } from 'react-icons/md';
 import { FiXSquare } from 'react-icons/fi';
+import { ReadContractErrorType } from 'viem';
 
 /**
  * @remarks "Error State" view only shows if both `isCheckEnabled` and `orderParsingError` are truthy. Error state has "failed to load" state. "Empty state" only shows if `isCheckEnabled` is false
@@ -9,12 +10,15 @@ import { FiXSquare } from 'react-icons/fi';
 export const LoadingOrFailed = ({
   isCheckEnabled,
   orderParsingError,
+  contractCallError,
 }: {
   isCheckEnabled: boolean;
   orderParsingError: unknown;
+  contractCallError: ReadContractErrorType | null;
 }) => {
   const isShowLoadingState = !!orderParsingError && !!isCheckEnabled;
   const isEmptyState = !isCheckEnabled;
+  const isContractReadError = !!isCheckEnabled && contractCallError;
 
   return (
     <>
@@ -31,6 +35,9 @@ export const LoadingOrFailed = ({
           {isShowLoadingState && 'Failed to load'}
         </p>
         <p className="text-textDark">
+          {/* TODO: test out `isContractReadError when there's a smart contract error */}
+          {isContractReadError &&
+            'There is an issue reading the smart contract'}
           {!isCheckEnabled && 'Load JSON or by URL'}
           {isShowLoadingState && 'Check your JSON or URL'}
         </p>
