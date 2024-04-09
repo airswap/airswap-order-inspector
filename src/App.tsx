@@ -33,8 +33,6 @@ function App() {
     },
   });
 
-  // console.log(contractCallError);
-
   const formattedSchemaValidationErrors = useFormatSchemaValidationErrors(
     schemaValidationError
   );
@@ -80,8 +78,17 @@ function App() {
     setOrderText(e.target.value);
   };
 
-  const handleTextModeCheck = () => {
-    orderText.length > 0 ? setIsCheckEnabled(true) : null;
+  const handleUrlChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setIsCheckEnabled(false);
+    setOrderText(e.target.value);
+  };
+
+  const handleSubmit = () => {
+    if (orderText.length > 0) {
+      setIsCheckEnabled(true);
+    } else {
+      return;
+    }
   };
 
   const formattedErrors = ErrorDisplay({
@@ -89,6 +96,7 @@ function App() {
     orderErrors,
   });
 
+  // this is used to render "No errors found" display
   const noErrorDisplay = NoErrorDisplay({
     formattedSchemaValidationErrors,
     orderErrors,
@@ -119,9 +127,15 @@ function App() {
         </div>
 
         {urlMode ? (
-          <div>
-            <input type="text" placeholder="Enter URL" className="w-full" />
-            <Button onClick={() => handleTextModeCheck}>Check</Button>
+          <div className="flex flex-row">
+            <input
+              type="text"
+              value={orderText}
+              onChange={handleUrlChange}
+              placeholder="Enter URL"
+              className="w-full h-12 top-[287px] bg-transparent border p-2"
+            />
+            <Button onClick={handleSubmit}>Check</Button>
           </div>
         ) : (
           <div className="flex flex-row">
@@ -132,13 +146,7 @@ function App() {
               className="w-full h-12 top-[287px] bg-transparent border p-2"
               rows={10}
             />
-            <Button
-              onClick={() =>
-                orderText.length > 0 ? setIsCheckEnabled(true) : null
-              }
-            >
-              Check
-            </Button>
+            <Button onClick={handleSubmit}>Check</Button>
           </div>
         )}
         {isCheckEnabled && !orderParsingError && (

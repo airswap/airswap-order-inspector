@@ -69,6 +69,13 @@
   resolved "https://registry.yarnpkg.com/@airswap/swap/-/swap-4.2.2.tgz#6587f437980f5cf1715d5135039141ff66f491e3"
   integrity sha512-EIx0btHqx4aq8J4hnYe1fignNIuQwlnPnQWK7qgONpEnV++GfUwwbTso62jb7gmmU/pQAdl4Qm1TZfljvfoDdg==
 
+"@airswap/types@^4.2.0":
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/@airswap/types/-/types-4.2.0.tgz#28dbd3a5c89a8c69612ec4e17b610ec0c0025c67"
+  integrity sha512-/PlBspKQyaW/bgYqUPwXgtOxZAwfJemya9Ln9SoeWKegKKZ0LxgONIjgc4Nmxy461wvcIIUXzccsDK5RfunGAQ==
+  dependencies:
+    "@uniswap/token-lists" "^1.0.0-beta.31"
+
 "@airswap/utils@4.3.2", "@airswap/utils@^4.3.2":
   version "4.3.2"
   resolved "https://registry.yarnpkg.com/@airswap/utils/-/utils-4.3.2.tgz#2c3c1419a3acee7a156ef484c68c6f75bee226a3"
@@ -2245,7 +2252,7 @@
   resolved "https://registry.yarnpkg.com/@ungap/structured-clone/-/structured-clone-1.2.0.tgz#756641adb587851b5ccb3e095daf27ae581c8406"
   integrity sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==
 
-"@uniswap/token-lists@^1.0.0-beta.24":
+"@uniswap/token-lists@^1.0.0-beta.24", "@uniswap/token-lists@^1.0.0-beta.31":
   version "1.0.0-beta.34"
   resolved "https://registry.yarnpkg.com/@uniswap/token-lists/-/token-lists-1.0.0-beta.34.tgz#879461f5d4009327a24259bbab797e0f22db58c8"
   integrity sha512-Hc3TfrFaupg0M84e/Zv7BoF+fmMWDV15mZ5s8ZQt2qZxUcNw2GQW+L6L/2k74who31G+p1m3GRYbJpAo7d1pqA==
