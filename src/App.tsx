@@ -3,7 +3,6 @@ import React, { ChangeEvent, useState } from 'react';
 import { cn } from './lib/utils';
 import { useValidateOrder } from './hooks/useValidateOrder';
 import { Header } from './features/ui/header';
-import { Select } from './features/ui/select';
 import {
   SwapContractAddressStore,
   useAppStore,
@@ -16,6 +15,7 @@ import { useFormatSchemaValidationErrors } from './hooks/useFormatSchemaValidati
 import { LoadingOrFailed } from './features/ui/loadingOrFailed';
 import { ErrorDisplay } from './features/ui/errorDisplay';
 import { NoErrorDisplay } from './features/ui/noErrorDisplay';
+import { JsonData } from './features/ui/jsonData';
 
 function App() {
   const [urlMode, setUrlMode] = useState<boolean>(false);
@@ -184,49 +184,21 @@ function App() {
           </div>
         )}
         {isCheckEnabled && !orderParsingError && (
-          <div className="flex flex-row py-4">
-            <div className="w-1/2 h-full pr-6 border-r font-bold text-[13px]">
-              <h2 className="text-[16px]">Domain</h2>
-              <div className="grid grid-cols-2 gap-2 mt-2 mb-6">
-                <div className="text-textDark font-medium">Chain</div>
-                <div>
-                  <Select />
-                </div>
-                <div className="text-textDark font-medium">Swap contract</div>
-                <div>{swapContract}</div>
-                <div className="text-textDark font-medium">Domain Name</div>
-                <div>{domainName}</div>
-                <div className="text-textDark font-medium">Domain Version</div>
-                <div>{domainVersion}</div>
-                <div className="text-textDark font-medium">Protocol Fee</div>
-                <div>{protocolFeeFormatted}</div>
-              </div>
-
-              <h2 className="text-[16px]">Order</h2>
-              <div className="grid grid-cols-2 gap-2 my-2">
-                <div className="text-textDark font-medium">Nonce</div>
-                <div>{nonce}</div>
-                <div className="text-textDark font-medium">Expiry</div>
-                <div>{expiry}</div>
-                <div className="text-textDark font-medium">signerWallet</div>
-                <div>{signerWallet}</div>
-                <div className="text-textDark font-medium">signerToken</div>
-                <div>{signerToken}</div>
-                <div className="text-textDark font-medium">signerAmount</div>
-                <div>{signerAmount}</div>
-                <div className="text-textDark font-medium">senderWallet</div>
-                <div>{senderWallet}</div>
-                <div className="text-textDark font-medium">senderToken</div>
-                <div>{senderToken}</div>
-                <div className="text-textDark font-medium">senderAmount</div>
-                <div>{senderAmount}</div>
-              </div>
-            </div>
-            <div className="w-1/2 px-6">
-              <h2 className="font-bold">Issues</h2>
-              <pre className="whitespace-pre h-full">{isDisplayErrors}</pre>
-            </div>
-          </div>
+          <JsonData
+            swapContract={swapContract}
+            domainName={domainName}
+            domainVersion={domainVersion}
+            protocolFeeFormatted={protocolFeeFormatted}
+            nonce={nonce}
+            expiry={expiry}
+            signerWallet={signerWallet}
+            signerToken={signerToken}
+            signerAmount={signerAmount}
+            senderWallet={senderWallet}
+            senderToken={senderToken}
+            senderAmount={senderAmount}
+            isDisplayErrors={isDisplayErrors}
+          />
         )}
         {!isCheckEnabled || !!orderParsingError ? (
           <LoadingOrFailed
