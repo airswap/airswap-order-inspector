@@ -176,7 +176,7 @@ function App() {
             <textarea
               value={orderText}
               onChange={handleTextChange}
-              placeholder="JSON or URL"
+              placeholder="Enter JSON"
               className="w-full h-12 top-[287px] bg-transparent border p-2"
               rows={10}
             />
@@ -189,7 +189,7 @@ function App() {
               <h2 className="text-[16px]">Domain</h2>
               <div className="grid grid-cols-2 gap-2 mt-2 mb-6">
                 <div className="text-textDark font-medium">Chain</div>
-                <div className={`${orderText.length === 0 && 'hidden'}`}>
+                <div>
                   <Select />
                 </div>
                 <div className="text-textDark font-medium">Swap contract</div>

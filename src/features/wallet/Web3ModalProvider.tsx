@@ -32,11 +32,12 @@ const projectId = import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID || '1';
 
 // 2. Create wagmiConfig
 const metadata = {
-  // FIXME: update these with real values
-  name: 'Web3Modal',
-  description: 'Web3Modal Example',
-  url: 'https://web3modal.com', // origin must match your domain & subdomain
-  icons: ['https://avatars.githubusercontent.com/u/37784886'],
+  // FIXME: double check these values
+  name: 'AirSwap Checker',
+  description:
+    'AirSwap Makers can use the AirSwap Checker app to debug their JSON objects in their API setup',
+  url: 'https://check.airswap.eth.limo/',
+  icons: ['../../seets/airswap-logo.svg'],
 };
 
 const chains = [

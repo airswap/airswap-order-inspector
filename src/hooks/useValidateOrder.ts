@@ -64,7 +64,6 @@ export const useValidateOrder = ({
   }
 
   const { data: orderErrors, error: contractCallError } = useCheckOrder({
-    // FIXME: don't hardcode this - take from order if supplied, or get default for current chain.
     swapContract: {
       chainId: selectedChainId,
       address: swapContract as `0x${string}`,
