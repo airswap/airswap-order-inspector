@@ -23,10 +23,7 @@ export const NoErrorDisplay = ({
   if (isNoErrors) {
     return (
       <div className="flex flex-col items-center justify-center m-auto h-full -mt-10 text-center text-wrap">
-        <div
-          id="circle"
-          className="flex justify-center items-center h-[100px] w-[100px] bg-[#171A23] rounded-full"
-        >
+        <div className="flex justify-center items-center h-[100px] w-[100px] bg-[#171A23] rounded-full">
           <FaCheck size={22} />
         </div>
         <p className="mt-8 mb-4 font-bold text-white">Ready to swap</p>
