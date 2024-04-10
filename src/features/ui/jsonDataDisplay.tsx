@@ -4,7 +4,7 @@ import { blockExplorers } from '@/utils/blockExplorers';
 import { useChainId } from 'wagmi';
 import { TfiNewWindow } from 'react-icons/tfi';
 
-export const JsonData = ({
+export const JsonDataDisplay = ({
   swapContract,
   domainName,
   domainVersion,
