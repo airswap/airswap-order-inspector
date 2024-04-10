@@ -138,6 +138,7 @@ function App() {
             onClick={() => {
               setOrderText('');
               setUrlMode(false);
+              setIsCheckEnabled(false);
             }}
             className={cn({
               underline: !urlMode,
@@ -151,6 +152,7 @@ function App() {
             onClick={() => {
               setOrderText('');
               setUrlMode(true);
+              setIsCheckEnabled(false);
             }}
             className={cn({
               underline: urlMode,
