@@ -13,7 +13,7 @@ import { useFormatSchemaValidationErrors } from './hooks/useFormatSchemaValidati
 import { LoadingOrFailed } from './features/ui/loadingOrFailed';
 import { ErrorDisplay } from './features/ui/errorDisplay';
 import { NoErrorDisplay } from './features/ui/noErrorDisplay';
-import { JsonData } from './features/ui/jsonData';
+import { JsonDataDisplay } from './features/ui/jsonDataDisplay';
 
 function App() {
   const [urlMode, setUrlMode] = useState<boolean>(false);
@@ -143,7 +143,7 @@ function App() {
           <Button onClick={handleSubmit}>Check</Button>
         </div>
         {isCheckEnabled && !orderParsingError && (
-          <JsonData
+          <JsonDataDisplay
             swapContract={swapContract}
             domainName={domainName}
             domainVersion={domainVersion}

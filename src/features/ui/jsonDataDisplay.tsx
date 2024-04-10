@@ -1,5 +1,8 @@
 import { truncateAddress } from '@/utils/truncateAddress';
 import { Select } from './select';
+import { blockExplorers } from '@/utils/blockExplorers';
+import { useChainId } from 'wagmi';
+import { TfiNewWindow } from 'react-icons/tfi';
 
 export const JsonData = ({
   swapContract,
@@ -30,6 +33,9 @@ export const JsonData = ({
   senderAmount: string | undefined;
   isDisplayErrors: JSX.Element | JSX.Element[] | undefined;
 }) => {
+  const chainId = useChainId();
+  const explorerUrl = blockExplorers[chainId || 1];
+
   return (
     <div className="flex flex-row py-4">
       <div className="w-1/2 h-full pr-6 border-r font-bold text-[13px]">
@@ -40,7 +46,16 @@ export const JsonData = ({
             <Select />
           </div>
           <div className="text-textDark font-medium">Swap contract</div>
-          <div>{truncateAddress(swapContract)}</div>
+          <div>
+            <a
+              href={`${explorerUrl}/address/${swapContract}`}
+              target="_"
+              className="flex flex-row items-center"
+            >
+              {truncateAddress(swapContract)}
+              <TfiNewWindow className="ml-3" />
+            </a>
+          </div>
           <div className="text-textDark font-medium">Domain Name</div>
           <div>{domainName}</div>
           <div className="text-textDark font-medium">Domain Version</div>
@@ -56,15 +71,59 @@ export const JsonData = ({
           <div className="text-textDark font-medium">Expiry</div>
           <div>{expiry}</div>
           <div className="text-textDark font-medium">signerWallet</div>
-          <div>{truncateAddress(signerWallet)}</div>
+          <div>
+            <a
+              href={`${explorerUrl}/address/${signerWallet}`}
+              target="_"
+              className="flex flex-row items-center"
+            >
+              {truncateAddress(signerWallet)}
+              <div>
+                <TfiNewWindow className="ml-3" />
+              </div>
+            </a>
+          </div>
           <div className="text-textDark font-medium">signerToken</div>
-          <div>{truncateAddress(signerToken)}</div>
+          <div>
+            <a
+              href={`${explorerUrl}/address/${signerToken}`}
+              target="_"
+              className="flex flex-row items-center"
+            >
+              {truncateAddress(signerToken)}
+              <div>
+                <TfiNewWindow className="ml-3" />
+              </div>
+            </a>
+          </div>
           <div className="text-textDark font-medium">signerAmount</div>
           <div>{signerAmount}</div>
           <div className="text-textDark font-medium">senderWallet</div>
-          <div>{truncateAddress(senderWallet)}</div>
+          <div>
+            <a
+              href={`${explorerUrl}/address/${senderWallet}`}
+              target="_"
+              className="flex flex-row items-center"
+            >
+              {truncateAddress(senderWallet)}
+              <div>
+                <TfiNewWindow className="ml-3" />
+              </div>
+            </a>
+          </div>
           <div className="text-textDark font-medium">senderToken</div>
-          <div>{truncateAddress(senderToken)}</div>
+          <div>
+            <a
+              href={`${explorerUrl}/address/${senderToken}`}
+              target="_"
+              className="flex flex-row items-center"
+            >
+              {truncateAddress(senderToken)}
+              <div>
+                <TfiNewWindow className="ml-3" />
+              </div>
+            </a>
+          </div>
           <div className="text-textDark font-medium">senderAmount</div>
           <div>{senderAmount}</div>
         </div>

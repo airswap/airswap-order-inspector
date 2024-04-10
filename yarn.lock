@@ -17,6 +17,11 @@
   resolved "https://registry.yarnpkg.com/@airswap/batch-call/-/batch-call-4.2.3.tgz#a6db2b0a4627eadfe9136715f92642c2d536f98f"
   integrity sha512-/jbrEw1ecTpYAoNw3s9Ank5UBjD1bMTiox+AmafChIr9hET3wYulmg6rm5hzJTL99cZkZm9dwpsV5LRubVirNA==
 
+"@airswap/constants@^4.2.0":
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/@airswap/constants/-/constants-4.2.0.tgz#2b85dc77a5dc9d4ca4220f3c87697a1dfdddc9ec"
+  integrity sha512-fygrTng2SRhL95Ic+qlQJnVJwTZ5aLlMu8Csmbbroojt2rVP8KqHH6PLVaVkepUXop0tv9ZJToBokVwo0zT0vA==
+
 "@airswap/jsonrpc-client-websocket@0.0.1":
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/@airswap/jsonrpc-client-websocket/-/jsonrpc-client-websocket-0.0.1.tgz#e75932a0f19cb6c23cf145834277211cce150400"
