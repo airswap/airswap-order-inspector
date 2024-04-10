@@ -1,3 +1,4 @@
+import { truncateAddress } from '@/utils/truncateAddress';
 import { Select } from './select';
 
 export const JsonData = ({
@@ -24,7 +25,7 @@ export const JsonData = ({
   signerWallet: string | undefined;
   signerToken: string | undefined;
   signerAmount: string | undefined;
-  senderWallet: string | undefined;
+  senderWallet: string | undefined | null;
   senderToken: string | undefined;
   senderAmount: string | undefined;
   isDisplayErrors: JSX.Element | JSX.Element[] | undefined;
@@ -39,7 +40,7 @@ export const JsonData = ({
             <Select />
           </div>
           <div className="text-textDark font-medium">Swap contract</div>
-          <div>{swapContract}</div>
+          <div>{truncateAddress(swapContract)}</div>
           <div className="text-textDark font-medium">Domain Name</div>
           <div>{domainName}</div>
           <div className="text-textDark font-medium">Domain Version</div>
@@ -55,15 +56,15 @@ export const JsonData = ({
           <div className="text-textDark font-medium">Expiry</div>
           <div>{expiry}</div>
           <div className="text-textDark font-medium">signerWallet</div>
-          <div>{signerWallet}</div>
+          <div>{truncateAddress(signerWallet)}</div>
           <div className="text-textDark font-medium">signerToken</div>
-          <div>{signerToken}</div>
+          <div>{truncateAddress(signerToken)}</div>
           <div className="text-textDark font-medium">signerAmount</div>
           <div>{signerAmount}</div>
           <div className="text-textDark font-medium">senderWallet</div>
-          <div>{senderWallet}</div>
+          <div>{truncateAddress(senderWallet)}</div>
           <div className="text-textDark font-medium">senderToken</div>
-          <div>{senderToken}</div>
+          <div>{truncateAddress(senderToken)}</div>
           <div className="text-textDark font-medium">senderAmount</div>
           <div>{senderAmount}</div>
         </div>

@@ -1,7 +1,7 @@
-export const truncateAddress = (address: string | null) => {
+export const truncateAddress = (address: string | undefined | null) => {
   if (!address) {
     return;
   } else {
-    return address.slice(0, 4) + '...' + address.slice(-4);
+    return address.slice(0, 5) + '...' + address.slice(-3);
   }
 };
