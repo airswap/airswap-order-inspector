@@ -25,7 +25,6 @@ export const useCheckOrder = ({
     functionName: 'check',
     args: [
       // Note that we can safely assert non-null here as we will not enable the
-      // hook if the order is non-existent or invalid.
       (order?.senderWallet! as Address) || zeroAddress,
       BigInt(order?.nonce || 0),
       BigInt(order?.expiry || 0),

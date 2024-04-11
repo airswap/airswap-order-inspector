@@ -74,11 +74,16 @@ export const useValidateOrder = ({
     }
   }, [schemaValid, schemaValidationResult, setSwapContractAddress]);
 
-  const { data: orderErrors, error: contractCallError } = useCheckOrder({
+  const {
+    data: orderErrors,
+    error: contractCallError,
+    dataUpdatedAt,
+  } = useCheckOrder({
     swapContract: swapContract as `0x${string}`,
     enabled: schemaValid,
     order: schemaValid ? schemaValidationResult.data : undefined,
   });
+  console.log(orderErrors, contractCallError, dataUpdatedAt);
 
   return {
     schemaValidationResult,
