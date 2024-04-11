@@ -20,7 +20,7 @@ function App() {
   const [orderText, setOrderText] = useState<string>('');
 
   const { isCheckEnabled, setIsCheckEnabled } = useAppStore();
-  const { selectedChainId, setSelectedChainId } = useChainStore();
+  const { selectedChainId } = useChainStore();
   const swapContractAddress = useSwapContractAddressStore(
     (state: SwapContractAddressStore) => state.swapContractAddress
   );
@@ -45,11 +45,6 @@ function App() {
     order: orderText,
     isUrl: urlMode,
     swapContract: swapContract,
-    onSetChain: (newId) => {
-      if (selectedChainId !== newId) {
-        setSelectedChainId(newId);
-      }
-    },
   });
 
   const formattedSchemaValidationErrors = useFormatSchemaValidationErrors(

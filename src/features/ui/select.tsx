@@ -7,7 +7,7 @@ import { useChainStore, useSelectStore } from '@/store/store';
 export const Select = () => {
   const [isSelectOpen, setIsSelectOpen] = useState(false);
   const { isSelectDisabled } = useSelectStore();
-  const { setSelectedChainId, selectedChainId } = useChainStore();
+  const { selectedChainId, setSelectedChainId } = useChainStore();
 
   const handleIsSelectOpen = () => {
     setIsSelectOpen((isSelectOpen) => !isSelectOpen);
@@ -29,7 +29,7 @@ export const Select = () => {
   };
   const options = renderOptions();
 
-  const handleSelectChange = (chain: string) => {
+  const handleSelectChange = (chain: number) => {
     if (isSelectDisabled) {
       return;
     } else {
@@ -41,8 +41,8 @@ export const Select = () => {
     <>
       <RadixSelect.Root
         disabled={isSelectDisabled}
-        onValueChange={(val) => {
-          handleSelectChange(val);
+        onValueChange={(val: string) => {
+          handleSelectChange(Number(val));
         }}
         onOpenChange={handleIsSelectOpen}
       >

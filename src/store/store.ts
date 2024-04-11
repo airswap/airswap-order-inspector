@@ -7,7 +7,7 @@ export interface SelectStore {
 
 export interface ChainStore {
   selectedChainId: number;
-  setSelectedChainId: (chain: number) => void;
+  setSelectedChainId: (chainId: number) => void;
 }
 
 export interface SwapContractAddressStore {
@@ -22,7 +22,7 @@ export const useSelectStore = create<SelectStore>((set) => ({
 
 export const useChainStore = create<ChainStore>((set) => ({
   selectedChainId: 1,
-  setSelectedChainId: (chain) => set({ selectedChainId: chain }),
+  setSelectedChainId: (chainId) => set({ selectedChainId: chainId }),
 }));
 
 export interface AppStore {
