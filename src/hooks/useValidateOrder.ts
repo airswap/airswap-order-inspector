@@ -1,25 +1,15 @@
-import { hexToString } from 'viem';
-import { useCheckOrder } from './useCheckOrder';
-import { signedOrderSchema } from '../utils/orderSchema';
-import { parseOrderFromUrl } from '../utils/parseOrderFromUrl';
-import {
-  SwapContractAddressStore,
-  useChainStore,
-  useSelectStore,
-  useSwapContractAddressStore,
-} from '@/store/store';
-import { SelectStore } from '@/store/store';
+import { SelectStore, useChainStore, useSelectStore } from '@/store/store';
+import { SwapERC20 } from '@airswap/libraries';
 import { useEffect } from 'react';
+import { hexToString } from 'viem';
+import { SignedOrder, signedOrderSchema } from '../utils/orderSchema';
+import { parseOrderFromUrl } from '../utils/parseOrderFromUrl';
+import { useCheckOrder } from './useCheckOrder';
 
 export const useValidateOrder = ({
-  order,
-  isUrl,
-  swapContract,
-  // onSetChain,
+  orderText,
 }: {
-  order?: string;
-  isUrl: boolean;
-  swapContract: string | undefined;
+  orderText?: string;
   // onSetChain?: (chainId: number) => void;
 }) => {
   const setIsSelectDisabled = useSelectStore(
@@ -27,22 +17,29 @@ export const useValidateOrder = ({
   );
   const { selectedChainId, setSelectedChainId } = useChainStore();
 
-  const setSwapContractAddress = useSwapContractAddressStore(
-    (state: SwapContractAddressStore) => state.setSwapContractAddress
-  );
-
+  //
   let _order;
   let orderParsingError;
-  if (order) {
+  if (orderText) {
+    const isUrl = !orderText.startsWith('{');
     try {
-      _order = isUrl ? parseOrderFromUrl(order) : JSON.parse(order);
+      _order = isUrl ? parseOrderFromUrl(orderText) : JSON.parse(orderText);
     } catch (e) {
       orderParsingError = e;
     }
   }
 
+  // Check if the parsed order is valid.
   const schemaValidationResult = signedOrderSchema.safeParse(_order);
   const schemaValid = schemaValidationResult.success;
+  let order: SignedOrder | undefined = undefined;
+  if (schemaValid) {
+    order = schemaValidationResult.data;
+  }
+
+  const _chainId = order?.chainId || selectedChainId;
+  const _swapContractAddress =
+    order?.swapContract || SwapERC20.getAddress(_chainId);
 
   useEffect(() => {
     if (schemaValid && schemaValidationResult.data.chainId) {
@@ -64,23 +61,14 @@ export const useValidateOrder = ({
     setSelectedChainId,
   ]);
 
-  // if swapContractAddress is present, we want to pass it into the store, then into `usecontractAddress` hook to set eip721domain info
-  useEffect(() => {
-    if (schemaValid && schemaValidationResult.data.swapContract) {
-      const contractAddress = schemaValidationResult.data.swapContract;
-
-      // Update swapContractAddress in the store after rendering
-      setSwapContractAddress(contractAddress);
-    }
-  }, [schemaValid, schemaValidationResult, setSwapContractAddress]);
-
   const { data: orderErrors, error: contractCallError } = useCheckOrder({
-    swapContract: swapContract as `0x${string}`,
+    swapContract: _swapContractAddress as `0x${string}`,
     enabled: schemaValid,
     order: schemaValid ? schemaValidationResult.data : undefined,
   });
 
   return {
+    order,
     schemaValidationResult,
     orderErrors: orderErrors?.map((e) => hexToString(e)),
     contractCallError,

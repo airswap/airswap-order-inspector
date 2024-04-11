@@ -16,7 +16,6 @@ import { NoErrorDisplay } from './features/ui/noErrorDisplay';
 import { JsonDataDisplay } from './features/ui/jsonDataDisplay';
 
 function App() {
-  const [urlMode, setUrlMode] = useState<boolean>(false);
   const [orderText, setOrderText] = useState<string>('');
 
   const { isCheckEnabled, setIsCheckEnabled } = useAppStore();
@@ -41,10 +40,9 @@ function App() {
     contractCallError,
     orderParsingError,
     schemaValidationError,
+    order,
   } = useValidateOrder({
-    order: orderText,
-    isUrl: urlMode,
-    swapContract: swapContract,
+    orderText: orderText,
   });
 
   const formattedSchemaValidationErrors = useFormatSchemaValidationErrors(
@@ -91,13 +89,6 @@ function App() {
     setIsCheckEnabled(false);
     setOrderText(e.target.value);
     // check if URL or JSON
-    if (e.target.value[0] === '{') {
-      setUrlMode(false);
-    } else if (e.target.value.substring(0, 4) === 'http') {
-      setUrlMode(true);
-    } else {
-      return;
-    }
   };
 
   const handleSubmit = () => {
