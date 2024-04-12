@@ -3,9 +3,11 @@ import { FiXSquare } from 'react-icons/fi';
 import { ReadContractErrorType } from 'viem';
 
 export const LoadingOrFailed = ({
+  orderText,
   orderParsingError,
   contractCallError,
 }: {
+  orderText: string | undefined;
   orderParsingError: unknown;
   contractCallError: ReadContractErrorType | null;
 }) => {
@@ -23,7 +25,8 @@ export const LoadingOrFailed = ({
           )}
         </div>
         <p className="mt-8 mb-4 font-bold text-white">
-          {isShowLoadingState ? 'Failed to load' : 'Load an order'}
+          {!orderText && 'Load an order'}
+          {isShowLoadingState && 'Failed to load'}
         </p>
         <p className="text-textDark">
           {/* TODO: test out `isContractReadError when there's a smart contract error */}

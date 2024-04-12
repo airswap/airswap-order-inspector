@@ -8,9 +8,10 @@ import { LoadingOrFailed } from './features/ui/loadingOrFailed';
 import { ErrorDisplay } from './features/ui/errorDisplay';
 import { NoErrorDisplay } from './features/ui/noErrorDisplay';
 import { JsonDataDisplay } from './features/ui/jsonDataDisplay';
+import { useSetChainId } from './hooks/useSetChainId';
 
 function App() {
-  const [orderText, setOrderText] = useState<string>('');
+  const [orderText, setOrderText] = useState<string | undefined>(undefined);
 
   const { selectedChainId } = useAppStore();
 
@@ -21,7 +22,6 @@ function App() {
 
   const { eip712Domain, protocolFee } = useDomainInfo({
     chainId: selectedChainId,
-    // swapContract: swapContractAddress,
   });
 
   const {
@@ -33,6 +33,11 @@ function App() {
     order,
   } = useValidateOrder({
     orderText: orderText,
+  });
+
+  useSetChainId({
+    schemaValid: schemaValidationResult.success,
+    order: order,
   });
 
   const formattedSchemaValidationErrors = useFormatSchemaValidationErrors(
@@ -108,7 +113,7 @@ function App() {
             rows={10}
           />
         </div>
-        {!orderParsingError && (
+        {orderText && !orderParsingError && (
           <JsonDataDisplay
             swapContract={swapContract}
             domainName={domainName}
@@ -125,8 +130,9 @@ function App() {
             isDisplayErrors={isDisplayErrors}
           />
         )}
-        {orderParsingError ? (
+        {orderParsingError || !orderText ? (
           <LoadingOrFailed
+            orderText={orderText}
             orderParsingError={orderParsingError}
             contractCallError={contractCallError}
           />
