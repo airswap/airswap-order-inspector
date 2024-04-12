@@ -5,7 +5,10 @@ import { useAppStore } from './store/store';
 import { useDomainInfo } from './hooks/useDomainInfo';
 import { useFormatSchemaValidationErrors } from './hooks/useFormatSchemaValidationErrors';
 import { LoadingOrFailed } from './features/ui/loadingOrFailed';
-import { ErrorDisplay } from './features/ui/errorDisplay';
+import {
+  FormattedErrors,
+  formattedErrors,
+} from './features/ui/formattedErrors';
 import { NoErrorDisplay } from './features/ui/noErrorDisplay';
 import { JsonDataDisplay } from './features/ui/jsonDataDisplay';
 import { useSetChainId } from './hooks/useSetChainId';
@@ -85,7 +88,7 @@ function App() {
     // check if URL or JSON
   };
 
-  const formattedErrors = ErrorDisplay({
+  const formattedErrors = FormattedErrors({
     formattedSchemaValidationErrors,
     orderErrors,
     eip721DomainStatus: eip712Domain?.status,
@@ -97,7 +100,7 @@ function App() {
     orderErrors,
   });
 
-  const isDisplayErrors = formattedErrors ? formattedErrors : noErrorDisplay;
+  const displayErrors = formattedErrors ? formattedErrors : noErrorDisplay;
 
   return (
     <React.Fragment>
@@ -127,7 +130,7 @@ function App() {
             senderWallet={senderWallet}
             senderToken={senderToken}
             senderAmount={senderAmount}
-            isDisplayErrors={isDisplayErrors}
+            displayErrors={displayErrors}
           />
         )}
         {orderParsingError || !orderText ? (

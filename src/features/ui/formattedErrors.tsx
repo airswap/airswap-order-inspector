@@ -6,7 +6,7 @@ type SchemaValidationError = {
   error: string;
 }[];
 
-export const ErrorDisplay = ({
+export const FormattedErrors = ({
   formattedSchemaValidationErrors,
   orderErrors,
   eip721DomainStatus,
@@ -29,7 +29,7 @@ export const ErrorDisplay = ({
         </div>
       );
     });
-  } else if (orderErrors) {
+  } else if (orderErrors && orderErrors.length > 0) {
     return orderErrors?.map((error) => {
       return (
         <div className="flex flex-row my-4" key={error}>

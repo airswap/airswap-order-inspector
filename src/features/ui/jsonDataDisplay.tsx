@@ -17,7 +17,7 @@ export const JsonDataDisplay = ({
   senderWallet,
   senderToken,
   senderAmount,
-  isDisplayErrors,
+  displayErrors,
 }: {
   swapContract: string | undefined;
   domainName: string | undefined;
@@ -31,10 +31,11 @@ export const JsonDataDisplay = ({
   senderWallet: string | undefined | null;
   senderToken: string | undefined;
   senderAmount: string | undefined;
-  isDisplayErrors: JSX.Element | JSX.Element[] | undefined;
+  displayErrors: JSX.Element | JSX.Element[] | undefined;
 }) => {
   const chainId = useChainId();
   const explorerUrl = blockExplorers[chainId || 1];
+  console.log('displayErrors', displayErrors);
 
   return (
     <div className="flex flex-row py-4">
@@ -130,7 +131,7 @@ export const JsonDataDisplay = ({
       </div>
       <div className="w-1/2 px-6">
         <h2 className="font-bold">Issues</h2>
-        <pre className="whitespace-pre h-full">{isDisplayErrors}</pre>
+        <pre className="whitespace-pre h-full">{displayErrors}</pre>
       </div>
     </div>
   );
