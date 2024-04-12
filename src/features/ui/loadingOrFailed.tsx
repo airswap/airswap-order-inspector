@@ -12,7 +12,7 @@ export const LoadingOrFailed = ({
   contractCallError: ReadContractErrorType | null;
 }) => {
   const isShowLoadingState = !!orderParsingError;
-  const isContractReadError = contractCallError;
+  console.log('contractCallError', contractCallError);
 
   return (
     <>
@@ -29,13 +29,12 @@ export const LoadingOrFailed = ({
           {isShowLoadingState && 'Failed to load'}
         </p>
         <p className="text-textDark">
-          {/* TODO: test out `isContractReadError when there's a smart contract error */}
-          {isContractReadError &&
-            'There is an issue reading the smart contract'}
-          {/* TODO: Double check this */}
-          {isShowLoadingState
-            ? 'Check your JSON or URL'
-            : 'Load JSON or by URL'}
+          {/* FIXME: `contractCallError` updates slowly and does not render text correctly */}
+          {contractCallError
+            ? 'There is an issue reading the smart contract'
+            : isShowLoadingState
+              ? 'Check your JSON or URL'
+              : 'Load JSON or by URL'}
         </p>
       </div>
     </>

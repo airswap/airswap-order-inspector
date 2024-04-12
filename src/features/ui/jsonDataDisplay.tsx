@@ -35,7 +35,6 @@ export const JsonDataDisplay = ({
 }) => {
   const chainId = useChainId();
   const explorerUrl = blockExplorers[chainId || 1];
-  console.log('displayErrors', displayErrors);
 
   return (
     <div className="flex flex-row py-4">

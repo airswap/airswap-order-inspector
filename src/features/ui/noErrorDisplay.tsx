@@ -20,8 +20,6 @@ export const NoErrorDisplay = ({
     !formattedSchemaValidationErrors &&
     (orderErrors?.length === 0 || !orderErrors);
 
-  console.log('isNoErrors', isNoErrors);
-
   if (isNoErrors) {
     return (
       <div className="flex flex-col items-center justify-center m-auto h-full -mt-10 text-center text-wrap">

@@ -5,10 +5,7 @@ import { useAppStore } from './store/store';
 import { useDomainInfo } from './hooks/useDomainInfo';
 import { useFormatSchemaValidationErrors } from './hooks/useFormatSchemaValidationErrors';
 import { LoadingOrFailed } from './features/ui/loadingOrFailed';
-import {
-  FormattedErrors,
-  formattedErrors,
-} from './features/ui/formattedErrors';
+import { FormattedErrors } from './features/ui/formattedErrors';
 import { NoErrorDisplay } from './features/ui/noErrorDisplay';
 import { JsonDataDisplay } from './features/ui/jsonDataDisplay';
 import { useSetChainId } from './hooks/useSetChainId';
@@ -92,6 +89,7 @@ function App() {
     formattedSchemaValidationErrors,
     orderErrors,
     eip721DomainStatus: eip712Domain?.status,
+    contractCallError,
   });
 
   // this is used to render "No errors found" display
