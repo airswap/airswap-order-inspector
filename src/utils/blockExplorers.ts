@@ -13,8 +13,8 @@ export const blockExplorers: { [x: number]: string } = {
   [ChainIds.MAINNET]: 'https://etherscan.io',
   [ChainIds.POLYGON]: 'https://polygonscan.com',
   [ChainIds.MUMBAI]: 'https://mumbai.polygonscan.com',
-  [ChainIds.RSK]: 'https://explorer.rsk.co',
+  // [ChainIds.RSK]: 'https://explorer.rsk.co',
   [ChainIds.SEPOLIA]: 'https://sepolia.etherscan.io',
-  [ChainIds.TELOS]: 'https://www.teloscan.io',
-  [ChainIds.TELOSTESTNET]: 'https://testnet.teloscan.io',
+  // [ChainIds.TELOS]: 'https://www.teloscan.io',
+  // [ChainIds.TELOSTESTNET]: 'https://testnet.teloscan.io',
 };

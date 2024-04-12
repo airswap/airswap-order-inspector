@@ -4,11 +4,9 @@ import { defaultWagmiConfig } from '@web3modal/wagmi/react/config';
 import { WagmiProvider } from 'wagmi';
 import {
   arbitrum,
-  arbitrumGoerli,
   avalanche,
   avalancheFuji,
   base,
-  baseGoerli,
   bsc,
   bscTestnet,
   linea,
@@ -16,10 +14,10 @@ import {
   mainnet,
   polygon,
   polygonMumbai,
-  rootstock,
+  // rootstock,
   sepolia,
-  telos,
-  telosTestnet,
+  // telos,
+  // telosTestnet,
 } from 'wagmi/chains';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactNode } from 'react';
@@ -44,8 +42,8 @@ const chains = [
   mainnet,
   sepolia,
   sepolia,
-  telos,
-  telosTestnet,
+  // telos,
+  // telosTestnet,
   bsc,
   bscTestnet,
   polygon,
@@ -56,9 +54,7 @@ const chains = [
   arbitrum,
   avalanche,
   avalancheFuji,
-  baseGoerli,
-  arbitrumGoerli,
-  rootstock,
+  // rootstock,
 ] as const;
 const config = defaultWagmiConfig({
   chains,
