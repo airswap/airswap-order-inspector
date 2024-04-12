@@ -2,37 +2,19 @@ import * as RadixSelect from '@radix-ui/react-select';
 import { useState } from 'react';
 import { FaChevronDown } from 'react-icons/fa';
 import { chainIdOptions } from '@/lib/chainIdOptions';
-import { useChainStore, useSelectStore } from '@/store/store';
+import { useAppStore } from '@/store/store';
 
-export const Select = () => {
+export const ChainSelector = () => {
   const [isSelectOpen, setIsSelectOpen] = useState(false);
-  const { isSelectDisabled } = useSelectStore();
-  const { selectedChainId, setSelectedChainId } = useChainStore();
+  const { isSelectDisabled, selectedChainId, setSelectedChainId } =
+    useAppStore();
 
   const handleIsSelectOpen = () => {
     setIsSelectOpen((isSelectOpen) => !isSelectOpen);
   };
 
-  const renderOptions = () => {
-    return chainIdOptions.map((chain) => (
-      <RadixSelect.Item
-        value={chain.value}
-        key={chain.value}
-        className="py-1 px-2 bg-background text-lightGray first:rounded-t-sm last:rounded-b-sm hover:bg-blueExtraDark"
-      >
-        <RadixSelect.ItemText>
-          {chain.label}: {chain.value}
-        </RadixSelect.ItemText>
-        <RadixSelect.ItemIndicator>{chain.value}</RadixSelect.ItemIndicator>
-      </RadixSelect.Item>
-    ));
-  };
-  const options = renderOptions();
-
   const handleSelectChange = (chain: number) => {
-    if (isSelectDisabled) {
-      return;
-    } else {
+    if (!isSelectDisabled) {
       setSelectedChainId(Number(chain));
     }
   };
@@ -74,7 +56,22 @@ export const Select = () => {
             className="h-[340px] rounded-md border"
           >
             <RadixSelect.ScrollUpButton />
-            <RadixSelect.Viewport>{options}</RadixSelect.Viewport>
+            <RadixSelect.Viewport>
+              {chainIdOptions.map((chain) => (
+                <RadixSelect.Item
+                  value={chain.value}
+                  key={chain.value}
+                  className="py-1 px-2 bg-background text-lightGray first:rounded-t-sm last:rounded-b-sm hover:bg-blueExtraDark"
+                >
+                  <RadixSelect.ItemText>
+                    {chain.label}: {chain.value}
+                  </RadixSelect.ItemText>
+                  <RadixSelect.ItemIndicator>
+                    {chain.value}
+                  </RadixSelect.ItemIndicator>
+                </RadixSelect.Item>
+              ))}
+            </RadixSelect.Viewport>
             <RadixSelect.ScrollDownButton />
             <RadixSelect.Arrow />
           </RadixSelect.Content>

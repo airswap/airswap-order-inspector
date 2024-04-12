@@ -1,5 +1,5 @@
 import { truncateAddress } from '@/utils/truncateAddress';
-import { Select } from './select';
+import { ChainSelector } from './ChainSelector';
 import { blockExplorers } from '@/utils/blockExplorers';
 import { useChainId } from 'wagmi';
 import { TfiNewWindow } from 'react-icons/tfi';
@@ -43,7 +43,7 @@ export const JsonDataDisplay = ({
         <div className="grid grid-cols-2 gap-2 mt-2 mb-6">
           <div className="text-textDark font-medium">Chain</div>
           <div>
-            <Select />
+            <ChainSelector />
           </div>
           <div className="text-textDark font-medium">Swap contract</div>
           <div>

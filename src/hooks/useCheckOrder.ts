@@ -3,7 +3,7 @@ import { Address, Hash, zeroAddress } from 'viem';
 import { useReadContract } from 'wagmi';
 import { swapErc20Abi } from '../abi/swapErc20Abi';
 import { SignedOrder } from '../utils/orderSchema';
-import { ChainStore, useChainStore } from '@/store/store';
+import { useAppStore } from '@/store/store';
 
 export const useCheckOrder = ({
   swapContract,
@@ -14,9 +14,7 @@ export const useCheckOrder = ({
   enabled?: boolean;
   order?: SignedOrder;
 }) => {
-  const selectedChainId = useChainStore(
-    (state: ChainStore) => state.selectedChainId
-  );
+  const { selectedChainId } = useAppStore();
 
   return useReadContract({
     address: swapContract,

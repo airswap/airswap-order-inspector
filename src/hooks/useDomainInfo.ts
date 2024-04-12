@@ -1,22 +1,19 @@
 import { useReadContracts } from 'wagmi';
 import { swapErc20Abi } from '@/abi/swapErc20Abi';
-import { useContractAddress } from './useContractAddress';
+import { SwapERC20 } from '@airswap/libraries';
+import { Address } from 'viem';
+import { useAppStore } from '@/store/store';
 
 /**
  *
  * @param swapContract this is inputted by a user and will override `address` obtained from `useContractAddress` hook if a user enters one
  * @returns
  */
-export const useDomainInfo = ({
-  chainId,
-  swapContract,
-}: {
-  chainId: number | undefined;
-  swapContract: string | undefined;
-}) => {
-  const address = useContractAddress({ chainId });
+export const useDomainInfo = ({ chainId }: { chainId: number | undefined }) => {
+  const { swapContractAddress } = useAppStore();
+  const address = SwapERC20.getAddress(chainId || 1) as Address;
   const wagmiContractConfig = {
-    address: (swapContract as `0x${string}`) || address,
+    address: (swapContractAddress as `0x${string}`) || address,
     abi: swapErc20Abi,
   };
 

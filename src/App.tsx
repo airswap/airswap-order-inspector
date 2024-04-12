@@ -1,13 +1,7 @@
-import { Button } from './features/ui/button';
 import React, { ChangeEvent, useState } from 'react';
 import { useValidateOrder } from './hooks/useValidateOrder';
 import { Header } from './features/ui/header';
-import {
-  SwapContractAddressStore,
-  useAppStore,
-  useChainStore,
-  useSwapContractAddressStore,
-} from './store/store';
+import { useAppStore } from './store/store';
 import { useDomainInfo } from './hooks/useDomainInfo';
 import { useFormatSchemaValidationErrors } from './hooks/useFormatSchemaValidationErrors';
 import { LoadingOrFailed } from './features/ui/loadingOrFailed';
@@ -18,11 +12,7 @@ import { JsonDataDisplay } from './features/ui/jsonDataDisplay';
 function App() {
   const [orderText, setOrderText] = useState<string>('');
 
-  const { isCheckEnabled, setIsCheckEnabled } = useAppStore();
-  const { selectedChainId } = useChainStore();
-  const swapContractAddress = useSwapContractAddressStore(
-    (state: SwapContractAddressStore) => state.swapContractAddress
-  );
+  const { selectedChainId } = useAppStore();
 
   let swapContract: string | undefined;
   let domainName: string | undefined;
@@ -31,7 +21,7 @@ function App() {
 
   const { eip712Domain, protocolFee } = useDomainInfo({
     chainId: selectedChainId,
-    swapContract: swapContractAddress,
+    // swapContract: swapContractAddress,
   });
 
   const {
@@ -75,28 +65,19 @@ function App() {
   const validSchema = schemaValidationResult.success;
 
   if (validSchema) {
-    nonce = schemaValidationResult.data.nonce;
-    expiry = schemaValidationResult.data.expiry;
-    signerWallet = schemaValidationResult.data.signerWallet;
-    signerToken = schemaValidationResult.data.signerToken;
-    signerAmount = schemaValidationResult.data.signerAmount;
-    senderWallet = schemaValidationResult.data.senderWallet;
-    senderToken = schemaValidationResult.data.senderToken;
-    senderAmount = schemaValidationResult.data.senderAmount;
+    nonce = order?.nonce;
+    expiry = order?.expiry;
+    signerWallet = order?.signerWallet;
+    signerToken = order?.signerToken;
+    signerAmount = order?.signerAmount;
+    senderWallet = order?.senderWallet;
+    senderToken = order?.senderToken;
+    senderAmount = order?.senderAmount;
   }
 
   const handleTextChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setIsCheckEnabled(false);
     setOrderText(e.target.value);
     // check if URL or JSON
-  };
-
-  const handleSubmit = () => {
-    if (orderText.length > 0) {
-      setIsCheckEnabled(true);
-    } else {
-      return;
-    }
   };
 
   const formattedErrors = ErrorDisplay({
@@ -126,9 +107,8 @@ function App() {
             className="w-full h-12 top-[287px] bg-transparent border p-2"
             rows={10}
           />
-          <Button onClick={handleSubmit}>Check</Button>
         </div>
-        {isCheckEnabled && !orderParsingError && (
+        {!orderParsingError && (
           <JsonDataDisplay
             swapContract={swapContract}
             domainName={domainName}
@@ -145,9 +125,8 @@ function App() {
             isDisplayErrors={isDisplayErrors}
           />
         )}
-        {!isCheckEnabled || !!orderParsingError ? (
+        {orderParsingError ? (
           <LoadingOrFailed
-            isCheckEnabled={isCheckEnabled}
             orderParsingError={orderParsingError}
             contractCallError={contractCallError}
           />

@@ -1,4 +1,4 @@
-import { SelectStore, useChainStore, useSelectStore } from '@/store/store';
+import { useAppStore } from '@/store/store';
 import { SwapERC20 } from '@airswap/libraries';
 import { useEffect } from 'react';
 import { hexToString } from 'viem';
@@ -6,18 +6,10 @@ import { SignedOrder, signedOrderSchema } from '../utils/orderSchema';
 import { parseOrderFromUrl } from '../utils/parseOrderFromUrl';
 import { useCheckOrder } from './useCheckOrder';
 
-export const useValidateOrder = ({
-  orderText,
-}: {
-  orderText?: string;
-  // onSetChain?: (chainId: number) => void;
-}) => {
-  const setIsSelectDisabled = useSelectStore(
-    (state: SelectStore) => state.setIsSelectDisabled
-  );
-  const { selectedChainId, setSelectedChainId } = useChainStore();
+export const useValidateOrder = ({ orderText }: { orderText?: string }) => {
+  const { selectedChainId, setSelectedChainId, setIsSelectDisabled } =
+    useAppStore();
 
-  //
   let _order;
   let orderParsingError;
   if (orderText) {
@@ -42,8 +34,8 @@ export const useValidateOrder = ({
     order?.swapContract || SwapERC20.getAddress(_chainId);
 
   useEffect(() => {
-    if (schemaValid && schemaValidationResult.data.chainId) {
-      const chainId = schemaValidationResult.data.chainId;
+    if (schemaValid && order?.chainId) {
+      const chainId = order?.chainId;
 
       if (selectedChainId !== chainId) {
         setSelectedChainId(chainId);
@@ -55,7 +47,7 @@ export const useValidateOrder = ({
     }
   }, [
     schemaValid,
-    schemaValidationResult,
+    order,
     selectedChainId,
     setIsSelectDisabled,
     setSelectedChainId,
