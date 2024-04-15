@@ -18,7 +18,6 @@ export const FormattedErrors = ({
   eip721DomainStatus: 'success' | 'failure' | undefined;
   contractCallError: ReadContractErrorType | null;
 }) => {
-  console.log(contractCallError);
   if (contractCallError) {
     return (
       <div className="flex flex-row my-4" key={contractCallError.shortMessage}>
