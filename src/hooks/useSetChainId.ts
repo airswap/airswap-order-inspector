@@ -20,7 +20,7 @@ type Order =
     }
   | undefined;
 
-export const useSetChainId = (order: Order): void => {
+export const useSetChainId = ({ order }: { order: Order }): void => {
   const { setIsSelectDisabled, setSelectedChainId } = useAppStore();
 
   useEffect(() => {
