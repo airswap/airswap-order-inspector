@@ -36,6 +36,7 @@ export const useValidateOrder = ({ orderText }: { orderText?: string }) => {
     error: contractCallError,
     isLoading: isChecking,
   } = useCheckOrder({
+    chainId: _chainId,
     swapContract: _swapContractAddress as `0x${string}`,
     enabled: schemaValid,
     order: schemaValid ? schemaValidationResult.data : undefined,

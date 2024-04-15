@@ -3,22 +3,21 @@ import { Address, Hash, zeroAddress } from 'viem';
 import { useReadContract } from 'wagmi';
 import { swapErc20Abi } from '../abi/swapErc20Abi';
 import { SignedOrder } from '../utils/orderSchema';
-import { useAppStore } from '@/store/store';
 
 export const useCheckOrder = ({
   swapContract,
+  chainId,
   enabled = true,
   order,
 }: {
   swapContract: Address;
+  chainId: number;
   enabled?: boolean;
   order?: SignedOrder;
 }) => {
-  const { selectedChainId } = useAppStore();
-
   return useReadContract({
     address: swapContract,
-    chainId: selectedChainId,
+    chainId: chainId,
     abi: swapErc20Abi,
     functionName: 'check',
     args: [
@@ -42,6 +41,10 @@ export const useCheckOrder = ({
       staleTime: Infinity,
       gcTime: 600_000,
       enabled: !!order && enabled,
+      retry(failureCount, error) {
+        if ((error.name as string) === 'ChainNotConfiguredError') return false;
+        return failureCount < 3;
+      },
     },
   });
 };
