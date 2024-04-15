@@ -20,31 +20,16 @@ type Order =
     }
   | undefined;
 
-export const useSetChainId = ({
-  schemaValid,
-  order,
-}: {
-  schemaValid: boolean;
-  order: Order;
-}): void => {
-  const { setIsSelectDisabled, setSelectedChainId, selectedChainId } =
-    useAppStore();
+export const useSetChainId = (order: Order): void => {
+  const { setIsSelectDisabled, setSelectedChainId } = useAppStore();
 
   useEffect(() => {
-    if (!order?.chainId) {
-      setIsSelectDisabled(false);
-      return;
-    } else if (schemaValid && selectedChainId !== order?.chainId) {
-      setSelectedChainId(order?.chainId);
+    if (order?.chainId) {
       setIsSelectDisabled(true);
+      setSelectedChainId(order.chainId);
     } else {
-      return;
+      setIsSelectDisabled(false);
     }
-  }, [
-    schemaValid,
-    order?.chainId,
-    selectedChainId,
-    setSelectedChainId,
-    setIsSelectDisabled,
-  ]);
+    return;
+  }, [order?.chainId, setSelectedChainId, setIsSelectDisabled]);
 };

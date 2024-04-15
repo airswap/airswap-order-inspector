@@ -36,10 +36,7 @@ function App() {
     orderText: orderText,
   });
 
-  useSetChainId({
-    schemaValid: schemaValidationResult.success,
-    order: order,
-  });
+  useSetChainId({ order });
 
   const formattedSchemaValidationErrors = useFormatSchemaValidationErrors(
     schemaValidationError

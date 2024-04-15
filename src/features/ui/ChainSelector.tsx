@@ -34,7 +34,7 @@ export const ChainSelector = () => {
         >
           <RadixSelect.Value
             placeholder={
-              isSelectDisabled ? selectedChainId.toString() : 'chain Id'
+              isSelectDisabled ? selectedChainId.toString() : 'Select chain Id'
             }
           />
 

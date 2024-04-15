@@ -19,6 +19,8 @@ export const useValidateOrder = ({ orderText }: { orderText?: string }) => {
     }
   }
 
+  // console.log(_order);
+
   // Check if the parsed order is valid.
   const schemaValidationResult = signedOrderSchema.safeParse(_order);
   const schemaValid = schemaValidationResult.success;
