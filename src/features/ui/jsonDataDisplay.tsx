@@ -3,6 +3,7 @@ import { ChainSelector } from './ChainSelector';
 import { blockExplorers } from '@/utils/blockExplorers';
 import { useChainId } from 'wagmi';
 import { TfiNewWindow } from 'react-icons/tfi';
+import { ImSpinner8 } from 'react-icons/im';
 
 export const JsonDataDisplay = ({
   swapContract,
@@ -18,6 +19,7 @@ export const JsonDataDisplay = ({
   senderToken,
   senderAmount,
   displayErrors,
+  isChecking,
 }: {
   swapContract: string | undefined;
   domainName: string | undefined;
@@ -32,6 +34,7 @@ export const JsonDataDisplay = ({
   senderToken: string | undefined;
   senderAmount: string | undefined;
   displayErrors: JSX.Element | JSX.Element[] | undefined;
+  isChecking: boolean;
 }) => {
   const chainId = useChainId();
   const explorerUrl = blockExplorers[chainId || 1];
@@ -130,7 +133,18 @@ export const JsonDataDisplay = ({
       </div>
       <div className="w-1/2 px-6">
         <h2 className="font-bold">Issues</h2>
-        <pre className="whitespace-pre h-full">{displayErrors}</pre>
+        {isChecking ? (
+          <div className="w-full h-full grid place-items-center">
+            <div className="flex flex-col gap-2 items-center">
+              <ImSpinner8 className="animate-spin" size={24} />
+              <p className="font-light text-white/80 text-sm">
+                Checking for issues...
+              </p>
+            </div>
+          </div>
+        ) : (
+          <pre className="whitespace-pre h-full">{displayErrors}</pre>
+        )}
       </div>
     </div>
   );

@@ -31,7 +31,11 @@ export const useValidateOrder = ({ orderText }: { orderText?: string }) => {
   const _swapContractAddress =
     order?.swapContract || SwapERC20.getAddress(_chainId);
 
-  const { data: orderErrors, error: contractCallError } = useCheckOrder({
+  const {
+    data: orderErrors,
+    error: contractCallError,
+    isLoading: isChecking,
+  } = useCheckOrder({
     swapContract: _swapContractAddress as `0x${string}`,
     enabled: schemaValid,
     order: schemaValid ? schemaValidationResult.data : undefined,
@@ -43,6 +47,7 @@ export const useValidateOrder = ({ orderText }: { orderText?: string }) => {
     orderErrors: orderErrors?.map((e) => hexToString(e)),
     contractCallError,
     orderParsingError,
+    isChecking,
     schemaValidationError: !schemaValid && schemaValidationResult.error,
   };
 };

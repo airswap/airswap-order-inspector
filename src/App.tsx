@@ -31,6 +31,7 @@ function App() {
     orderParsingError,
     schemaValidationError,
     order,
+    isChecking,
   } = useValidateOrder({
     orderText: orderText,
   });
@@ -116,6 +117,7 @@ function App() {
         </div>
         {orderText && !orderParsingError && (
           <JsonDataDisplay
+            isChecking={isChecking}
             swapContract={swapContract}
             domainName={domainName}
             domainVersion={domainVersion}
