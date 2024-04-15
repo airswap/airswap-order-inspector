@@ -18,6 +18,7 @@ export const FormattedErrors = ({
   eip721DomainStatus: 'success' | 'failure' | undefined;
   contractCallError: ReadContractErrorType | null;
 }) => {
+  console.log(contractCallError);
   if (contractCallError) {
     return (
       <div className="flex flex-row my-4" key={contractCallError.shortMessage}>
@@ -26,8 +27,10 @@ export const FormattedErrors = ({
         </div>
         <div className="flex flex-col ml-4 text-[13px]">
           <p className="mb-1.5 font-bold">{contractCallError.shortMessage}</p>
-          <p className="text-textDark font-normal">
-            {contractCallError.shortMessage}
+          <p className="text-textDark font-normal text-wrap">
+            {
+              'Please verify these domain details: chainId, swapContract, domainName, domainVersion, and protocolFee. You can select a chainId from the dropdown menu on the left. If issues persist, it could be a network error. Please check your connection or try again later.'
+            }
           </p>
         </div>
       </div>

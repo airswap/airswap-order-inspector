@@ -14,10 +14,7 @@ import {
   mainnet,
   polygon,
   polygonMumbai,
-  // rootstock,
   sepolia,
-  // telos,
-  // telosTestnet,
 } from 'wagmi/chains';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactNode } from 'react';
@@ -41,9 +38,6 @@ const metadata = {
 const chains = [
   mainnet,
   sepolia,
-  sepolia,
-  // telos,
-  // telosTestnet,
   bsc,
   bscTestnet,
   polygon,
@@ -54,7 +48,6 @@ const chains = [
   arbitrum,
   avalanche,
   avalancheFuji,
-  // rootstock,
 ] as const;
 const config = defaultWagmiConfig({
   chains,
