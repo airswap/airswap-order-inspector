@@ -54,7 +54,7 @@ export const ChainSelector = () => {
         <RadixSelect.Portal>
           <RadixSelect.Content
             position="popper"
-            className="h-[340px] rounded-md border"
+            className="h-fit rounded-md border"
           >
             <RadixSelect.ScrollUpButton className="SelectScrollButton">
               <RadixSelect.ScrollUpButton />
