@@ -27,7 +27,7 @@ const projectId = import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID || '1';
 
 // 2. Create wagmiConfig
 const metadata = {
-  // FIXME: double check these values
+  // TODO: double check these values
   name: 'AirSwap Checker',
   description:
     'AirSwap Makers can use the AirSwap Checker app to debug their JSON objects in their API setup',

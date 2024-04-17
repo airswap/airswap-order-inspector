@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import { useValidateOrder } from './hooks/useValidateOrder';
 import { Header } from './features/ui/header';
 import { useAppStore } from './store/store';
