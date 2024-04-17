@@ -1,7 +1,9 @@
-export type SelectOptions = {
+export type SelectOption = {
   value: string;
   label: string;
-}[];
+};
+
+export type SelectOptions = SelectOption[];
 
 export const chainIdOptions: SelectOptions = [
   { value: '1', label: 'Ethereum' },
