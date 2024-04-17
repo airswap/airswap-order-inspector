@@ -94,9 +94,6 @@ export const ChainSelector = () => {
                   <RadixSelect.ItemText>
                     {chain.label}: {chain.value}
                   </RadixSelect.ItemText>
-                  <RadixSelect.ItemIndicator>
-                    {chain.value}
-                  </RadixSelect.ItemIndicator>
                 </RadixSelect.Item>
               ))}
             </RadixSelect.Viewport>
