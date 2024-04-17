@@ -17,7 +17,7 @@ export const useDomainInfo = ({ chainId }: { chainId: number | undefined }) => {
     abi: swapErc20Abi,
   };
 
-  const { data } = useReadContracts({
+  const { data, isLoading, error } = useReadContracts({
     contracts: [
       {
         ...wagmiContractConfig,
@@ -38,5 +38,5 @@ export const useDomainInfo = ({ chainId }: { chainId: number | undefined }) => {
   });
   const [eip712Domain, protocolFee] = data || [];
 
-  return { eip712Domain, protocolFee };
+  return { eip712Domain, protocolFee, isLoading, error };
 };

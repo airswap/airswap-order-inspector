@@ -36,6 +36,7 @@ export const ChainSelector = () => {
             placeholder={
               isSelectDisabled ? selectedChainId.toString() : 'Select chain Id'
             }
+            className={isSelectDisabled ? 'opacity-50' : 'opacity-0'}
           />
 
           <RadixSelect.Icon className="ml-2">

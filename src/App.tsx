@@ -20,7 +20,12 @@ function App() {
   let domainVersion: string | undefined;
   let protocolFeeFormatted: number | undefined;
 
-  const { eip712Domain, protocolFee } = useDomainInfo({
+  const {
+    eip712Domain,
+    protocolFee,
+    isLoading: isLoadingDomainInfo,
+    error: errorDomainInfo,
+  } = useDomainInfo({
     chainId: selectedChainId,
   });
 
@@ -46,10 +51,16 @@ function App() {
     swapContract = eip712Domain.result[4];
     domainName = eip712Domain.result[1];
     domainVersion = eip712Domain.result[2];
+  } else if (isLoadingDomainInfo) {
+    swapContract = 'loading...';
+    domainName = 'loading...';
+    domainVersion = 'loading...';
+  } else if (errorDomainInfo) {
+    swapContract = 'Contract read error';
+    domainName = 'Contract read error';
+    domainVersion = 'Contract read error';
   } else {
-    swapContract = 'Error reading contract';
-    domainName = 'Error reading contract';
-    domainVersion = 'Error reading contract';
+    null;
   }
 
   if (protocolFee?.status === 'success') {
@@ -80,7 +91,6 @@ function App() {
 
   const handleTextChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setOrderText(e.target.value);
-    // check if URL or JSON
   };
 
   const formattedErrors = FormattedErrors({
@@ -90,7 +100,6 @@ function App() {
     contractCallError,
   });
 
-  // this is used to render "No errors found" display
   const noErrorDisplay = NoErrorDisplay({
     formattedSchemaValidationErrors,
     orderErrors,
