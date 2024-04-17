@@ -29,7 +29,7 @@ export const ChainSelector = () => {
         onOpenChange={handleIsSelectOpen}
       >
         <RadixSelect.Trigger
-          className="flex items-center px-3 py-1 bg-blueGray border border-blueExtraDark rounded-sm font-semibold uppercase"
+          className={`flex items-center ${isSelectOpen && 'py-3 px-5 border border-blueExtraDark'} bg-blueGray rounded-sm font-semibold uppercase`}
           aria-label="chain id"
         >
           <RadixSelect.Value
@@ -56,13 +56,15 @@ export const ChainSelector = () => {
             position="popper"
             className="h-[340px] rounded-md border"
           >
-            <RadixSelect.ScrollUpButton />
-            <RadixSelect.Viewport>
+            <RadixSelect.ScrollUpButton className="SelectScrollButton">
+              <RadixSelect.ScrollUpButton />
+            </RadixSelect.ScrollUpButton>
+            <RadixSelect.Viewport className="max-h-[200px] overflow-y-auto">
               {chainIdOptions.map((chain) => (
                 <RadixSelect.Item
                   value={chain.value}
                   key={chain.value}
-                  className="py-1 px-2 bg-background text-lightGray first:rounded-t-sm last:rounded-b-sm hover:bg-blueExtraDark"
+                  className="py-3 px-5 bg-background text-lightGray border border-b-0.5 first:rounded-t-md last:rounded-b-sm hover:bg-blueExtraDark"
                 >
                   <RadixSelect.ItemText>
                     {chain.label}: {chain.value}
@@ -73,7 +75,6 @@ export const ChainSelector = () => {
                 </RadixSelect.Item>
               ))}
             </RadixSelect.Viewport>
-            <RadixSelect.ScrollDownButton />
             <RadixSelect.Arrow />
           </RadixSelect.Content>
         </RadixSelect.Portal>
