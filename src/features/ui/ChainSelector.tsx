@@ -1,11 +1,15 @@
 import * as RadixSelect from '@radix-ui/react-select';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FaChevronDown } from 'react-icons/fa';
 import { chainIdOptions } from '@/lib/chainIdOptions';
 import { useAppStore } from '@/store/store';
+import { chainIdInOptions } from '@/utils/chainIdInOptions';
+import { matchNetworkNameWithId } from '@/utils/matchNetworkNamesWithId';
 
 export const ChainSelector = () => {
   const [isSelectOpen, setIsSelectOpen] = useState(false);
+  const [placeholder, setPlaceholder] = useState('Select chain id');
+  const [networkName, setNetworkName] = useState<string>('');
   const { isSelectDisabled, selectedChainId, setSelectedChainId } =
     useAppStore();
 
@@ -18,6 +22,26 @@ export const ChainSelector = () => {
       setSelectedChainId(Number(chain));
     }
   };
+
+  const isChainIdInOptions = chainIdInOptions(selectedChainId);
+
+  const chainIdPlaceholder = useCallback(() => {
+    if (!isSelectDisabled) {
+      return selectedChainId.toString();
+    } else if (!isChainIdInOptions) {
+      return 'JSON chainId invalid';
+    } else {
+      return selectedChainId.toString();
+    }
+  }, [isSelectDisabled, isChainIdInOptions, selectedChainId]);
+
+  useEffect(() => {
+    const updatedPlaceholder = chainIdPlaceholder();
+    setPlaceholder(updatedPlaceholder);
+
+    const networkNameMatch = matchNetworkNameWithId(placeholder);
+    setNetworkName(networkNameMatch || '');
+  }, [chainIdPlaceholder, placeholder]);
 
   return (
     <>
@@ -32,12 +56,13 @@ export const ChainSelector = () => {
           className={`flex items-center ${isSelectOpen && 'py-3 px-5 border border-blueExtraDark'} bg-blueGray rounded-sm font-semibold uppercase`}
           aria-label="chain id"
         >
-          <RadixSelect.Value
-            placeholder={
-              isSelectDisabled ? selectedChainId.toString() : 'Select chain Id'
-            }
-            className={isSelectDisabled ? 'opacity-50' : 'opacity-0'}
-          />
+          <RadixSelect.Value placeholder={`${networkName}: ${placeholder}`}>
+            {selectedChainId ? (
+              `${networkName}: ${placeholder}`
+            ) : (
+              <span className="placeholder">Select chain id</span>
+            )}
+          </RadixSelect.Value>
 
           <RadixSelect.Icon className="ml-2">
             <div
@@ -45,7 +70,7 @@ export const ChainSelector = () => {
                 isSelectOpen
                   ? 'transition-transform rotate-180'
                   : 'transition-transform rotate-0'
-              }`}
+              } ${isSelectDisabled ? 'hidden' : 'block'}`}
             >
               <FaChevronDown />
             </div>

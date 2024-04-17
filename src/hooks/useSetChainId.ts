@@ -29,6 +29,7 @@ export const useSetChainId = ({ order }: { order: Order }): void => {
       setSelectedChainId(order.chainId);
     } else {
       setIsSelectDisabled(false);
+      setSelectedChainId(1);
     }
     return;
   }, [order?.chainId, setSelectedChainId, setIsSelectDisabled]);
