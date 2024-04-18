@@ -4,7 +4,7 @@ import { FaChevronDown } from 'react-icons/fa';
 import { SelectOption, SelectOptions } from '@/lib/chainIdOptions';
 
 export const Select = ({
-  isSelectDisabled,
+  isSelectDisabled = false,
   handleSelectChange,
   placeholderValue,
   placeholderFiller,
