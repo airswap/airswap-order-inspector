@@ -47,7 +47,7 @@ export const ChainSelector = () => {
     <Select
       isSelectDisabled={isSelectDisabled}
       handleSelectChange={(val: string) => handleSelectChange(Number(val))}
-      placeholderValue={`${networkName}: ${placeholder}`}
+      placeholderValue={`${networkName && networkName + ':'} ${placeholder}`}
       placeholderFiller={placeholderFiller}
       selectOptions={chainIdOptions}
     />
