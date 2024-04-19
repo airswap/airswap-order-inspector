@@ -1,14 +1,14 @@
-import { useChainId } from 'wagmi';
+import { useAppStore } from '@/store/store';
+import { TfiNewWindow } from 'react-icons/tfi';
 import { blockExplorers } from '../../utils/blockExplorers';
 import { truncateAddress } from '../../utils/truncateAddress';
-import { TfiNewWindow } from 'react-icons/tfi';
 
 export const ExplorerUrl = ({
   jsonData,
 }: {
   jsonData: string | undefined | null;
 }) => {
-  const chainId = useChainId();
+  const chainId = useAppStore((store) => store.selectedChainId);
   const explorerUrl = blockExplorers[chainId || 1];
 
   if (!jsonData) {
