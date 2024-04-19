@@ -32,7 +32,7 @@ const metadata = {
   description:
     'AirSwap Makers can use the AirSwap Checker app to debug their JSON objects in their API setup',
   url: 'https://check.airswap.eth.limo/',
-  icons: ['../../seets/airswap-logo.svg'],
+  icons: ['https://avatars.githubusercontent.com/u/26823563?s=200&v=4'],
 };
 
 const chains = [
