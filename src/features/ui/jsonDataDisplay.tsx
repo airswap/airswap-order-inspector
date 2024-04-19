@@ -38,6 +38,8 @@ export const JsonDataDisplay = ({
 }) => {
   const signerTokenData = useTokenData(signerToken as Address);
   const senderTokenData = useTokenData(senderToken as Address);
+  const signerTokenSymbol = signerTokenData.symbol;
+  const senderTokenSymbol = senderTokenData.symbol;
 
   const signerAmountFormatted = formatDecimals({
     amount: signerAmount,
@@ -82,10 +84,7 @@ export const JsonDataDisplay = ({
           </div>
           <div className="text-textDark font-medium">signerToken</div>
           <div>
-            <ExplorerUrl
-              jsonData={signerToken}
-              symbol={signerTokenData.symbol}
-            />
+            <ExplorerUrl jsonData={signerToken} symbol={signerTokenSymbol} />
           </div>
           <div className="text-textDark font-medium">signerAmount</div>
           <div>{signerAmountFormatted}</div>
@@ -95,10 +94,7 @@ export const JsonDataDisplay = ({
           </div>
           <div className="text-textDark font-medium">senderToken</div>
           <div className="flex flex-row">
-            <ExplorerUrl
-              jsonData={senderToken}
-              symbol={senderTokenData.symbol}
-            />
+            <ExplorerUrl jsonData={senderToken} symbol={senderTokenSymbol} />
           </div>
           <div className="text-textDark font-medium">senderAmount</div>
           <div>{senderAmountFormatted}</div>

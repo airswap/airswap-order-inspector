@@ -6,9 +6,8 @@ export const formatDecimals = ({
   decimals: number | undefined;
 }) => {
   if (!amount || !decimals) {
-    console.log('no amount or no decimals');
     return undefined;
+  } else {
+    return Number(amount) / 10 ** decimals;
   }
-
-  return Number(amount) / 10 ** decimals;
 };
