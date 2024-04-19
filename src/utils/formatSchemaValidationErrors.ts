@@ -4,7 +4,7 @@ import { SchemaValidationError } from '../../types';
  *
  * @returns array with errors extracted from schemaValidationError input. If returns undefined, there are no errors
  */
-export const useFormatSchemaValidationErrors = (
+export const formatSchemaValidationErrors = (
   schemaValidationError: SchemaValidationError
 ) => {
   if (!schemaValidationError) {

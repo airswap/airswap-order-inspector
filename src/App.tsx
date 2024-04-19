@@ -3,7 +3,7 @@ import { useValidateOrder } from './hooks/useValidateOrder';
 import { Header } from './features/ui/header';
 import { useAppStore } from './store/store';
 import { useDomainInfo } from './hooks/useDomainInfo';
-import { useFormatSchemaValidationErrors } from './hooks/useFormatSchemaValidationErrors';
+import { formatSchemaValidationErrors } from './utils/formatSchemaValidationErrors';
 import { LoadingOrFailed } from './features/ui/loadingOrFailed';
 import { FormattedErrors } from './features/ui/formattedErrors';
 import { NoErrorDisplay } from './features/ui/noErrorDisplay';
@@ -43,7 +43,7 @@ function App() {
 
   useSetChainId({ order });
 
-  const formattedSchemaValidationErrors = useFormatSchemaValidationErrors(
+  const formattedSchemaValidationErrors = formatSchemaValidationErrors(
     schemaValidationError
   );
 
