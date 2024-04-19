@@ -5,8 +5,10 @@ import { truncateAddress } from '../../utils/truncateAddress';
 
 export const ExplorerUrl = ({
   jsonData,
+  symbol,
 }: {
   jsonData: string | undefined | null;
+  symbol?: string | undefined;
 }) => {
   const chainId = useAppStore((store) => store.selectedChainId);
   const explorerUrl = blockExplorers[chainId || 1];
@@ -21,7 +23,7 @@ export const ExplorerUrl = ({
       target="_"
       className="flex flex-row items-center"
     >
-      {truncateAddress(jsonData)}
+      {truncateAddress(jsonData)} {`${symbol ? ' (' + symbol + ')' : ''}`}
       <div>
         <TfiNewWindow className="ml-3" />
       </div>

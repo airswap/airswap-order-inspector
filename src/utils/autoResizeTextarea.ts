@@ -3,8 +3,6 @@ export const autoResizeTextarea = (textarea: HTMLTextAreaElement | null) => {
 
   textarea.style.height = 'fit';
 
-  console.log(textarea.style.height, textarea.scrollHeight);
-
   if (textarea.value === '' || !textarea.value) {
     textarea.style.height = '2rem';
   } else {
