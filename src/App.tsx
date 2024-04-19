@@ -9,6 +9,7 @@ import { FormattedErrors } from './features/ui/formattedErrors';
 import { NoErrorDisplay } from './features/ui/noErrorDisplay';
 import { JsonDataDisplay } from './features/ui/jsonDataDisplay';
 import { useSetChainId } from './hooks/useSetChainId';
+import { autoResizeTextarea } from './utils/autoResizeTextarea';
 
 function App() {
   const [orderText, setOrderText] = useState<string | undefined>(undefined);
@@ -63,6 +64,9 @@ function App() {
     null;
   }
 
+  const jsonTextarea = document.getElementById('jsonTextarea');
+  autoResizeTextarea(jsonTextarea as HTMLTextAreaElement);
+
   if (protocolFee?.status === 'success') {
     protocolFeeFormatted = Number(protocolFee.result);
   }
@@ -114,10 +118,11 @@ function App() {
         <h1 className="font-bold text-[24px]">Inspect an order</h1>
         <div className="flex flex-row">
           <textarea
+            id="jsonTextarea"
             value={orderText}
             onChange={handleTextChange}
             placeholder="Enter JSON or URL"
-            className="w-full h-12 top-[287px] bg-transparent border p-2"
+            className="w-full h-fit p-2 top-[287px] bg-transparent border"
             rows={10}
           />
         </div>
