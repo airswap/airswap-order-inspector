@@ -1,24 +1,14 @@
+import path from 'path';
+import react from '@vitejs/plugin-react-swc';
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import { ValidateEnv } from '@julr/vite-plugin-validate-env';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  base: './',
-  plugins: [
-    react(),
-    nodePolyfills({
-      include: ['path', 'stream', 'util'],
-      exclude: ['http'],
-      globals: {
-        Buffer: true,
-        global: true,
-        process: true,
-      },
-      overrides: {
-        fs: 'memfs',
-      },
-      protocolImports: true,
-    }),
-  ],
+  plugins: [react(), ValidateEnv(), nodePolyfills()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
 });
