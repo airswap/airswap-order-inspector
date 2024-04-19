@@ -1,7 +1,6 @@
 import { useReadContracts } from 'wagmi';
 import { swapErc20Abi } from '@/abi/swapErc20Abi';
 import { SwapERC20 } from '@airswap/libraries';
-import { Address } from 'viem';
 import { useAppStore } from '@/store/store';
 
 /**
@@ -11,9 +10,11 @@ import { useAppStore } from '@/store/store';
  */
 export const useDomainInfo = ({ chainId }: { chainId: number | undefined }) => {
   const { swapContractAddress } = useAppStore();
-  const address = SwapERC20.getAddress(chainId || 1) as Address;
+  const address = SwapERC20.getAddress(chainId || 1);
+  const _address = swapContractAddress || address;
+
   const wagmiContractConfig = {
-    address: (swapContractAddress as `0x${string}`) || address,
+    address: (swapContractAddress as `0x${string}`) || _address,
     abi: swapErc20Abi,
   };
 
@@ -30,10 +31,10 @@ export const useDomainInfo = ({ chainId }: { chainId: number | undefined }) => {
     ],
     query: {
       refetchInterval: false,
-      // Once wrong, always wrong.
+      // Immutable in contract
       staleTime: Infinity,
       gcTime: 600_000,
-      enabled: !!chainId,
+      enabled: !!chainId && !!_address,
     },
   });
   const [eip712Domain, protocolFee] = data || [];
