@@ -7,6 +7,8 @@ interface AppStore {
   setSelectedChainId: (chainId: number) => void;
   swapContractAddress: string | undefined;
   setSwapContractAddress: (address: string) => void;
+  protocolFeeFromJson: string | undefined;
+  setProtocolFeeFromJson: (fee: string | undefined) => void;
 }
 
 export const useAppStore = create<AppStore>((set) => ({
@@ -16,4 +18,7 @@ export const useAppStore = create<AppStore>((set) => ({
   setSelectedChainId: (chainId) => set({ selectedChainId: chainId }),
   swapContractAddress: undefined,
   setSwapContractAddress: (address) => set({ swapContractAddress: address }),
+  protocolFeeFromJson: undefined,
+  setProtocolFeeFromJson: (protocolFee) =>
+    set({ protocolFeeFromJson: protocolFee }),
 }));

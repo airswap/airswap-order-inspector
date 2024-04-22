@@ -9,11 +9,12 @@ import { FormattedErrors } from './features/ui/formattedErrors';
 import { NoErrorDisplay } from './features/ui/noErrorDisplay';
 import { JsonDataDisplay } from './features/ui/jsonDataDisplay';
 import { useSetChainId } from './hooks/useSetChainId';
+import { useSetProtocolFee } from './hooks/useSetProtocolFee';
 
 function App() {
   const [orderText, setOrderText] = useState<string | undefined>(undefined);
 
-  const { selectedChainId } = useAppStore();
+  const { selectedChainId, protocolFeeFromJson } = useAppStore();
 
   let swapContract: string | undefined;
   let domainName: string | undefined;
@@ -42,6 +43,10 @@ function App() {
   });
 
   useSetChainId({ order });
+  useSetProtocolFee({
+    jsonProtocolFee: order?.protocolFee,
+    protocolFee: protocolFee,
+  });
 
   const formattedSchemaValidationErrors = formatSchemaValidationErrors(
     schemaValidationError
@@ -127,7 +132,9 @@ function App() {
             swapContract={swapContract}
             domainName={domainName}
             domainVersion={domainVersion}
-            protocolFeeFormatted={protocolFeeFormatted}
+            protocolFeeFormatted={
+              Number(protocolFeeFromJson) || protocolFeeFormatted
+            }
             nonce={nonce}
             expiry={expiry}
             signerWallet={signerWallet}

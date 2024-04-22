@@ -19,6 +19,7 @@ export const signedOrderSchema = z.object({
   // optionals.
   chainId: z.coerce.number().optional(),
   swapContract: address().optional(),
+  // TODO: add schema validation for protocolFee so it accepts `protocolFee` from `useDomainInfo` as an input, and compares it to `protocolFee` set by user in JSON
   protocolFee: z.coerce.number().optional(),
 });
 
