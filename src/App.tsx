@@ -114,7 +114,7 @@ function App() {
   return (
     <React.Fragment>
       <Header />
-      <main className="container flex flex-col w-[849px] h-fit py-8 gap-4 border">
+      <main className="container flex flex-col w-[849px] h-fit py-8 gap-4 border mb-6">
         <h1 className="font-bold text-[24px]">Inspect an order</h1>
         <div className="flex flex-row">
           <textarea
