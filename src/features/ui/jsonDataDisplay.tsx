@@ -4,6 +4,7 @@ import { ExplorerUrl } from './explorerUrl';
 import { useTokenData } from '@/hooks/useTokenData';
 import { Address } from 'viem';
 import { formatDecimals } from '@/utils/formatDecimals';
+import { useFormatExpiry } from '@/hooks/useFormatExpiry';
 
 export const JsonDataDisplay = ({
   swapContract,
@@ -77,7 +78,9 @@ export const JsonDataDisplay = ({
           <div className="text-textDark font-medium">Nonce</div>
           <div>{nonce}</div>
           <div className="text-textDark font-medium">Expiry</div>
-          <div>{expiry}</div>
+          <div>
+            {useFormatExpiry(expiry)} {`(${expiry})`}
+          </div>
           <div className="text-textDark font-medium">signerWallet</div>
           <div>
             <ExplorerUrl jsonData={signerWallet} />
