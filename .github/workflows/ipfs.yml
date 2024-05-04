@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 18.16.1
+          node-version: 18.18
 
       - name: Checkout 🛎️
         uses: actions/checkout@v2.3.1
