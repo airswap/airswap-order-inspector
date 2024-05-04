@@ -17,6 +17,7 @@ jobs:
       - name: Install and Build 🔧
         env:
           VITE_INFURA_API_KEY: ${{ vars.INFURA_API_KEY }}
+          VITE_WALLET_CONNECT_PROJECT_ID: ${{ vars.VITE_WALLET_CONNECT_PROJECT_ID }}
         run: |
           yarn
           yarn build
