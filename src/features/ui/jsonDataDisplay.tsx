@@ -1,6 +1,10 @@
 import { ChainSelector } from './ChainSelector';
 import { ImSpinner8 } from 'react-icons/im';
 import { ExplorerUrl } from './explorerUrl';
+import { useTokenData } from '@/hooks/useTokenData';
+import { Address } from 'viem';
+import { formatDecimals } from '@/utils/formatDecimals';
+import { useFormatExpiry } from '@/hooks/useFormatExpiry';
 
 export const JsonDataDisplay = ({
   swapContract,
@@ -33,6 +37,21 @@ export const JsonDataDisplay = ({
   displayErrors: JSX.Element | JSX.Element[] | undefined;
   isChecking: boolean;
 }) => {
+  const signerTokenData = useTokenData(signerToken as Address);
+  const senderTokenData = useTokenData(senderToken as Address);
+  const signerTokenSymbol = signerTokenData.symbol;
+  const senderTokenSymbol = senderTokenData.symbol;
+
+  const signerAmountFormatted = formatDecimals({
+    amount: signerAmount,
+    decimals: signerTokenData.decimals,
+  });
+
+  const senderAmountFormatted = formatDecimals({
+    amount: senderAmount,
+    decimals: senderTokenData.decimals,
+  });
+
   return (
     <div className="flex flex-row py-4">
       <div className="w-1/2 h-full pr-6 border-r font-bold text-[13px]">
@@ -59,27 +78,29 @@ export const JsonDataDisplay = ({
           <div className="text-textDark font-medium">Nonce</div>
           <div>{nonce}</div>
           <div className="text-textDark font-medium">Expiry</div>
-          <div>{expiry}</div>
+          <div>
+            {useFormatExpiry(expiry)} {`(${expiry})`}
+          </div>
           <div className="text-textDark font-medium">signerWallet</div>
           <div>
             <ExplorerUrl jsonData={signerWallet} />
           </div>
           <div className="text-textDark font-medium">signerToken</div>
           <div>
-            <ExplorerUrl jsonData={signerToken} />
+            <ExplorerUrl jsonData={signerToken} symbol={signerTokenSymbol} />
           </div>
           <div className="text-textDark font-medium">signerAmount</div>
-          <div>{signerAmount}</div>
+          <div>{signerAmountFormatted}</div>
           <div className="text-textDark font-medium">senderWallet</div>
           <div>
             <ExplorerUrl jsonData={senderWallet} />
           </div>
           <div className="text-textDark font-medium">senderToken</div>
-          <div>
-            <ExplorerUrl jsonData={senderToken} />
+          <div className="flex flex-row">
+            <ExplorerUrl jsonData={senderToken} symbol={senderTokenSymbol} />
           </div>
           <div className="text-textDark font-medium">senderAmount</div>
-          <div>{senderAmount}</div>
+          <div>{senderAmountFormatted}</div>
         </div>
       </div>
       <div className="w-1/2 px-6">
