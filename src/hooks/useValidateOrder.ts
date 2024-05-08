@@ -5,7 +5,13 @@ import { SignedOrder, signedOrderSchema } from '../utils/orderSchema';
 import { parseOrderFromUrl } from '../utils/parseOrderFromUrl';
 import { useCheckOrder } from './useCheckOrder';
 
-export const useValidateOrder = ({ orderText }: { orderText?: string }) => {
+export const useValidateOrder = ({
+  orderText,
+  protocolFee,
+}: {
+  orderText?: string;
+  protocolFee: number | undefined;
+}) => {
   const { selectedChainId } = useAppStore();
 
   let _order;
@@ -20,7 +26,9 @@ export const useValidateOrder = ({ orderText }: { orderText?: string }) => {
   }
 
   // Check if the parsed order is valid.
-  const schemaValidationResult = signedOrderSchema.safeParse(_order);
+  const schemaWithExpectedFee = signedOrderSchema(protocolFee);
+
+  const schemaValidationResult = schemaWithExpectedFee.safeParse(_order);
   const schemaValid = schemaValidationResult.success;
   let order: SignedOrder | undefined = undefined;
   if (schemaValid) {

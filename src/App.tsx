@@ -41,6 +41,7 @@ function App() {
     isChecking,
   } = useValidateOrder({
     orderText: orderText,
+    protocolFee: Number(protocolFee?.result),
   });
 
   useSetChainId({ order });
