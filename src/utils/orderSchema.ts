@@ -1,10 +1,10 @@
-import { nullable, z } from 'zod';
+import { nullable, z, ZodRawShape } from 'zod';
 
 const address = () => z.string().startsWith('0x').length(42);
 const stringNumber = () => z.string().regex(/^[0-9]*$/);
 
 export const signedOrderSchema = (expectedProtocolFee?: number | undefined) => {
-  return z.object({
+  const schemaConfig: ZodRawShape = {
     nonce: z.coerce.number(),
     expiry: z.coerce.number(),
     signerWallet: address(),
@@ -16,12 +16,16 @@ export const signedOrderSchema = (expectedProtocolFee?: number | undefined) => {
     v: z.coerce.number(),
     r: z.string().startsWith('0x').length(66),
     s: z.string().startsWith('0x').length(66),
-
     // optionals.
     chainId: z.coerce.number().optional(),
     swapContract: address().optional(),
-    protocolFee: z.literal(expectedProtocolFee).optional(),
-  });
+  };
+
+  if (expectedProtocolFee) {
+    schemaConfig.protocolFee = z.literal(expectedProtocolFee).optional();
+  }
+
+  return z.object(schemaConfig);
 };
 
 export type SignedOrder = z.infer<ReturnType<typeof signedOrderSchema>>;
