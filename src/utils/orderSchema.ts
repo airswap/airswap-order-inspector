@@ -4,22 +4,6 @@ const address = () => z.string().startsWith('0x').length(42);
 const stringNumber = () => z.string().regex(/^[0-9]*$/);
 
 export const signedOrderSchema = (expectedProtocolFee?: number | undefined) => {
-  const protocolFeeValidator = z
-    .number()
-    .optional()
-    .refine(
-      (protocolFee) => {
-        if (protocolFee !== undefined && expectedProtocolFee !== undefined) {
-          return protocolFee === expectedProtocolFee;
-        }
-        return true; // Allow undefined protocolFee
-      },
-      {
-        message: (value) =>
-          `Invalid protocolFee: expected ${expectedProtocolFee}, got ${value}`,
-      }
-    );
-
   return z.object({
     nonce: z.coerce.number(),
     expiry: z.coerce.number(),
@@ -36,7 +20,7 @@ export const signedOrderSchema = (expectedProtocolFee?: number | undefined) => {
     // optionals.
     chainId: z.coerce.number().optional(),
     swapContract: address().optional(),
-    protocolFee: protocolFeeValidator,
+    protocolFee: z.literal(expectedProtocolFee).optional(),
   });
 };
 
