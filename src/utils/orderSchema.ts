@@ -22,7 +22,9 @@ export const signedOrderSchema = (expectedProtocolFee?: number | undefined) => {
   };
 
   if (expectedProtocolFee) {
-    schemaConfig.protocolFee = z.literal(expectedProtocolFee).optional();
+    schemaConfig.protocolFee = z.coerce
+      .number()
+      .pipe(z.literal(expectedProtocolFee).optional());
   }
 
   return z.object(schemaConfig);
