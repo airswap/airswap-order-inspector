@@ -11,6 +11,7 @@ export const JsonDataDisplay = ({
   domainName,
   domainVersion,
   protocolFeeFormatted,
+  userProtocolFee,
   nonce,
   expiry,
   signerWallet,
@@ -26,6 +27,7 @@ export const JsonDataDisplay = ({
   domainName: string | undefined;
   domainVersion: string | undefined;
   protocolFeeFormatted: number | undefined;
+  userProtocolFee?: string | undefined;
   nonce: number | undefined;
   expiry: number | undefined;
   signerWallet: string | undefined;
@@ -91,6 +93,14 @@ export const JsonDataDisplay = ({
           </div>
           <div className="text-textDark font-medium">signerAmount</div>
           <div>{signerAmountFormatted}</div>
+
+          {userProtocolFee && (
+            <>
+              <div className="text-textDark font-medium">protocolFee</div>
+              <div>{userProtocolFee}</div>
+            </>
+          )}
+
           <div className="text-textDark font-medium">senderWallet</div>
           <div>
             <ExplorerUrl jsonData={senderWallet} />

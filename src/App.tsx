@@ -85,6 +85,7 @@ function App() {
   let senderWallet;
   let senderToken;
   let senderAmount;
+  let userProtocolFee;
 
   const validSchema = schemaValidationResult.success;
 
@@ -97,6 +98,7 @@ function App() {
     senderWallet = order?.senderWallet;
     senderToken = order?.senderToken;
     senderAmount = order?.senderAmount;
+    userProtocolFee = order?.protocolFee;
   }
 
   const handleTextChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -141,6 +143,7 @@ function App() {
             protocolFeeFormatted={
               Number(protocolFeeFromJson) || protocolFeeFormatted
             }
+            userProtocolFee={userProtocolFee}
             nonce={nonce}
             expiry={expiry}
             signerWallet={signerWallet}
