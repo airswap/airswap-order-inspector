@@ -3,24 +3,33 @@ import { useEffect } from 'react';
 
 type Order =
   | {
-      nonce: number;
-      signerWallet: string;
-      senderWallet: string | null;
-      expiry: number;
-      signerToken: string;
-      signerAmount: string;
-      senderToken: string;
-      senderAmount: string;
-      v: number;
-      r: string;
-      s: string;
-      chainId?: number | undefined;
-      swapContract?: string | undefined;
-      protocolFee?: number | undefined;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      [x: string]: any;
     }
   | undefined;
+// | {
+//     nonce: number;
+//     signerWallet: string;
+//     senderWallet: string | null;
+//     expiry: number;
+//     signerToken: string;
+//     signerAmount: string;
+//     senderToken: string;
+//     senderAmount: string;
+//     v: number;
+//     r: string;
+//     s: string;
+//     chainId?: number | undefined;
+//     swapContract?: string | undefined;
+//     protocolFee?: number | undefined;
+//   }
+// | undefined;
 
-export const useSetChainId = ({ order }: { order: Order }): void => {
+export const useSetChainId = ({
+  order,
+}: {
+  order: Order | undefined;
+}): void => {
   const { setIsSelectDisabled, setSelectedChainId } = useAppStore();
 
   useEffect(() => {
