@@ -83,7 +83,7 @@ export const JsonDataDisplay = ({
           <div>{nonce}</div>
           <div className="text-textDark font-medium">Expiry</div>
           <div>
-            {expiry && expiryDisplay} {expiry ? `(${expiry})` : ''}
+            {expiry && expiryDisplay} {expiry && `(${expiry})`}
           </div>
           <div className="text-textDark font-medium">signerWallet</div>
           <div>
