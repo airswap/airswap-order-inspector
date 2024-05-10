@@ -1,24 +1,15 @@
 import { useAppStore } from '@/store/store';
 import { useEffect } from 'react';
 
-type Order =
-  | {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      [x: string]: any;
-    }
-  | undefined;
+type Order = { [x: string]: number | string } | undefined;
 
-export const useSetChainId = ({
-  order,
-}: {
-  order: Order | undefined;
-}): void => {
+export const useSetChainId = ({ order }: { order: Order }): void => {
   const { setIsSelectDisabled, setSelectedChainId } = useAppStore();
 
   useEffect(() => {
     if (order?.chainId) {
       setIsSelectDisabled(true);
-      setSelectedChainId(order.chainId);
+      setSelectedChainId(Number(order.chainId));
     } else {
       setIsSelectDisabled(false);
       setSelectedChainId(1);
