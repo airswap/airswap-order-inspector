@@ -25,7 +25,6 @@ export const useValidateOrder = ({
     }
   }
 
-  console.log(_order);
   // Check if the parsed order is valid.
   const schemaWithExpectedFee = signedOrderSchema(protocolFee);
 
