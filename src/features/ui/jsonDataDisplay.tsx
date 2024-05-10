@@ -44,6 +44,8 @@ export const JsonDataDisplay = ({
   const signerTokenSymbol = signerTokenData.symbol;
   const senderTokenSymbol = senderTokenData.symbol;
 
+  const expiryDisplay = useFormatExpiry(expiry);
+
   const signerAmountFormatted = formatDecimals({
     amount: signerAmount,
     decimals: signerTokenData.decimals,
@@ -81,7 +83,7 @@ export const JsonDataDisplay = ({
           <div>{nonce}</div>
           <div className="text-textDark font-medium">Expiry</div>
           <div>
-            {useFormatExpiry(expiry)} {`(${expiry})`}
+            {expiry && expiryDisplay} {expiry ? `(${expiry})` : ''}
           </div>
           <div className="text-textDark font-medium">signerWallet</div>
           <div>
