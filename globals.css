@@ -83,7 +83,7 @@
   font-weight: 200;
   src:
     local('Loos ExtraLight'),
-    url('../src/assets/fonts/Loos-ExtraLight.otf') format('opentype');
+    url('/fonts/Loos-ExtraLight.otf') format('opentype');
 }
 
 @font-face {
@@ -92,7 +92,7 @@
   font-weight: 400;
   src:
     local('Loos Regular'),
-    url('../src/assets/fonts/Loos-Regular.otf') format('opentype');
+    url('/fonts/Loos-Regular.otf') format('opentype');
 }
 
 @font-face {
@@ -101,7 +101,7 @@
   font-weight: 500;
   src:
     local('Loos Medium'),
-    url('../src/assets/fonts/Loos-Medium.otf') format('opentype');
+    url('/fonts/Loos-Medium.otf') format('opentype');
 }
 
 @font-face {
@@ -110,7 +110,7 @@
   font-weight: 700;
   src:
     local('Loos Bold'),
-    url('../src/assets/fonts/Loos-Bold.otf') format('opentype');
+    url('/fonts/Loos-Bold.otf') format('opentype');
 }
 
 @font-face {
@@ -119,5 +119,5 @@
   font-weight: 900;
   src:
     local('Loos Black'),
-    url('../src/assets/fonts/Loos-Black.otf') format('opentype');
+    url('/fonts/Loos-Black.otf') format('opentype');
 }

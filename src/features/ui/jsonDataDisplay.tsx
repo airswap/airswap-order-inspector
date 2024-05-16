@@ -11,6 +11,7 @@ export const JsonDataDisplay = ({
   domainName,
   domainVersion,
   protocolFeeFormatted,
+  userProtocolFee,
   nonce,
   expiry,
   signerWallet,
@@ -26,6 +27,7 @@ export const JsonDataDisplay = ({
   domainName: string | undefined;
   domainVersion: string | undefined;
   protocolFeeFormatted: number | undefined;
+  userProtocolFee?: string | undefined;
   nonce: number | undefined;
   expiry: number | undefined;
   signerWallet: string | undefined;
@@ -41,6 +43,8 @@ export const JsonDataDisplay = ({
   const senderTokenData = useTokenData(senderToken as Address);
   const signerTokenSymbol = signerTokenData.symbol;
   const senderTokenSymbol = senderTokenData.symbol;
+
+  const expiryDisplay = useFormatExpiry(expiry);
 
   const signerAmountFormatted = formatDecimals({
     amount: signerAmount,
@@ -79,7 +83,7 @@ export const JsonDataDisplay = ({
           <div>{nonce}</div>
           <div className="text-textDark font-medium">Expiry</div>
           <div>
-            {useFormatExpiry(expiry)} {`(${expiry})`}
+            {expiry && expiryDisplay} {expiry && `(${expiry})`}
           </div>
           <div className="text-textDark font-medium">signerWallet</div>
           <div>
@@ -91,6 +95,14 @@ export const JsonDataDisplay = ({
           </div>
           <div className="text-textDark font-medium">signerAmount</div>
           <div>{signerAmountFormatted}</div>
+
+          {userProtocolFee && (
+            <>
+              <div className="text-textDark font-medium">protocolFee</div>
+              <div>{userProtocolFee}</div>
+            </>
+          )}
+
           <div className="text-textDark font-medium">senderWallet</div>
           <div>
             <ExplorerUrl jsonData={senderWallet} />

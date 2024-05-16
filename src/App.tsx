@@ -9,12 +9,13 @@ import { FormattedErrors } from './features/ui/formattedErrors';
 import { NoErrorDisplay } from './features/ui/noErrorDisplay';
 import { JsonDataDisplay } from './features/ui/jsonDataDisplay';
 import { useSetChainId } from './hooks/useSetChainId';
+import { useSetProtocolFee } from './hooks/useSetProtocolFee';
 import { autoResizeTextarea } from './utils/autoResizeTextarea';
 
 function App() {
   const [orderText, setOrderText] = useState<string | undefined>(undefined);
 
-  const { selectedChainId } = useAppStore();
+  const { selectedChainId, protocolFeeFromJson } = useAppStore();
 
   let swapContract: string | undefined;
   let domainName: string | undefined;
@@ -40,9 +41,14 @@ function App() {
     isChecking,
   } = useValidateOrder({
     orderText: orderText,
+    protocolFee: Number(protocolFee?.result),
   });
 
   useSetChainId({ order });
+  useSetProtocolFee({
+    jsonProtocolFee: order?.protocolFee,
+    protocolFee: protocolFee,
+  });
 
   const formattedSchemaValidationErrors = formatSchemaValidationErrors(
     schemaValidationError
@@ -79,6 +85,7 @@ function App() {
   let senderWallet;
   let senderToken;
   let senderAmount;
+  let userProtocolFee;
 
   const validSchema = schemaValidationResult.success;
 
@@ -91,6 +98,7 @@ function App() {
     senderWallet = order?.senderWallet;
     senderToken = order?.senderToken;
     senderAmount = order?.senderAmount;
+    userProtocolFee = order?.protocolFee;
   }
 
   const handleTextChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -132,7 +140,10 @@ function App() {
             swapContract={swapContract}
             domainName={domainName}
             domainVersion={domainVersion}
-            protocolFeeFormatted={protocolFeeFormatted}
+            protocolFeeFormatted={
+              Number(protocolFeeFromJson) || protocolFeeFormatted
+            }
+            userProtocolFee={userProtocolFee}
             nonce={nonce}
             expiry={expiry}
             signerWallet={signerWallet}
