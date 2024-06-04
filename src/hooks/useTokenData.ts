@@ -1,20 +1,21 @@
+import { useAppStore } from '@/store/store';
 import { Address, erc20Abi } from 'viem';
-import { useChainId, useReadContract } from 'wagmi';
+import { useReadContract } from 'wagmi';
 
 export const useTokenData = (contract: Address | undefined) => {
-  const chainId = useChainId();
+  const { selectedChainId } = useAppStore();
 
   const { data: decimals } = useReadContract({
     address: contract,
     abi: erc20Abi,
-    chainId: chainId,
+    chainId: selectedChainId || 1,
     functionName: 'decimals',
   });
 
   const { data: symbol } = useReadContract({
     address: contract,
     abi: erc20Abi,
-    chainId: chainId,
+    chainId: selectedChainId || 1,
     functionName: 'symbol',
   });
 
