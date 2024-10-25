@@ -23,4 +23,6 @@ $ yarn start
 
 This repo is a frontend for AirSwap. AirSwap is an open developer community focused on decentralized trading systems. Designers and developers earn for contributing; check [CONTRIBUTING](CONTRIBUTING.md) and join the [Discord](https://chat.airswap.io/) server to learn more.
 
+This app is currently hosted on IPFS at [https://inspect.airswap.eth.limo/](https://inspect.airswap.eth.limo/).
+
 Let's build stuff! 🛠️
